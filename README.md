@@ -1,19 +1,16 @@
-# MP3 Player
+# Carbontype Framework
 
-A classic MP3 player web application with vinyl record aesthetics and audio visualizer.
-
-### Check it out
-
-[![MP3 Player Demo](music-player.png)](https://www.instagram.com/p/DP_AT0-Dyol214AZknSKSb_9EnxukBWTg9_kF80/)
+A minimal, clean web application framework with modern build tooling and live-reload development environment.
 
 ## Features
 
-- Audio playback with play/pause, next/previous track controls
-- Vinyl record rotation animation
-- Real-time audio visualizer
-- Dynamic color palettes generated from album artwork
-- Responsive design
-- Playlist management
+- Clean HTML5/CSS3/JavaScript structure
+- SCSS compilation with live reload
+- Automatic file watching and syncing
+- Line Awesome icon library integration
+- Interactive component examples
+- Responsive design patterns
+- Modern development workflow
 
 ## Prerequisites
 
@@ -30,16 +27,18 @@ npm install
 
 ### Development
 
-Start the development server with live reload:
+Start the development server with live reload and file watching:
 
 ```bash
 npm run dev
 ```
 
 This will:
-- Watch for changes in SCSS, HTML, JS, images, music, and data files
-- Automatically rebuild on changes
+- Build all assets (SCSS, HTML, JS, images, fonts)
+- Watch for changes in SCSS, HTML, JS, and image files
+- Automatically rebuild and sync changes to `dist/`
 - Start a live server at `http://localhost:8080`
+- Auto-reload browser on any file changes
 
 ### Building
 
@@ -50,28 +49,19 @@ npm run build
 ```
 
 This runs all build tasks in sequence:
-1. Generate color palettes from album artwork
-2. Compile SCSS to CSS
-3. Copy HTML files
-4. Copy JavaScript files
-5. Optimize images
-6. Convert music files to Opus format
-7. Copy data files
-8. Copy font files
+1. Compile SCSS to CSS
+2. Copy HTML files
+3. Copy JavaScript files
+4. Copy images
+5. Copy Line Awesome icon fonts
 
 ### Individual Build Tasks
-
-#### Generate Color Palettes
-```bash
-npm run generate-palettes
-```
-Generates color palettes from album artwork using the Vibrant library.
 
 #### Build Styles
 ```bash
 npm run build:scss
 ```
-Compiles SCSS files to CSS without source maps.
+Compiles SCSS files from `src/styles/` to `dist/styles/` without source maps.
 
 #### Build HTML
 ```bash
@@ -89,19 +79,7 @@ Copies JavaScript files from `src/scripts/` to `dist/scripts/`.
 ```bash
 npm run build:img
 ```
-Optimizes and copies images using Sharp.
-
-#### Build Music
-```bash
-npm run build:music
-```
-Converts MP3 files to Opus format for optimal web delivery. Uses FFmpeg to transcode audio files from `src/music/` to `dist/music/` with high-quality Opus encoding (128kbps), providing better compression and smaller file sizes compared to MP3.
-
-#### Build Data
-```bash
-npm run build:data
-```
-Copies JSON data files from `src/data/` to `dist/data/`.
+Copies images from `src/img/` to `dist/img/` maintaining directory structure.
 
 #### Build Fonts
 ```bash
@@ -111,14 +89,12 @@ Copies Line Awesome icon fonts to `dist/fonts/`.
 
 ### Watch Tasks
 
-Watch individual file types for changes:
+Watch individual file types for changes (automatically run by `npm run dev`):
 
-- `npm run watch:scss` - Watch and compile SCSS files
-- `npm run watch:html` - Watch and copy HTML files
-- `npm run watch:js` - Watch and copy JavaScript files
-- `npm run watch:img` - Watch and copy images
-- `npm run watch:music` - Watch and convert music files to Opus format
-- `npm run watch:data` - Watch and copy data files
+- `npm run watch:scss` - Watch and compile SCSS files on change
+- `npm run watch:html` - Watch and copy HTML files on change
+- `npm run watch:js` - Watch and copy JavaScript files on change
+- `npm run watch:img` - Watch and copy images on change
 
 ### Serve
 
@@ -128,11 +104,11 @@ Start a local server without watching for changes:
 npm run serve
 ```
 
-Serves the `dist/` directory at `http://localhost:8080`.
+Serves the `dist/` directory at `http://localhost:8080` with auto-reload.
 
 ### Clean
 
-Remove the build directory:
+Remove all built files from the `dist/` directory:
 
 ```bash
 npm run clean
@@ -141,41 +117,69 @@ npm run clean
 ## Project Structure
 
 ```
-player/
+frmwrk__/
 ├── src/
-│   ├── data/           # Track metadata (JSON)
-│   ├── img/            # Album artwork and assets
-│   ├── music/          # MP3 source files
+│   ├── img/            # Images and assets
+│   │   └── assets/     # Logo and static assets
 │   ├── scripts/        # JavaScript files
+│   │   └── main.js     # Main application logic
 │   ├── styles/         # SCSS stylesheets
+│   │   └── main.scss   # Main stylesheet
 │   └── index.html      # Main HTML file
-├── dist/               # Build output (generated)
-│   └── music/          # Optimized Opus audio files
-├── scripts/            # Build scripts
-│   ├── generate-palettes.js
-│   ├── optimize-images.js
-│   ├── optimize-music.js
-│   └── watch-music.js
-└── package.json
+├── dist/               # Build output (auto-generated, gitignored)
+│   ├── fonts/          # Icon fonts
+│   ├── img/            # Processed images
+│   ├── scripts/        # Compiled JavaScript
+│   ├── styles/         # Compiled CSS
+│   └── index.html      # Built HTML
+├── .gitignore          # Git ignore rules
+├── package.json        # Dependencies and scripts
+└── README.md           # This file
 ```
 
 ## Technologies Used
 
-- **Sass** - CSS preprocessor
-- **Line Awesome** - Icon library
-- **Sharp** - Image optimization
-- **Node Vibrant** - Color palette extraction
-- **FFmpeg** - Audio transcoding and optimization
-- **Fluent-FFmpeg** - Node.js wrapper for FFmpeg
-- **Chokidar** - File system watcher for development
-- **Live Server** - Development server
+- **Sass** - CSS preprocessor for modular stylesheets
+- **Line Awesome** - Icon library (1000+ icons)
+- **CPX** - File copying and watching utility
+- **Live Server** - Development server with live reload
 - **Concurrently** - Run multiple npm scripts simultaneously
+
+## Development Workflow
+
+1. **Start development server**: `npm run dev`
+2. **Edit files** in the `src/` directory
+3. **Watch changes** automatically sync to `dist/` and reload browser
+4. **Build for production**: `npm run build`
+
+### File Watching
+
+The development server watches for changes in:
+- `src/styles/**/*.scss` → Compiles to `dist/styles/`
+- `src/**/*.html` → Copies to `dist/`
+- `src/scripts/**/*.js` → Copies to `dist/scripts/`
+- `src/img/**/*` → Copies to `dist/img/`
+
+All changes trigger automatic browser reload via live-server.
+
+## Example Components
+
+The framework includes example implementations:
+- Interactive button with console logging
+- Responsive card components
+- Modern CSS variables for theming
+- Icon integration examples
+
+## Browser Support
+
+Modern browsers that support:
+- CSS Grid
+- CSS Custom Properties (variables)
+- ES6 JavaScript
 
 ## Author
 
 Jonny Pyper / Carbontype
-
-Music copyright belongs to respective owners.
 
 ## License
 
