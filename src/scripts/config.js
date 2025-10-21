@@ -7,7 +7,10 @@ const config = {
     clientId: '86af3b20703442e78f9a90778846ce3b',
     clientSecret: 'xHpqmVAnuwV8DFcMQncEYxCio35MSUHq',
     region: 'eu',
-    redirectUri: 'http://localhost:8080',
+    // Auto-detect environment: localhost for dev, live URL for production
+    redirectUri: window.location.hostname === 'localhost'
+      ? 'http://localhost:8080'
+      : 'https://carbontype.co/guild/',
 
     // API endpoints by region
     endpoints: {
