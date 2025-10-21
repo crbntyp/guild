@@ -1,186 +1,310 @@
-# Carbontype Framework
+# WoW Guild Roster Site
 
-A minimal, clean web application framework with modern build tooling and live-reload development environment.
+A World of Warcraft guild roster website powered by the Battle.net API, showing real-time guild member information for **Geez-yer-shoes-n-jaykit** cross-realm guild (EU).
 
 ## Features
 
-- Clean HTML5/CSS3/JavaScript structure
-- SCSS compilation with live reload
-- Automatic file watching and syncing
-- Line Awesome icon library integration
-- Interactive component examples
-- Responsive design patterns
-- Modern development workflow
+### Guild Roster Display
+- Real-time guild roster data from Battle.net API
+- **Cross-realm support** - displays characters from multiple connected realms (Tarren Mill, Silvermoon, Frostmane)
+- Character cards with large character portraits (inset renders)
+- Class-colored borders and character names
+- **Realm badges** - shows character's home realm on each card
+- Class icon in header beside character name
+- Detailed member info with icons:
+  - Class icon + Class name
+  - Race icon + Race name (gender-specific)
+  - Specialization icon + Spec name
+  - Faction icon + Faction name
+  - Shield icon + Item level
+- Search and filter members by name or class
+- Sort by item level, rank, name, level, or class
+- Responsive grid layout for all screen sizes
+- Smart filtering - automatically excludes invalid characters (404s)
 
-## Prerequisites
+### Character Details Modal
+- Click any character card to view detailed information
+- Full character render (main-raw) with transparent background
+- Level, class, race, gender, realm, and active specialization
+- Accurate item level from Battle.net API
+- Achievement points
+- Full equipment grid with item thumbnails
+- WoW-style item tooltips showing stats, sockets, and quality
+- **Interactive character carousel** - browse all guild members
+- Keyboard navigation (arrow keys) to switch between characters
+- Auto-centering on selected character
+
+### Visual Polish
+- Dark WoW-themed UI with authentic class colors
+- Icon system with graceful fallbacks
+- Item quality color-coding (Poor, Common, Rare, Epic, Legendary)
+- Smooth animations and hover effects
+- Loading states and error handling
+
+### Performance
+- Smart caching system (LocalStorage with TTL)
+- Automatic OAuth token management
+- Batch API requests with rate limiting
+- Minimal redundant API calls
+
+## Tech Stack
+
+- **Frontend**: Vanilla JavaScript (ES6 Modules)
+- **Styling**: SCSS with WoW class colors and dark theme
+- **API**: Battle.net REST API
+- **Build**: Sass, Live Server, CPX
+- **Icons**: Line Awesome
+
+## Project Structure
+
+```
+src/
+├── assets/
+│   └── icons/                      # Local icon system
+│       ├── classes/                # 13 class icons (PNG)
+│       ├── specs/                  # 38 spec icons (PNG)
+│       ├── races/                  # 58 race icons - 29 races × 2 genders (PNG)
+│       ├── factions/               # 2 faction icons (PNG)
+│       └── placeholder.png         # Default placeholder icon
+├── scripts/
+│   ├── api/
+│   │   ├── battlenet-client.js    # Battle.net OAuth & API client
+│   │   └── wow-api.js              # WoW-specific API endpoints
+│   ├── services/
+│   │   ├── cache-service.js        # LocalStorage caching with TTL
+│   │   ├── guild-service.js        # Guild roster management
+│   │   └── character-service.js    # Character profile/equipment data
+│   ├── components/
+│   │   └── guild-roster.js         # Roster UI, modals, equipment display
+│   ├── utils/
+│   │   ├── wow-constants.js        # Class colors and names
+│   │   ├── wow-icons.js            # Local icon path mappings
+│   │   ├── item-quality.js         # Item quality colors and slots
+│   │   └── helpers.js              # Utility functions
+│   ├── config.js                   # API configuration
+│   └── main.js                     # App initialization
+├── styles/
+│   └── main.scss                   # Complete WoW-themed styles
+└── index.html                      # Main HTML page
+```
+
+## Setup
+
+### Prerequisites
 
 - Node.js (v14 or higher)
 - npm
+- Battle.net Developer Account (already configured)
 
-## Installation
+### Installation
 
-```bash
-npm install
-```
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-## Available Scripts
+### Configuration
 
-### Development
+The Battle.net API credentials are already configured in `src/scripts/config.js`:
+- **Region**: EU
+- **Guild**: Geez-yer-shoes-n-jaykit
+- **Realm**: Tarren Mill (guild home realm)
+- **Cross-realm support**: Automatically handles members from Silvermoon, Frostmane, and Tarren Mill
 
-Start the development server with live reload and file watching:
+**IMPORTANT**: For production, move credentials to environment variables and add `src/scripts/config.js` to `.gitignore` or use a proper secrets management solution.
 
+## Development
+
+Start the development server:
 ```bash
 npm run dev
 ```
 
 This will:
-- Build all assets (SCSS, HTML, JS, images, fonts)
-- Watch for changes in SCSS, HTML, JS, and image files
-- Automatically rebuild and sync changes to `dist/`
-- Start a live server at `http://localhost:8080`
-- Auto-reload browser on any file changes
+- Build all assets
+- Start live server at `http://localhost:8080`
+- Watch for changes and auto-reload
 
-### Building
-
-Build the entire project for production:
+## Build Commands
 
 ```bash
+# Build everything
 npm run build
-```
 
-This runs all build tasks in sequence:
-1. Compile SCSS to CSS
-2. Copy HTML files
-3. Copy JavaScript files
-4. Copy images
-5. Copy Line Awesome icon fonts
+# Build individual components
+npm run build:scss    # Compile SCSS
+npm run build:html    # Copy HTML
+npm run build:js      # Copy JavaScript
+npm run build:img     # Copy images
+npm run build:assets  # Copy icon assets
+npm run build:fonts   # Copy icon fonts
 
-### Individual Build Tasks
-
-#### Build Styles
-```bash
-npm run build:scss
-```
-Compiles SCSS files from `src/styles/` to `dist/styles/` without source maps.
-
-#### Build HTML
-```bash
-npm run build:html
-```
-Copies HTML files from `src/` to `dist/`.
-
-#### Build JavaScript
-```bash
-npm run build:js
-```
-Copies JavaScript files from `src/scripts/` to `dist/scripts/`.
-
-#### Build Images
-```bash
-npm run build:img
-```
-Copies images from `src/img/` to `dist/img/` maintaining directory structure.
-
-#### Build Fonts
-```bash
-npm run build:fonts
-```
-Copies Line Awesome icon fonts to `dist/fonts/`.
-
-### Watch Tasks
-
-Watch individual file types for changes (automatically run by `npm run dev`):
-
-- `npm run watch:scss` - Watch and compile SCSS files on change
-- `npm run watch:html` - Watch and copy HTML files on change
-- `npm run watch:js` - Watch and copy JavaScript files on change
-- `npm run watch:img` - Watch and copy images on change
-
-### Serve
-
-Start a local server without watching for changes:
-
-```bash
-npm run serve
-```
-
-Serves the `dist/` directory at `http://localhost:8080` with auto-reload.
-
-### Clean
-
-Remove all built files from the `dist/` directory:
-
-```bash
+# Clean dist folder
 npm run clean
 ```
 
-## Project Structure
+## Battle.net API
 
+### Endpoints Used
+
+- `/oauth/token` - OAuth client credentials access tokens
+- `/data/wow/guild/{realm}/{guild}/roster` - Guild member list
+- `/data/wow/guild/{realm}/{guild}` - Guild information
+- `/profile/wow/character/{realm}/{character}` - Character profiles
+- `/profile/wow/character/{realm}/{character}/equipment` - Character gear with item details
+- `/profile/wow/character/{realm}/{character}/specializations` - Character specs & talents
+- `/profile/wow/character/{realm}/{character}/character-media` - Character avatars & renders
+- `/data/wow/playable-race/{id}` - Race information and icons
+- `/data/wow/playable-specialization/{id}` - Specialization data
+- `/data/wow/media/item/{id}` - Item thumbnails
+
+### Rate Limiting
+
+The API has rate limits. The app implements:
+- Smart caching (5-15 minute TTL)
+- LocalStorage persistence
+- Automatic token refresh
+
+### CORS
+
+The Battle.net API allows CORS requests from browsers, so no backend proxy is needed for development.
+
+## Features Explained
+
+### Icon System
+Icons are loaded from local PNG files in `/src/assets/icons/`:
+- **Class Icons**: 13 class icons (Warrior, Paladin, Hunter, etc.) - `classes/classicon_*.png`
+- **Race Icons**: 58 gender-specific icons for 29 playable races - `races/race_{id}_{gender}.png`
+- **Faction Icons**: Alliance and Horde emblems - `factions/alliance.png` & `factions/horde.png`
+- **Spec Icons**: 38 specialization icons covering all retail WoW specs - `specs/spec_{id}.png`
+
+**Current State**: All icons use placeholder PNG files (gray circle with "?")
+
+**Replacing Icons**:
+1. Replace placeholder files in each folder with actual icon images (PNG format, 56x56px recommended)
+2. Keep the same filename format
+3. Run `npm run build:assets` to copy to dist folder
+
+**Fallback System**: Line Awesome icon fonts provide fallbacks if icons fail to load.
+
+### Character Cards
+Each character card displays:
+1. **Large character portrait** (180px height) - inset render from Battle.net
+2. **Realm badge** (bottom right) - shows character's home realm
+3. **Header section**:
+   - Class icon beside character name
+   - Character level
+   - Class-colored border
+4. **Details section** with icons:
+   - Class icon + Class name (e.g., Warrior)
+   - Race icon + Race name (gender-specific, e.g., Human)
+   - Spec icon + Spec name (e.g., Arms)
+   - Faction icon + Faction name (Alliance/Horde)
+   - Shield icon + Item level (from character profile API)
+
+### Equipment Display (Modal)
+When clicking a character:
+1. Fetches character profile, equipment, specializations, and media
+2. Displays full character render (main-raw asset with transparent background)
+3. Equipment grid with 16+ item slots
+4. Item thumbnails loaded from Battle.net media endpoints with authentication
+5. Each item shows:
+   - Quality-colored border (grey/green/blue/purple/orange)
+   - Item level (iLvl)
+   - Slot name (Head, Chest, Weapon, etc.)
+6. Hover tooltips show:
+   - Item stats
+   - Sockets and gems
+   - Durability
+   - Binding type
+   - Required level
+
+### Caching Strategy
+- **Guild roster**: 10 minutes (reduces frequent roster checks)
+- **Character profiles**: 15 minutes (balances freshness with API limits)
+- **Equipment**: 15 minutes (gear doesn't change often)
+- **Specializations**: Not cached (to avoid LocalStorage quota issues)
+- **OAuth tokens**: Cached until expiry (typically 24 hours)
+
+### Cross-Realm Character Support
+- **Composite key system**: Characters uniquely identified by `name + realm` combination
+- Handles duplicate character names across different realms (e.g., "Nervë" on Silvermoon vs "Nervë" on Frostmane)
+- Separate data storage for each character:
+  - Item levels tracked per character-realm pair
+  - Gender data stored per character-realm pair
+  - Equipment and specs fetched from correct realm
+- Realm information displayed throughout UI:
+  - Roster cards show realm badge
+  - Character detail modal shows realm badge
+  - Carousel displays realm name
+
+### Error Handling
+- Smart 404 filtering - automatically removes characters that don't exist
+- Graceful fallbacks for missing media/icons
+- Automatic OAuth token refresh on 401 errors
+- Suppressed console errors for expected 404s (cleaner debugging)
+- Console logging for debugging (can be disabled for production)
+
+## Customization
+
+### Change Guild
+Edit `src/scripts/config.js`:
+```javascript
+guild: {
+  realm: 'your-realm',
+  name: 'your-guild-name',
+  realmSlug: 'your-realm',
+  nameSlug: 'your-guild-name'
+}
 ```
-frmwrk__/
-├── src/
-│   ├── img/            # Images and assets
-│   │   └── assets/     # Logo and static assets
-│   ├── scripts/        # JavaScript files
-│   │   └── main.js     # Main application logic
-│   ├── styles/         # SCSS stylesheets
-│   │   └── main.scss   # Main stylesheet
-│   └── index.html      # Main HTML file
-├── dist/               # Build output (auto-generated, gitignored)
-│   ├── fonts/          # Icon fonts
-│   ├── img/            # Processed images
-│   ├── scripts/        # Compiled JavaScript
-│   ├── styles/         # Compiled CSS
-│   └── index.html      # Built HTML
-├── .gitignore          # Git ignore rules
-├── package.json        # Dependencies and scripts
-└── README.md           # This file
+
+### Change Theme Colors
+Edit `src/styles/main.scss`:
+```scss
+:root {
+  --color-primary: #0078FF;  // Change main color
+  --color-bg: #1a1a1a;       // Change background
+  // etc...
+}
 ```
 
-## Technologies Used
+### Class Colors
+Class colors are defined in `src/scripts/utils/wow-constants.js` using official Blizzard colors.
 
-- **Sass** - CSS preprocessor for modular stylesheets
-- **Line Awesome** - Icon library (1000+ icons)
-- **CPX** - File copying and watching utility
-- **Live Server** - Development server with live reload
-- **Concurrently** - Run multiple npm scripts simultaneously
+## Future Enhancements
 
-## Development Workflow
+Ideas for expansion:
+- Battle.net OAuth login for user profiles
+- Guild achievements display
+- Raid progression tracking
+- Member activity/online status
+- Guild bank integration
+- Mythic+ scores (via Raider.IO API)
+- PvP ratings
+- Guild news feed
+- Member comparison tools
 
-1. **Start development server**: `npm run dev`
-2. **Edit files** in the `src/` directory
-3. **Watch changes** automatically sync to `dist/` and reload browser
-4. **Build for production**: `npm run build`
+## Security Notes
 
-### File Watching
+- Client ID and Secret are currently in source code
+- For production: Use environment variables or backend proxy
+- Consider implementing a backend API to hide credentials
+- The current setup is fine for development/personal use
 
-The development server watches for changes in:
-- `src/styles/**/*.scss` → Compiles to `dist/styles/`
-- `src/**/*.html` → Copies to `dist/`
-- `src/scripts/**/*.js` → Copies to `dist/scripts/`
-- `src/img/**/*` → Copies to `dist/img/`
+## Credits
 
-All changes trigger automatic browser reload via live-server.
-
-## Example Components
-
-The framework includes example implementations:
-- Interactive button with console logging
-- Responsive card components
-- Modern CSS variables for theming
-- Icon integration examples
-
-## Browser Support
-
-Modern browsers that support:
-- CSS Grid
-- CSS Custom Properties (variables)
-- ES6 JavaScript
-
-## Author
-
-Jonny Pyper / Carbontype
+- **API**: Battle.net / Blizzard Entertainment
+- **Framework**: Carbontype by Jonny Pyper
+- **Icons**: Line Awesome
+- **Guild**: Geez-yer-shoes-n-jaykit (Tarren Mill EU)
 
 ## License
 
 ISC
+
+## Support
+
+For issues or questions:
+- Check Battle.net API docs: https://develop.battle.net/documentation
+- WoW API forums: https://us.forums.blizzard.com/en/blizzard/c/api-discussion
