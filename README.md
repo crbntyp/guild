@@ -52,20 +52,20 @@ A World of Warcraft guild roster website powered by the Battle.net API, showing 
 - **Frontend**: Vanilla JavaScript (ES6 Modules)
 - **Styling**: SCSS with WoW class colors and dark theme
 - **API**: Battle.net REST API
+- **Icons**: Wowhead CDN (class, race, spec icons)
 - **Build**: Sass, Live Server, CPX
-- **Icons**: Line Awesome
+- **Font**: Muli from Google Fonts
 
 ## Project Structure
 
 ```
 src/
 ├── assets/
-│   └── icons/                      # Local icon system
-│       ├── classes/                # 13 class icons (PNG)
-│       ├── specs/                  # 38 spec icons (PNG)
-│       ├── races/                  # 58 race icons - 29 races × 2 genders (PNG)
-│       ├── factions/               # 2 faction icons (PNG)
-│       └── placeholder.png         # Default placeholder icon
+│   ├── fonts/                      # Empty (removed custom fonts)
+│   └── icons/                      # Local placeholders only
+├── img/
+│   ├── logo.png                    # Guild logo
+│   └── placeholder.png             # Fallback placeholder
 ├── scripts/
 │   ├── api/
 │   │   ├── battlenet-client.js    # Battle.net OAuth & API client
@@ -78,10 +78,10 @@ src/
 │   │   └── guild-roster.js         # Roster UI, modals, equipment display
 │   ├── utils/
 │   │   ├── wow-constants.js        # Class colors and names
-│   │   ├── wow-icons.js            # Local icon path mappings
+│   │   ├── wow-icons.js            # Wowhead CDN icon URLs
 │   │   ├── item-quality.js         # Item quality colors and slots
 │   │   └── helpers.js              # Utility functions
-│   ├── config.js                   # API configuration
+│   ├── config.js                   # API configuration (auto-detects environment)
 │   └── main.js                     # App initialization
 ├── styles/
 │   └── main.scss                   # Complete WoW-themed styles
@@ -173,20 +173,20 @@ The Battle.net API allows CORS requests from browsers, so no backend proxy is ne
 ## Features Explained
 
 ### Icon System
-Icons are loaded from local PNG files in `/src/assets/icons/`:
-- **Class Icons**: 13 class icons (Warrior, Paladin, Hunter, etc.) - `classes/classicon_*.png`
-- **Race Icons**: 58 gender-specific icons for 29 playable races - `races/race_{id}_{gender}.png`
-- **Faction Icons**: Alliance and Horde emblems - `factions/alliance.png` & `factions/horde.png`
-- **Spec Icons**: 38 specialization icons covering all retail WoW specs - `specs/spec_{id}.png`
+Icons are dynamically loaded from **Wowhead CDN**:
+- **Class Icons**: 13 class icons (Warrior, Paladin, Hunter, etc.) from Wowhead
+- **Race Icons**: Gender-specific icons for all playable races from Wowhead
+- **Spec Icons**: Specialization icons for all retail WoW specs from Wowhead
+- **Item Icons**: Equipment thumbnails from Battle.net Media endpoints
 
-**Current State**: All icons use placeholder PNG files (gray circle with "?")
+**Character Images from Battle.net**:
+- **Inset renders**: Character portrait images
+- **Main-raw renders**: Full body character renders with transparent background
+- **Avatar images**: Small character avatar thumbnails
 
-**Replacing Icons**:
-1. Replace placeholder files in each folder with actual icon images (PNG format, 56x56px recommended)
-2. Keep the same filename format
-3. Run `npm run build:assets` to copy to dist folder
+**Fallback System**: Line Awesome icon fonts provide fallbacks if Wowhead icons fail to load.
 
-**Fallback System**: Line Awesome icon fonts provide fallbacks if icons fail to load.
+**Local Assets**: Only placeholder images and fonts are stored locally.
 
 ### Character Cards
 Each character card displays:
