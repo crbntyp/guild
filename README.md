@@ -152,9 +152,7 @@ npm run clean
 - `/data/wow/guild/{realm}/{guild}/roster` - Guild member list
 - `/profile/wow/character/{realm}/{character}` - Character profiles (includes item level)
 - `/profile/wow/character/{realm}/{character}/equipment` - Character gear with item details
-- `/profile/wow/character/{realm}/{character}/specializations` - Character specs
 - `/profile/wow/character/{realm}/{character}/character-media` - Character avatars & renders
-- `/data/wow/playable-race/{id}` - Race information for gender-specific icons
 
 ### Rate Limiting
 
