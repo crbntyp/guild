@@ -16,7 +16,7 @@ A World of Warcraft guild roster website powered by the Battle.net API, showing 
   - Race icon + Race name (gender-specific)
   - Specialization icon + Spec name
   - Faction icon + Faction name
-  - Shield icon + Item level
+  - Item level display
 - Search and filter members by name or class
 - Sort by item level, rank, name, level, or class
 - Responsive grid layout for all screen sizes
@@ -150,14 +150,11 @@ npm run clean
 
 - `/oauth/token` - OAuth client credentials access tokens
 - `/data/wow/guild/{realm}/{guild}/roster` - Guild member list
-- `/data/wow/guild/{realm}/{guild}` - Guild information
-- `/profile/wow/character/{realm}/{character}` - Character profiles
+- `/profile/wow/character/{realm}/{character}` - Character profiles (includes item level)
 - `/profile/wow/character/{realm}/{character}/equipment` - Character gear with item details
-- `/profile/wow/character/{realm}/{character}/specializations` - Character specs & talents
+- `/profile/wow/character/{realm}/{character}/specializations` - Character specs
 - `/profile/wow/character/{realm}/{character}/character-media` - Character avatars & renders
-- `/data/wow/playable-race/{id}` - Race information and icons
-- `/data/wow/playable-specialization/{id}` - Specialization data
-- `/data/wow/media/item/{id}` - Item thumbnails
+- `/data/wow/playable-race/{id}` - Race information for gender-specific icons
 
 ### Rate Limiting
 
@@ -201,7 +198,7 @@ Each character card displays:
    - Race icon + Race name (gender-specific, e.g., Human)
    - Spec icon + Spec name (e.g., Arms)
    - Faction icon + Faction name (Alliance/Horde)
-   - Shield icon + Item level (from character profile API)
+   - la-shield-alt icon + Item level (from character profile API)
 
 ### Equipment Display (Modal)
 When clicking a character:
