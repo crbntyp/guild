@@ -127,7 +127,9 @@ function renderCharacterDetails(container, data, realmSlug) {
           </div>
         </div>
         <div class="character-details-right">
-          ${equipmentHTML}
+          <div class="character-details">
+            ${equipmentHTML}
+          </div>
         </div>
       </div>
     </div>
