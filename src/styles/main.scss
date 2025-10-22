@@ -85,6 +85,8 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
 }
 
 // Header
@@ -212,12 +214,23 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#character-details-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .character-details-top {
   flex: 1;
   overflow: hidden;
-  margin-bottom: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .btn-primary {
@@ -252,10 +265,11 @@ body {
 // Footer
 .footer {
   text-align: center;
-  padding: var(--spacing-lg) 0;
+  padding: var(--spacing-sm) 0;
   color: var(--color-text-light);
   border-top: 1px solid var(--color-border);
-  margin-top: auto;
+  flex-shrink: 0;
+  font-size: 12px;
 
   i {
     color: var(--color-danger);
@@ -562,20 +576,61 @@ body {
 .character-details-wrapper {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  height: 100%;
+  flex: 1;
   overflow: hidden;
   gap: var(--spacing-lg);
+  min-height: 0;
 }
 
 .character-details-left {
   overflow-y: auto;
   padding-right: var(--spacing-md);
+  min-height: 0;
+
+  // Custom scrollbar
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--color-bg);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 4px;
+
+    &:hover {
+      background: var(--color-primary);
+    }
+  }
 }
 
 .character-details-right {
   overflow-y: auto;
   padding-left: var(--spacing-md);
   border-left: 2px solid var(--color-border);
+  min-height: 0;
+
+  // Custom scrollbar
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--color-bg);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 4px;
+
+    &:hover {
+      background: var(--color-primary);
+    }
+  }
 }
 
 .character-details {
@@ -702,10 +757,12 @@ body {
 
     .equipment-grid {
       display: grid;
+      grid-template-columns: repeat(2, 1fr);
       gap: var(--spacing-sm);
       flex: 1;
       overflow-y: auto;
       padding-right: var(--spacing-xs);
+      align-content: start;
 
       // Custom scrollbar
       &::-webkit-scrollbar {
@@ -729,24 +786,26 @@ body {
 
     .equipment-item {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: var(--spacing-sm);
+      gap: var(--spacing-xs);
       background: var(--color-bg);
       padding: var(--spacing-sm);
       border-radius: var(--border-radius);
       border: 1px solid var(--color-border);
       transition: var(--transition);
-      min-height: 60px;
+      min-height: 80px;
+      text-align: center;
 
       &:hover {
         border-color: var(--color-primary);
-        transform: translateX(4px);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
       }
 
       .item-icon-wrapper {
-        width: 50px;
-        height: 50px;
+        width: 40px;
+        height: 40px;
         flex-shrink: 0;
         position: relative;
         border-radius: 6px;
@@ -776,25 +835,26 @@ body {
       }
 
       .equipment-slot {
-        display: flex;
-        align-items: center;
         color: var(--color-text-light);
-        font-size: 14px;
-        min-width: 80px;
-
-        span {
-          font-weight: 500;
-        }
+        font-size: 11px;
+        font-weight: 500;
       }
 
       .equipment-details {
-        flex: 1;
-        text-align: right;
+        width: 100%;
 
         .item-name {
           font-weight: 600;
-          font-size: 14px;
+          font-size: 12px;
           margin-bottom: 2px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .item-level {
+          font-size: 11px;
+          color: var(--color-text-light);
         }
       }
     }
@@ -809,7 +869,8 @@ body {
 
 // Character Carousel
 .character-carousel-container {
-  height: 35%;
+  height: 200px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
