@@ -35,11 +35,7 @@ A World of Warcraft guild roster website powered by the Battle.net API, showing 
 - Auto-centering on selected character
 
 ### Visual Polish
-- Dark WoW-themed UI with authentic class colors
-- Icon system with graceful fallbacks
-- Item quality color-coding (Poor, Common, Rare, Epic, Legendary)
-- Smooth animations and hover effects
-- Loading states and error handling
+- TBA
 
 ### Performance
 - Smart caching system (LocalStorage with TTL)
