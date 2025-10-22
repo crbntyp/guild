@@ -40,8 +40,6 @@ class GuildRoster {
         sortBy: this.sortBy
       });
 
-      console.log(`Loaded ${this.roster.length} characters`);
-
       // Fetch character details for spec icons
       await this.enrichRosterWithSpecs();
 
@@ -60,7 +58,7 @@ class GuildRoster {
   showLoading() {
     this.container.innerHTML = `
       <div class="loading-spinner">
-        <i class="las la-circle-notch la-spin la-3x"></i>
+        <i class="las la-circle-notch la-spin la-6x"></i>
         <p>Loading guild roster...</p>
       </div>
     `;
@@ -146,33 +144,17 @@ class GuildRoster {
     // Build new content
     const content = `
       <div class="guild-header">
-        <h2>${guildName}</h2>
-        <div class="guild-stats">
-          <div class="stat">
-            <span class="stat-label">Members</span>
-            <span class="stat-value">${stats.total}</span>
-          </div>
-          <div class="stat">
-            <span class="stat-label">Max Level</span>
-            <span class="stat-value">${stats.maxLevel}</span>
-          </div>
-          <div class="stat">
-            <span class="stat-label">Avg Level</span>
-            <span class="stat-value">${stats.averageLevel}</span>
-          </div>
-        </div>
+        <span class="guild-count">${stats.total} Champions</span>
+        <h2>
+          ${guildName}
+        </h2>
+        <span class="guild-realms">Tarren Mill, Silvermoon & Frostmane</span>
       </div>
 
       <div class="roster-controls">
-        <input
-          type="text"
-          id="search-input"
-          class="search-input"
-          placeholder="Search members..."
-        />
 
         <select id="sort-select" class="sort-select">
-          <option value="ilvl" ${this.sortBy === 'ilvl' ? 'selected' : ''}>Sort by iLvl</option>
+          <option value="ilvl" ${this.sortBy === 'ilvl' ? 'selected' : ''}>Sort by Item Level</option>
           <option value="rank" ${this.sortBy === 'rank' ? 'selected' : ''}>Sort by Rank</option>
           <option value="name" ${this.sortBy === 'name' ? 'selected' : ''}>Sort by Name</option>
           <option value="level" ${this.sortBy === 'level' ? 'selected' : ''}>Sort by Level</option>
@@ -212,12 +194,11 @@ class GuildRoster {
       await this.loadItemLevels();
 
       // Then load everything else in parallel (race icons need gender data)
-      const results = await Promise.all([
+      await Promise.all([
         this.loadSpecIcons(),
         this.loadRaceFactionIcons(),
         this.loadCharacterAvatars()
       ]);
-      console.log('All icons loaded', results);
     } catch (error) {
       console.error('Error loading icons:', error);
     }
@@ -251,13 +232,11 @@ class GuildRoster {
   }
 
   async loadRaceFactionIcons() {
-    console.log('loadRaceFactionIcons called - using Blizzard render service');
     const raceIconsToLoad = new Map(); // Map of raceId+gender to list of placeholders
     const factionIconsToLoad = new Map(); // Map of raceId to list of placeholders
 
     // Collect all placeholders and group them by race/gender
     const memberCards = this.container.querySelectorAll('.member-card');
-    console.log('Found member cards:', memberCards.length);
 
     for (const card of memberCards) {
       const raceIconPlaceholder = card.querySelector('.race-icon-placeholder');
@@ -283,8 +262,6 @@ class GuildRoster {
       }
     }
 
-    console.log('Race/Faction icons to load:', raceIconsToLoad.size);
-
     // Fetch race data to get race name and faction info
     for (const [key, items] of raceIconsToLoad.entries()) {
       const { raceId, gender } = items[0];
@@ -294,8 +271,6 @@ class GuildRoster {
         const raceName = raceData.name;
         const factionType = raceData.faction?.type || 'UNKNOWN';
         const isAlliance = factionType === 'ALLIANCE';
-
-        console.log(`Race ${raceId}: ${raceName} (${factionType})`);
 
         // Get race icon URLs from Wowhead CDN with local fallback
         const raceIconUrl = getRaceIconUrl(parseInt(raceId), gender);
@@ -358,14 +333,10 @@ class GuildRoster {
       // Small delay between requests
       await new Promise(resolve => setTimeout(resolve, 100));
     }
-
-    console.log('Race and faction icons loaded from Blizzard render service');
   }
 
   async loadSpecIcons() {
-    console.log('loadSpecIcons called - loading spec text');
     const specPlaceholders = this.container.querySelectorAll('.spec-icon-placeholder');
-    console.log('Found spec placeholders:', specPlaceholders.length);
 
     // Limit concurrent requests to avoid overwhelming the API
     const batchSize = 5;
@@ -383,11 +354,9 @@ class GuildRoster {
         const specTextElement = card?.querySelector('.member-spec');
 
         try {
-          console.log(`Fetching spec for ${characterName}...`);
           const specs = await characterService.fetchCharacterSpecializations(realmSlug, characterName);
 
           if (!specs || !specs.specializations) {
-            console.log(`${characterName}: No spec data returned`, specs);
             if (specTextElement) {
               specTextElement.textContent = 'No spec';
             }
@@ -395,12 +364,9 @@ class GuildRoster {
             return;
           }
 
-          console.log(`${characterName}: Spec data:`, specs.specializations);
-
           const activeSpec = characterService.getActiveSpec(specs);
 
           if (!activeSpec || !activeSpec.specialization) {
-            console.log(`${characterName}: No active spec found. Full specs:`, JSON.stringify(specs.specializations));
             if (specTextElement) {
               specTextElement.textContent = 'No spec';
             }
@@ -427,12 +393,10 @@ class GuildRoster {
           // Add spec text to the card
           if (specTextElement) {
             specTextElement.textContent = specName;
-            console.log(`${characterName}: ✓ ${specName}`);
             successCount++;
           }
         } catch (error) {
           // Character might not exist or API error
-          console.log(`${characterName}: ✗ Error - ${error.message}`);
           if (specTextElement) {
             specTextElement.textContent = 'No spec';
           }
@@ -445,14 +409,10 @@ class GuildRoster {
         await new Promise(resolve => setTimeout(resolve, 500));
       }
     }
-
-    console.log(`Spec loading complete: ${successCount} loaded, ${failCount} failed`);
   }
 
   async loadCharacterAvatars() {
-    console.log('loadCharacterAvatars called');
     const memberCards = this.container.querySelectorAll('.member-card');
-    console.log('Found member cards for avatars:', memberCards.length);
 
     // Limit concurrent requests
     const batchSize = 5;
@@ -492,17 +452,21 @@ class GuildRoster {
           const imageUrl = insetAsset?.value || avatarAsset?.value;
 
           if (imageUrl) {
+            // Preserve the member-header div that's already inside the placeholder
+            const memberHeader = avatarPlaceholder.querySelector('.member-header');
+            const memberHeaderHTML = memberHeader ? memberHeader.outerHTML : '';
+
             avatarPlaceholder.innerHTML = `
               <i class="las la-spinner la-spin loading-spinner"></i>
               <img src="${imageUrl}" alt="${characterName}" class="character-avatar-img"
                    onload="if(this.previousElementSibling) this.previousElementSibling.style.display='none';" />
+              ${memberHeaderHTML}
             `;
             successCount++;
           } else {
             failCount++;
           }
         } catch (error) {
-          console.log(`Could not load avatar for ${characterName}`);
           failCount++;
         }
       }));
@@ -512,8 +476,6 @@ class GuildRoster {
         await new Promise(resolve => setTimeout(resolve, 500));
       }
     }
-
-    console.log(`Avatar loading complete: ${successCount} loaded, ${failCount} failed`);
   }
 
   async loadItemLevels() {
@@ -573,7 +535,6 @@ class GuildRoster {
             const characterKey = this.getCharacterKey(characterName, realmSlug);
             this.invalidCharacters.add(characterKey);
             foundInvalidCharacters = true;
-            console.log(`Character ${characterName} (${realmSlug}) not found (404) - will be filtered from roster`);
           } else {
             // Log other errors normally
             console.error(`Error loading item level for ${characterName}:`, error);
@@ -591,7 +552,6 @@ class GuildRoster {
 
     // Re-render roster if we found any invalid characters
     if (foundInvalidCharacters) {
-      console.log(`Found ${this.invalidCharacters.size} invalid characters - re-rendering roster`);
       this.render();
       return; // Skip the rest since we're re-rendering
     }
@@ -714,58 +674,41 @@ class GuildRoster {
     const localRaceIconUrl = getLocalRaceIconUrl(character.playable_race?.id, gender);
 
     return `
-      <div class="member-card" data-character="${character.name}" data-realm="${realmSlug}" style="border: 2px solid ${classColor}">
+      <div class="member-card" data-character="${character.name}" data-realm="${realmSlug}" style="border: 1px solid ${classColor}">
         <div class="character-avatar-placeholder">
           <i class="las la-spinner la-spin loading-spinner"></i>
-        </div>
-        <div class="member-header">
-          <div class="member-name-with-icon">
-            <div class="member-icon class-icon" title="${className}">
-              ${classIconUrl ? `
-                <img src="${classIconUrl}" alt="${className}" class="icon-img"
-                     onerror="this.onerror=null; this.src='${localClassIconUrl}'; this.onerror=function() { this.style.display='none'; this.nextElementSibling.style.display='flex'; };" />
-                <i class="${classFallback}" style="display: none; color: ${classColor}"></i>
-              ` : `
-                <i class="${classFallback}" style="color: ${classColor}"></i>
-              `}
-            </div>
-            <div class="member-name" style="color: ${classColor}">
-              ${character.name}
-              ${character.realm?.name ? `<span style="font-size: 0.75em; opacity: 0.7; font-weight: normal;"> - ${character.realm.name}</span>` : ''}
-            </div>
+            <div class="member-header">
+              <div class="member-name-with-icon">
+                <div class="member-name" style="color: ${classColor}">
+                  ${character.name}
+                  ${character.realm?.name ? `<span style="font-size: 0.75em; opacity: 0.7; font-weight: normal;"> - ${character.realm.name}</span>` : ''}
+                </div>
+              </div>
+              <div class="member-level">${character.level}</div>
           </div>
-          <div class="member-level">Level ${character.level}</div>
         </div>
+        
         <div class="member-details">
           <div class="member-detail-row">
             <div class="member-icon class-icon-small class-icon-placeholder" title="${className}" data-class-id="${character.playable_class.id}" data-class-name="${className}" data-class-color="${classColor}">
               <i class="las la-spinner la-spin loading-spinner"></i>
             </div>
-            <div class="member-class">${className}</div>
           </div>
           <div class="member-detail-row">
             <div class="member-icon race-icon-small race-icon-placeholder" title="${genderName}" data-race-id="${character.playable_race?.id}" data-gender="${gender}">
               <i class="las la-spinner la-spin loading-spinner"></i>
             </div>
-            <div class="member-race">Loading...</div>
           </div>
           <div class="member-detail-row">
             <div class="member-icon spec-icon-small spec-icon-placeholder" title="Specialization" data-character="${character.name}" data-realm="${realmSlug}">
               <i class="las la-spinner la-spin"></i>
             </div>
-            <div class="member-spec">Loading spec...</div>
           </div>
           <div class="member-detail-row">
             <div class="member-icon faction-icon-small faction-icon-placeholder" title="Faction" data-race-id="${character.playable_race?.id}">
               <i class="las la-spinner la-spin"></i>
             </div>
-            <div class="member-faction">Loading...</div>
-          </div>
-          <div class="member-detail-row">
-            <div class="member-icon ilvl-icon" title="Item Level">
-              <i class="las la-shield-alt"></i>
-            </div>
-            <div class="member-ilvl">Loading...</div>
+            <div class="member-ilvl"><i class="las la-spinner la-spin"></i></div>
           </div>
         </div>
         ${realmName ? `<div class="member-realm-badge">${realmName}</div>` : ''}
@@ -997,7 +940,6 @@ class GuildRoster {
 
   async loadCarouselCharacterImages(modal) {
     const carouselPlaceholders = modal.querySelectorAll('.carousel-character-avatar-placeholder');
-    console.log('Loading carousel character images:', carouselPlaceholders.length);
 
     let foundInvalidCharacters = false;
 
@@ -1038,7 +980,6 @@ class GuildRoster {
             const characterKey = this.getCharacterKey(characterName, realmSlug);
             this.invalidCharacters.add(characterKey);
             foundInvalidCharacters = true;
-            console.log(`Character ${characterName} (${realmSlug}) not found (404) - will be filtered from roster`);
           }
         }
       }));
@@ -1051,7 +992,6 @@ class GuildRoster {
 
     // Re-render roster if we found any invalid characters
     if (foundInvalidCharacters) {
-      console.log(`Found ${this.invalidCharacters.size} invalid characters - re-rendering roster`);
       this.render();
     }
   }
@@ -1090,7 +1030,6 @@ class GuildRoster {
         if (is404) {
           const characterKey = this.getCharacterKey(characterName, realmSlug);
           this.invalidCharacters.add(characterKey);
-          console.log(`Character ${characterName} (${realmSlug}) not found (404) - will be filtered from roster`);
         }
       }
     }
@@ -1596,18 +1535,13 @@ class GuildRoster {
     const items = equipment.equipped_items;
     const equipmentItems = modal.querySelectorAll('.equipment-item');
 
-    console.log(`Loading thumbnails for ${equipmentItems.length} items`);
-
     for (let i = 0; i < equipmentItems.length && i < items.length; i++) {
       const itemElement = equipmentItems[i];
       const item = items[i];
       const mediaHref = itemElement.dataset.mediaHref;
 
-      console.log(`Item ${i}: mediaHref = ${mediaHref}`);
-
       if (mediaHref && mediaHref !== '') {
         try {
-          console.log(`Full mediaHref URL: ${mediaHref}`);
 
           // Fetch directly with auth token
           const token = battlenetClient.accessToken;
@@ -1620,15 +1554,11 @@ class GuildRoster {
           const separator = mediaHref.includes('?') ? '&' : '?';
           const fullUrl = `${mediaHref}${separator}locale=en_GB`;
 
-          console.log(`Fetching from: ${fullUrl}`);
-
           const response = await fetch(fullUrl, {
             headers: {
               'Authorization': `Bearer ${token}`
             }
           });
-
-          console.log(`Response status: ${response.status}`);
 
           if (!response.ok) {
             console.error(`Failed to fetch media: ${response.status} ${response.statusText}`);
@@ -1636,12 +1566,10 @@ class GuildRoster {
           }
 
           const mediaData = await response.json();
-          console.log(`Media data received:`, mediaData);
 
           const iconAsset = mediaData.assets?.find(asset => asset.key === 'icon');
 
           if (iconAsset?.value) {
-            console.log(`Found icon URL: ${iconAsset.value}`);
 
             // Replace the loader with the actual image
             const wrapper = itemElement.querySelector('.item-icon-wrapper');
@@ -1652,15 +1580,12 @@ class GuildRoster {
                 <img src="${iconAsset.value}" alt="${item.name}" class="item-thumbnail"
                      onerror="this.style.display='none';" />
               `;
-              console.log(`Replaced loader with image for item ${i}`);
             }
           }
         } catch (error) {
           console.error(`Failed to load item thumbnail for item ${i}:`, error);
           // Keep the fallback icon
         }
-      } else {
-        console.log(`No mediaHref for item ${i}`);
       }
     }
   }
@@ -1671,9 +1596,6 @@ class GuildRoster {
     }
 
     const items = equipment.equipped_items;
-
-    // Debug: Log first item to see structure
-    console.log('First equipment item structure:', items[0]);
 
     // Sort items by slot type for better display order
     const sortedItems = [...items].sort((a, b) => {
@@ -1693,9 +1615,6 @@ class GuildRoster {
       // Get item thumbnail from media
       let itemThumbnail = null;
 
-      // Debug: log media structure
-      console.log(`Item ${itemName} media:`, item.media);
-
       // Check if media.key.href exists (this is a URL to fetch media from)
       if (item.media?.key?.href) {
         // The equipment endpoint should include media data, or we need to fetch it
@@ -1707,13 +1626,11 @@ class GuildRoster {
       if (item.media?.assets && Array.isArray(item.media.assets)) {
         const iconAsset = item.media.assets.find(asset => asset.key === 'icon');
         itemThumbnail = iconAsset?.value;
-        console.log(`Found thumbnail for ${itemName}:`, itemThumbnail);
       }
 
       // Store item ID for async loading if needed
       const itemId = item.item?.id;
       const mediaHref = item.media?.key?.href;
-      console.log(`Item ${itemName} - ID: ${itemId}, Media Href: ${mediaHref}`);
 
       // Prepare tooltip data
       const tooltipData = this.buildItemTooltipData(item, qualityColor);

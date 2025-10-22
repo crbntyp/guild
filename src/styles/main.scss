@@ -2,8 +2,8 @@
 
 // CSS Variables
 :root {
-  --color-primary: #0078FF;
-  --color-primary-dark: #0056b3;
+  --color-primary: #fff;
+  --color-primary-dark: #fff;
   --color-secondary: #FFD700;
   --color-success: #10b981;
   --color-danger: #ef4444;
@@ -36,7 +36,7 @@ body {
   font-family: 'Muli', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   line-height: 1.6;
   color: var(--color-text);
-  background: var(--color-bg);
+  background: var(--color-bg) url(../img/bg-faction.jpg) top center/cover no-repeat fixed;
   min-height: 100vh;
   letter-spacing: 1.5px;
   display: flex;
@@ -182,17 +182,23 @@ body {
 // Guild Roster Styles
 .guild-header {
   text-align: center;
-  margin-bottom: var(--spacing-lg);
-  padding: var(--spacing-lg);
-  background: var(--color-bg-secondary);
-  border-radius: var(--border-radius);
-  border: 1px solid var(--color-border);
-
+  .guild-realms{
+    margin-bottom: var(--spacing-sm);
+    display: block;
+  }
+  .guild-count{
+    font-size: 12px;
+    background: var(--color-success);
+    height: 20px;
+    border-radius: 20px;
+    letter-spacing: 0px;
+    padding: 5px 10px;
+  }
   h2 {
-    color: var(--color-secondary);
+    color: var(--color-primary);
     font-size: 32px;
-    margin-bottom: var(--spacing-md);
     text-transform: capitalize;
+    position: relative;
   }
 
   .guild-stats {
@@ -225,17 +231,21 @@ body {
   gap: var(--spacing-sm);
   margin-bottom: var(--spacing-lg);
   flex-wrap: wrap;
+  justify-content: center;
 
-  .search-input,
   .sort-select,
   .class-filter {
     padding: 12px 16px;
+    padding-right: 34px;
+    appearance: none;
     border-radius: var(--border-radius);
-    border: 1px solid var(--color-border);
-    background: var(--color-bg-secondary);
+    border: 1px solid white;
+    background: transparent no-repeat right 5px center;
+    background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
     color: var(--color-text);
     font-family: 'Muli', inherit;
-    font-size: 16px;
+    font-size: 14px;
+    letter-spacing: 1.5px;
 
     &:focus {
       outline: none;
@@ -257,12 +267,12 @@ body {
 
 .roster-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: var(--spacing-md);
 }
 
 .member-card {
-  background: var(--color-card-bg);
+  background: rgba(0, 0, 0, 0.5);
   border-radius: var(--border-radius);
   overflow: hidden;
   cursor: pointer;
@@ -277,8 +287,7 @@ body {
   }
 
   .character-avatar-placeholder {
-    width: 100%;
-    height: 180px;
+  
     background: rgba(0, 0, 0, 0.3);
     display: flex;
     align-items: center;
@@ -304,11 +313,16 @@ body {
   }
 
   .member-header {
-    padding: var(--spacing-md);
-    background: rgba(0, 0, 0, 0.3);
+    padding: 5px 10px;
+    background: rgba(0, 0, 0, 0.8);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: absolute;
+    z-index: 10;
+    bottom:0px; left: 0px;
+    width: 100%;
+
 
     .member-name-with-icon {
       display: flex;
@@ -353,22 +367,23 @@ body {
       }
 
       .member-name {
-        font-size: 24px;
-        font-weight: 300;
+        font-size: 14px;
+        font-weight: 500;
       }
     }
 
     .member-level {
-      color: var(--color-text-light);
+      color: white;
       font-size: 14px;
     }
   }
 
   .member-details {
-    padding: var(--spacing-md);
+    padding: 20px;
     display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xs);
+    flex-direction: row;
+    justify-content: center;
+    gap: var(--spacing-sm);
 
     .member-detail-row {
       display: flex;
@@ -376,8 +391,8 @@ body {
       gap: var(--spacing-xs);
 
       .member-icon {
-        width: 40px;
-        height: 40px;
+        width: 30px;
+        height: 30px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -419,23 +434,25 @@ body {
     .member-realm,
     .member-rank,
     .member-ilvl {
-      font-size: 14px;
-      color: var(--color-text-light);
+      font-size: 11px;
+    }
+
+    .member-ilvl{
+      position: absolute;
+      top: 15px; left: 10px;
+      z-index: 10;
+      display: none;
     }
 
     .member-class {
       font-weight: 600;
       color: var(--color-text);
     }
-
-    .member-race {
-      font-style: italic;
-    }
   }
 
   .member-realm-badge {
     position: absolute;
-    bottom: 8px;
+    top: 8px;
     right: 8px;
     background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(8px);
