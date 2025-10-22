@@ -22,20 +22,35 @@ A World of Warcraft guild roster website powered by the Battle.net API, showing 
 - Responsive grid layout for all screen sizes
 - Smart filtering - automatically excludes invalid characters (404s)
 
-### Character Details Modal
-- Click any character card to view detailed information
+### Character Details Page
+- Click any character card to navigate to dedicated details page
+- **Back button** to return to roster
+- **Full viewport layout** - no page scrolling, content fits in view
 - Full character render (main-raw) with transparent background
 - Level, class, race, gender, realm, and active specialization
 - Accurate item level from Battle.net API
 - Achievement points
-- Full equipment grid with item thumbnails
+- **2-column equipment grid** with vertical card layout
+- Equipment displayed as compact cards with:
+  - Item icon with quality-colored border
+  - Slot name
+  - Item name with quality color
+  - Item level
 - WoW-style item tooltips showing stats, sockets, and quality
 - **Interactive character carousel** - browse all guild members
-- Keyboard navigation (arrow keys) to switch between characters
-- Auto-centering on selected character
+- Click any carousel character to instantly switch to their page
+- Auto-scroll to center active character
 
 ### Visual Polish
-- TBA
+- **Rotating background images** with smooth fade transitions
+- Custom background image set with 8-second rotation
+- Smooth 2-second fade between backgrounds
+- Background rotator on both roster and details pages
+- Dark theme optimized for readability
+- Class-colored accents throughout
+- Responsive grid layouts
+- Custom styled scrollbars
+- Hover animations and transitions
 
 ### Performance
 - Smart caching system (LocalStorage with TTL)
@@ -60,6 +75,11 @@ src/
 │   ├── fonts/                      # Empty (removed custom fonts)
 │   └── icons/                      # Local placeholders only
 ├── img/
+│   ├── bgs/                        # Background images for rotation
+│   │   ├── bg-faction.jpg
+│   │   ├── bg-mulgore.jpg
+│   │   ├── bg-tglades.jpg
+│   │   └── bg-eversong.jpg
 │   ├── logo.png                    # Guild logo
 │   └── placeholder.png             # Fallback placeholder
 ├── scripts/
@@ -71,17 +91,20 @@ src/
 │   │   ├── guild-service.js        # Guild roster management
 │   │   └── character-service.js    # Character profile/equipment data
 │   ├── components/
-│   │   └── guild-roster.js         # Roster UI, modals, equipment display
+│   │   ├── guild-roster.js         # Roster UI component
+│   │   └── background-rotator.js   # Background image rotation
 │   ├── utils/
 │   │   ├── wow-constants.js        # Class colors and names
 │   │   ├── wow-icons.js            # Wowhead CDN icon URLs
 │   │   ├── item-quality.js         # Item quality colors and slots
 │   │   └── helpers.js              # Utility functions
 │   ├── config.js                   # API configuration (auto-detects environment)
-│   └── main.js                     # App initialization
+│   ├── main.js                     # Roster page initialization
+│   └── character-details.js        # Character details page
 ├── styles/
 │   └── main.scss                   # Complete WoW-themed styles
-└── index.html                      # Main HTML page
+├── index.html                      # Main roster page
+└── character-details.html          # Character details page
 ```
 
 ## Setup
@@ -194,22 +217,27 @@ Each character card displays:
    - Faction icon + Faction name (Alliance/Horde)
    - la-shield-alt icon + Item level (from character profile API)
 
-### Equipment Display (Modal)
-When clicking a character:
-1. Fetches character profile, equipment, specializations, and media
-2. Displays full character render (main-raw asset with transparent background)
-3. Equipment grid with 16+ item slots
-4. Item thumbnails loaded from Battle.net media endpoints with authentication
-5. Each item shows:
+### Equipment Display (Character Details Page)
+When clicking a character card:
+1. Navigates to dedicated character details page
+2. Fetches character profile, equipment, specializations, and media
+3. Displays full character render (main-raw asset with transparent background)
+4. **2-column grid layout** with vertical equipment cards
+5. Equipment grid with 16+ item slots
+6. Item thumbnails loaded from Battle.net media endpoints with authentication
+7. Each item card shows:
+   - Item icon at top
    - Quality-colored border (grey/green/blue/purple/orange)
+   - Slot name
+   - Item name (with ellipsis for long names)
    - Item level (iLvl)
-   - Slot name (Head, Chest, Weapon, etc.)
-6. Hover tooltips show:
+8. Hover tooltips show:
    - Item stats
    - Sockets and gems
    - Durability
    - Binding type
    - Required level
+9. **Viewport-constrained layout** - no page scrolling, panels scroll independently
 
 ### Caching Strategy
 - **Guild roster**: 10 minutes (reduces frequent roster checks)

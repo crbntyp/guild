@@ -10,15 +10,25 @@ console.log('⚡ Guild Site initialized');
 document.addEventListener('DOMContentLoaded', async () => {
   // Initialize background rotator
   const backgroundImages = [
-    'img/bgs/bg-faction.jpg',
     'img/bgs/bg-mulgore.jpg',
     'img/bgs/bg-tglades.jpg',
     'img/bgs/bg-eversong.jpg',
-    'img/bgs/bg-shadowglen.jpg'
+    'img/bgs/bg-shadowglen.jpg',
+    'img/bgs/bg-suramar.jpg',
+    'img/bgs/bg-echoisles.jpg',
+    'img/bgs/bg-freach.jpg',
+    'img/bgs/bg-dmorogh.jpg',
+    'img/bgs/bg-goldshire.jpg',
+    'img/bgs/bg-azuremyst.jpg',
+    'img/bgs/bg-gilneas.jpg',
+    'img/bgs/bg-wisle.jpg',
+    'img/bgs/bg-durotar.jpg',
+    'img/bgs/bg-kezan.jpg'
   ];
 
   const bgRotator = new BackgroundRotator(backgroundImages, 8000, 2000);
   bgRotator.init();
+
   // Set dynamic realm name in header
   const subtitleElement = document.querySelector('.subtitle');
   if (subtitleElement) {
