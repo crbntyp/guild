@@ -7,8 +7,6 @@ console.log('⚡ Guild Site initialized');
 
 // Initialize guild roster when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
-  console.log('Loading guild roster...');
-
   // Set dynamic realm name in header
   const subtitleElement = document.querySelector('.subtitle');
   if (subtitleElement) {
@@ -23,7 +21,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Load the roster
   try {
     await guildRoster.load();
-    console.log('Guild roster loaded successfully');
   } catch (error) {
     console.error('Failed to load guild roster:', error);
   }
