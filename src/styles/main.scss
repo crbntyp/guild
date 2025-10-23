@@ -218,6 +218,11 @@ body {
   overflow: hidden;
   --race-background: url('../img/bgs/bg-tglades.jpg'); // Default background
 
+  // Hide background rotator on details page if it exists
+  ~ .bg-rotator-container {
+    display: none !important;
+  }
+
   // Race-specific background for details page
   &::before {
     content: '';
