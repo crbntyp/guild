@@ -10,6 +10,46 @@ import config from './config.js';
 
 console.log('⚡ Character Details Page initialized');
 
+// Race-specific background mapping
+const raceBackgrounds = {
+  'human': 'img/bgs/bg-goldshire.jpg',
+  'dwarf': 'img/bgs/bg-dmorogh.jpg',
+  'night elf': 'img/bgs/bg-tglades.jpg',
+  'gnome': 'img/bgs/bg-dmorogh.jpg',
+  'draenei': 'img/bgs/bg-azuremyst.jpg',
+  'worgen': 'img/bgs/bg-gilneas.jpg',
+  'orc': 'img/bgs/bg-durotar.jpg',
+  'undead': 'img/bgs/bg-tglades.jpg',
+  'tauren': 'img/bgs/bg-mulgore.jpg',
+  'troll': 'img/bgs/bg-echoisles.jpg',
+  'blood elf': 'img/bgs/bg-eversong.jpg',
+  'goblin': 'img/bgs/bg-kezan.jpg',
+  'pandaren': 'img/bgs/bg-wisle.jpg',
+  'nightborne': 'img/bgs/bg-suramar.jpg',
+  'void elf': 'img/bgs/bg-tglades.jpg',
+  'lightforged draenei': 'img/bgs/bg-azuremyst.jpg',
+  'dark iron dwarf': 'img/bgs/bg-dmorogh.jpg',
+  'kul tiran': 'img/bgs/bg-goldshire.jpg',
+  'mechagnome': 'img/bgs/bg-dmorogh.jpg',
+  'highmountain tauren': 'img/bgs/bg-mulgore.jpg',
+  'mag\'har orc': 'img/bgs/bg-durotar.jpg',
+  'zandalari troll': 'img/bgs/bg-echoisles.jpg',
+  'vulpera': 'img/bgs/bg-durotar.jpg',
+  'dracthyr': 'img/bgs/bg-tglades.jpg',
+  'default': 'img/bgs/bg-tglades.jpg'
+};
+
+function setRaceBackground(raceName) {
+  const detailsPage = document.querySelector('.character-details-page');
+  if (!detailsPage) return;
+
+  const backgroundImage = raceBackgrounds[raceName] || raceBackgrounds['default'];
+
+  // Set data attribute for CSS to use
+  detailsPage.setAttribute('data-race', raceName);
+  detailsPage.style.setProperty('--race-background', `url('${backgroundImage}')`);
+}
+
 // Initialize everything when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
   // Get character info from URL parameters
@@ -72,6 +112,10 @@ function renderCharacterDetails(container, data, realmSlug) {
   const gender = profile.gender?.name || profile.gender?.type || 'Unknown';
   const equipmentHTML = renderEquipment(equipment);
   const carouselHTML = renderCharacterCarousel(profile.name, realmSlug);
+
+  // Set race-specific background
+  const raceName = profile.race?.name?.toLowerCase() || 'default';
+  setRaceBackground(raceName);
 
   container.innerHTML = `
     <div class="character-details-top">

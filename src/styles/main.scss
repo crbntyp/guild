@@ -216,8 +216,9 @@ body {
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
+  --race-background: url('../img/bgs/bg-tglades.jpg'); // Default background
 
-  // Static background for details page only
+  // Race-specific background for details page
   &::before {
     content: '';
     position: fixed;
@@ -225,7 +226,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: url('../img/bgs/bg-faction.jpg') top center no-repeat;
+    background: var(--race-background) top center no-repeat;
     background-size: cover;
     z-index: -1;
   }
