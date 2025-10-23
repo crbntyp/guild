@@ -41,13 +41,19 @@ const raceBackgrounds = {
 
 function setRaceBackground(raceName) {
   const detailsPage = document.querySelector('.character-details-page');
-  if (!detailsPage) return;
+  if (!detailsPage) {
+    console.error('Character details page element not found');
+    return;
+  }
 
   const backgroundImage = raceBackgrounds[raceName] || raceBackgrounds['default'];
+  console.log(`Setting background for race: ${raceName} -> ${backgroundImage}`);
 
   // Set data attribute for CSS to use
   detailsPage.setAttribute('data-race', raceName);
   detailsPage.style.setProperty('--race-background', `url('${backgroundImage}')`);
+
+  console.log('Background set, CSS variable:', getComputedStyle(detailsPage).getPropertyValue('--race-background'));
 }
 
 // Initialize everything when DOM is ready
