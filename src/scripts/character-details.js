@@ -1,5 +1,4 @@
 // Character Details Page
-import BackgroundRotator from './components/background-rotator.js';
 import characterService from './services/character-service.js';
 import guildService from './services/guild-service.js';
 import { getClassColor, getClassName } from './utils/wow-constants.js';
@@ -13,17 +12,6 @@ console.log('⚡ Character Details Page initialized');
 
 // Initialize everything when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
-  // Initialize background rotator
-  const backgroundImages = [
-    'img/bgs/bg-faction.jpg',
-    'img/bgs/bg-mulgore.jpg',
-    'img/bgs/bg-tglades.jpg',
-    'img/bgs/bg-eversong.jpg'
-  ];
-
-  const bgRotator = new BackgroundRotator(backgroundImages, 8000, 2000);
-  bgRotator.init();
-
   // Get character info from URL parameters
   const urlParams = new URLSearchParams(window.location.search);
   const characterName = urlParams.get('character');
