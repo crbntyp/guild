@@ -576,10 +576,17 @@ class GuildRoster {
           // Update icon
           placeholder.title = specName;
           if (specIconUrl) {
-            placeholder.innerHTML = `
-              <img src="${specIconUrl}" alt="${specName}" class="icon-img" />
-            `;
-            placeholder.classList.remove('spec-icon-placeholder');
+            // Create image element with proper error handling
+            const img = new Image();
+            img.onload = () => {
+              placeholder.innerHTML = `<img src="${specIconUrl}" alt="${specName}" class="icon-img" />`;
+              placeholder.classList.remove('spec-icon-placeholder');
+            };
+            img.onerror = () => {
+              // Silently fail, leave placeholder as is
+              console.log(`Failed to load spec icon for ${characterName}`);
+            };
+            img.src = specIconUrl;
           }
 
           // Add hero talent name if present
