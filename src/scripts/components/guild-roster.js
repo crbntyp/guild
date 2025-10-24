@@ -333,7 +333,7 @@ class GuildRoster {
   async updateSpecsFromCache() {
     if (this.characterSpecs.size === 0) return;
 
-    const { getSpecIconUrl, getLocalSpecIconUrl, getFallbackIcon } = await import('./utils/wow-icons.js');
+    const { getSpecIconUrl, getLocalSpecIconUrl, getFallbackIcon } = await import('../utils/wow-icons.js');
 
     const memberCards = this.container.querySelectorAll('.member-card');
     memberCards.forEach(card => {
@@ -495,8 +495,8 @@ class GuildRoster {
             item.placeholder.innerHTML = `
               <i class="las la-spinner la-spin loading-spinner"></i>
               <img src="${raceIconUrl}" alt="${raceName}" class="icon-img"
-                   onload="this.previousElementSibling.style.display='none';"
-                   onerror="this.onerror=null; this.previousElementSibling.style.display='none'; this.src='${localRaceIconUrl}'; this.onerror=function() { this.style.display='none'; this.nextElementSibling.style.display='flex'; };" />
+                   onload="if(this.previousElementSibling) this.previousElementSibling.style.display='none';"
+                   onerror="this.onerror=null; if(this.previousElementSibling) this.previousElementSibling.style.display='none'; this.src='${localRaceIconUrl}'; this.onerror=function() { this.style.display='none'; this.nextElementSibling.style.display='flex'; };" />
               <i class="${getFallbackIcon('race')}" style="display: none;"></i>
             `;
           }
@@ -523,8 +523,8 @@ class GuildRoster {
             item.placeholder.innerHTML = `
               <i class="las la-spinner la-spin loading-spinner"></i>
               <img src="${factionIconUrl}" alt="${factionName}" class="icon-img"
-                   onload="this.previousElementSibling.style.display='none';"
-                   onerror="this.onerror=null; this.previousElementSibling.style.display='none'; this.src='${localFactionIconUrl}'; this.onerror=function() { this.style.display='none'; this.nextElementSibling.style.display='flex'; };" />
+                   onload="if(this.previousElementSibling) this.previousElementSibling.style.display='none';"
+                   onerror="this.onerror=null; if(this.previousElementSibling) this.previousElementSibling.style.display='none'; this.src='${localFactionIconUrl}'; this.onerror=function() { this.style.display='none'; this.nextElementSibling.style.display='flex'; };" />
               <i class="${getFallbackIcon('race')}" style="display: none;"></i>
             `;
 
@@ -605,8 +605,8 @@ class GuildRoster {
             placeholder.innerHTML = `
               <i class="las la-spinner la-spin loading-spinner"></i>
               <img src="${specIconUrl}" alt="${specName}" class="icon-img"
-                   onload="this.previousElementSibling.style.display='none';"
-                   onerror="this.onerror=null; this.previousElementSibling.style.display='none'; this.src='${localSpecIconUrl}'; this.onerror=function() { this.style.display='none'; this.nextElementSibling.style.display='flex'; };" />
+                   onload="if(this.previousElementSibling) this.previousElementSibling.style.display='none';"
+                   onerror="this.onerror=null; if(this.previousElementSibling) this.previousElementSibling.style.display='none'; this.src='${localSpecIconUrl}'; this.onerror=function() { this.style.display='none'; this.nextElementSibling.style.display='flex'; };" />
               <i class="${getFallbackIcon('spec')}" style="display: none;"></i>
             `;
           }
