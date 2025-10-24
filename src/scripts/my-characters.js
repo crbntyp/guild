@@ -175,9 +175,13 @@ function setClassFilter(classId) {
 function renderCharacters(characters) {
   const container = document.getElementById('my-characters-container');
 
+  // Get battle tag from auth service
+  const user = authService.getUser();
+  const battleTag = user?.battletag || 'Your';
+
   const html = `
     <div class="guild-header">
-      <h2 style="color: var(--color-primary);">My Characters</h2>
+      <h2 style="color: var(--color-primary);">${battleTag} Accounts Characters</h2>
       <p style="color: var(--color-text-light); margin-top: var(--spacing-sm);">
         ${characters.length} character${characters.length !== 1 ? 's' : ''} found
       </p>
