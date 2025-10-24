@@ -398,13 +398,39 @@ class GuildRoster {
             const memberHeader = avatarPlaceholder.querySelector('.member-header');
             const memberHeaderHTML = memberHeader ? memberHeader.outerHTML : '';
 
+            // Create image with fallback handling
+            const img = new Image();
+            img.onload = () => {
+              avatarPlaceholder.innerHTML = `
+                <img src="${imageUrl}" alt="${characterName}" class="character-avatar-img" />
+                ${memberHeaderHTML}
+              `;
+            };
+            img.onerror = () => {
+              // Suppress 403 errors and use fallback image
+              avatarPlaceholder.innerHTML = `
+                <img src="img/character-fallback.svg" alt="${characterName}" class="character-avatar-img" />
+                ${memberHeaderHTML}
+              `;
+            };
+            img.src = imageUrl;
+          } else {
+            // Use fallback image
+            const memberHeader = avatarPlaceholder.querySelector('.member-header');
+            const memberHeaderHTML = memberHeader ? memberHeader.outerHTML : '';
             avatarPlaceholder.innerHTML = `
-              <img src="${imageUrl}" alt="${characterName}" class="character-avatar-img" />
+              <img src="img/character-fallback.svg" alt="${characterName}" class="character-avatar-img" />
               ${memberHeaderHTML}
             `;
           }
         } catch (error) {
-          // Silently fail
+          // Suppress error and use fallback image
+          const memberHeader = avatarPlaceholder.querySelector('.member-header');
+          const memberHeaderHTML = memberHeader ? memberHeader.outerHTML : '';
+          avatarPlaceholder.innerHTML = `
+            <img src="img/character-fallback.svg" alt="${characterName}" class="character-avatar-img" />
+            ${memberHeaderHTML}
+          `;
         }
       }));
 
@@ -654,17 +680,41 @@ class GuildRoster {
             const memberHeader = avatarPlaceholder.querySelector('.member-header');
             const memberHeaderHTML = memberHeader ? memberHeader.outerHTML : '';
 
+            // Create image with fallback handling
+            const img = new Image();
+            img.onload = () => {
+              avatarPlaceholder.innerHTML = `
+                <img src="${imageUrl}" alt="${characterName}" class="character-avatar-img" />
+                ${memberHeaderHTML}
+              `;
+              successCount++;
+            };
+            img.onerror = (e) => {
+              // Suppress 403 errors and use fallback image
+              avatarPlaceholder.innerHTML = `
+                <img src="img/character-fallback.svg" alt="${characterName}" class="character-avatar-img" />
+                ${memberHeaderHTML}
+              `;
+            };
+            img.src = imageUrl;
+          } else {
+            // Use fallback image
+            const memberHeader = avatarPlaceholder.querySelector('.member-header');
+            const memberHeaderHTML = memberHeader ? memberHeader.outerHTML : '';
             avatarPlaceholder.innerHTML = `
-              <i class="las la-spinner la-spin loading-spinner"></i>
-              <img src="${imageUrl}" alt="${characterName}" class="character-avatar-img"
-                   onload="if(this.previousElementSibling) this.previousElementSibling.style.display='none';" />
+              <img src="img/character-fallback.svg" alt="${characterName}" class="character-avatar-img" />
               ${memberHeaderHTML}
             `;
-            successCount++;
-          } else {
             failCount++;
           }
         } catch (error) {
+          // Suppress error and use fallback image
+          const memberHeader = avatarPlaceholder.querySelector('.member-header');
+          const memberHeaderHTML = memberHeader ? memberHeader.outerHTML : '';
+          avatarPlaceholder.innerHTML = `
+            <img src="img/character-fallback.svg" alt="${characterName}" class="character-avatar-img" />
+            ${memberHeaderHTML}
+          `;
           failCount++;
         }
       }));

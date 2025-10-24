@@ -406,22 +406,21 @@ async function loadAvatar(card, character) {
           placeholder.innerHTML = `<img src="${imageUrl}" alt="${character.name}" class="character-avatar-img" />`;
         };
         img.onerror = () => {
-          // Hide the card if image fails to load
-          card.style.display = 'none';
+          // Suppress 403 errors and use fallback image
+          placeholder.innerHTML = `<img src="img/character-fallback.svg" alt="${character.name}" class="character-avatar-img" />`;
         };
         img.src = imageUrl;
       } else {
-        // Hide the card if no image URL
-        card.style.display = 'none';
+        // Use fallback image
+        placeholder.innerHTML = `<img src="img/character-fallback.svg" alt="${character.name}" class="character-avatar-img" />`;
       }
     } else {
-      // Hide the card if no media assets
-      card.style.display = 'none';
+      // Use fallback image
+      placeholder.innerHTML = `<img src="img/character-fallback.svg" alt="${character.name}" class="character-avatar-img" />`;
     }
   } catch (error) {
-    console.error('Error loading avatar for', character.name, ':', error);
-    // Hide the card on error (likely 404)
-    card.style.display = 'none';
+    // Suppress error and use fallback image
+    placeholder.innerHTML = `<img src="img/character-fallback.svg" alt="${character.name}" class="character-avatar-img" />`;
   }
 }
 
