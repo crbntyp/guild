@@ -1,0 +1,18 @@
+// Counter
+.counter {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--color-bg);
+  border-radius: var(--border-radius);
+  text-align: center;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-primary);
+  border: 2px solid var(--color-border);
+
+  #count {
+    color: var(--color-primary-dark);
+    font-size: 24px;
+  }
+}
+

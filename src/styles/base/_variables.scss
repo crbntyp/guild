@@ -1,0 +1,24 @@
+// CSS Variables
+:root {
+  --color-primary: #fff;
+  --color-primary-dark: #fff;
+  --color-secondary: #FFD700;
+  --color-success: #10b981;
+  --color-danger: #ef4444;
+  --color-warning: #f59e0b;
+  --color-text: #e0e0e0;
+  --color-text-light: #a0a0a0;
+  --color-bg: #1a1a1a;
+  --color-bg-secondary: #2a2a2a;
+  --color-border: #3a3a3a;
+  --color-card-bg: #242424;
+
+  --spacing-xs: 8px;
+  --spacing-sm: 16px;
+  --spacing-md: 24px;
+  --spacing-lg: 32px;
+  --spacing-xl: 48px;
+
+  --border-radius: 8px;
+  --transition: all 0.3s ease;
+}

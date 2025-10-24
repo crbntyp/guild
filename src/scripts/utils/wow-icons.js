@@ -42,7 +42,7 @@ export function getLocalClassIconUrl(classId) {
   return PLACEHOLDER_ICON;
 }
 
-// Race ID to IconSmall icon URLs from Wowpedia
+// Race ID to IconSmall icon URLs from Warcraft Wiki (formerly Wowpedia)
 // These are animated GIFs with hash-based URLs
 export const RACE_ICON_URLS = {
   // Original Races - NEW modern icons (without "2" suffix)
@@ -153,9 +153,11 @@ export const RACE_ICON_URLS = {
   70: {  // Dracthyr Alliance (single gender-neutral icon for both)
     male: 'https://static.wikia.nocookie.net/wowpedia/images/b/ba/IconSmall_Dracthyr.gif',
     female: 'https://static.wikia.nocookie.net/wowpedia/images/b/ba/IconSmall_Dracthyr.gif'
+  },
+  84: {  // Earthen (The War Within 2024)
+    male: 'https://warcraft.wiki.gg/images/thumb/IconSmall_Earthen_Male.gif/48px-IconSmall_Earthen_Male.gif',
+    female: 'https://warcraft.wiki.gg/images/thumb/IconSmall_Earthen_Female.gif/48px-IconSmall_Earthen_Female.gif'
   }
-  // Note: Earthen (race ID 84) icons don't exist on Wowpedia yet (new race in The War Within 2024)
-  // Will fall back to local icons or font icon
 };
 
 /**
@@ -293,6 +295,96 @@ export function getLocalSpecIconUrl(specId) {
   return PLACEHOLDER_ICON;
 }
 
+// Hero Talent icon mapping (hero talent ID to Wowhead icon name)
+// Icons from Wowhead CDN - using primary keystone ability icons
+export const HERO_TALENT_ICON_NAMES = {
+  // Death Knight
+  1: 'spell_deathknight_antimagiczone', // Deathbringer
+  2: 'spell_shadow_raisedead', // Rider of the Apocalypse
+  3: 'spell_shadow_soulleech_3', // San'layn
+
+  // Demon Hunter
+  35: 'inv_glaive_1h_artifactaldrachi_d_06', // Aldrachi Reaver
+  36: 'ability_demonhunter_felrush', // Fel-Scarred
+
+  // Druid
+  4: 'spell_druid_displacement', // Elune's Chosen
+  5: 'ability_druid_lunarguidance', // Keeper of the Grove
+  6: 'ability_druid_wildcharge', // Wildstalker
+  7: 'inv_misc_herb_dreamleaf', // Druid of the Claw
+
+  // Evoker
+  8: 'ability_evoker_timespiral', // Chronowarden
+  9: 'ability_evoker_masterylifebinder_green', // Flameshaper
+  10: 'inv_cape_dragonriding_protodrake', // Scalecommander
+
+  // Hunter
+  11: 'ability_hunter_aspectoftheviper', // Dark Ranger
+  43: 'ability_hunter_pet_wolf', // Pack Leader
+  12: 'ability_hunter_sentinelowl', // Sentinel
+
+  // Mage
+  13: 'ability_mage_firestarter', // Frostfire
+  14: 'inv_datacrystal06', // Spellslinger
+  15: 'spell_mage_overpowered', // Sunfury
+
+  // Monk
+  16: 'ability_monk_chibrew', // Conduit of the Celestials
+  17: 'monk_ability_brewmaster_spec', // Master of Harmony
+  18: 'ability_monk_sheilun', // Shado-Pan
+
+  // Paladin
+  19: 'spell_holy_crusade', // Herald of the Sun
+  20: 'ability_paladin_lightfury', // Lightsmith
+  21: 'spell_holy_prayerofhealing', // Templar
+
+  // Priest
+  22: 'spell_holy_circleofrenewal', // Archon
+  23: 'spell_shadow_shadesofdarkness', // Voidweaver
+  24: 'spell_holy_spiritualguidence', // Oracle
+
+  // Rogue
+  25: 'ability_rogue_deadmanhand', // Deathstalker
+  26: 'ability_rogue_slaughterfromtheshadows', // Fatebound
+  27: 'ability_rogue_bloodyeye', // Trickster
+
+  // Shaman
+  28: 'spell_fire_masterofelements', // Farseer
+  29: 'spell_nature_stoneskintotem', // Stormbringer
+  30: 'spell_shaman_improvedstormstrike', // Totemic
+
+  // Warlock
+  31: 'inv_belt_leather_raidwarlock_q_01', // Diabolist
+  32: 'spell_warlock_soulburn', // Hellcaller
+  33: 'ability_warlock_soulsiphon', // Soul Harvester
+
+  // Warrior
+  37: 'ability_warrior_colossussmash', // Colossus
+  38: 'ability_warrior_unrelentingassault', // Mountain Thane
+  39: 'ability_warrior_bloodbath', // Slayer
+};
+
+/**
+ * Get hero talent icon URL from Wowhead CDN
+ */
+export function getHeroTalentIconUrl(heroTalentId) {
+  if (!heroTalentId) return null;
+
+  const iconName = HERO_TALENT_ICON_NAMES[heroTalentId];
+  if (!iconName) {
+    return null;
+  }
+
+  return `https://wow.zamimg.com/images/wow/icons/large/${iconName}.jpg`;
+}
+
+/**
+ * Get local hero talent icon URL (for fallback)
+ */
+export function getLocalHeroTalentIconUrl(heroTalentId) {
+  return PLACEHOLDER_ICON;
+}
+
 /**
  * Fallback icon if Blizzard CDN fails
  */
@@ -301,7 +393,8 @@ export function getFallbackIcon(type) {
     'class': 'las la-shield-alt',
     'race': 'las la-user',
     'gender': 'las la-question',
-    'spec': 'las la-star'
+    'spec': 'las la-star',
+    'hero': 'las la-star'
   };
   return fallbacks[type] || 'las la-question';
 }

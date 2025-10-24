@@ -8,9 +8,12 @@ const config = {
     clientSecret: 'xHpqmVAnuwV8DFcMQncEYxCio35MSUHq',
     region: 'eu',
     // Auto-detect environment: localhost for dev, live URL for production
-    redirectUri: window.location.hostname === 'localhost'
-      ? 'http://localhost:8080'
-      : 'https://carbontype.co/guild/',
+    redirectUri: (window.location.hostname === 'localhost' ||
+                  window.location.hostname === '127.0.0.1')
+      ? 'http://localhost:8080/'
+      : window.location.hostname.startsWith('192.168.')
+        ? `http://${window.location.host}/`
+        : 'https://carbontype.co/guild/',
 
     // API endpoints by region
     endpoints: {

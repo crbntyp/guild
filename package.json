@@ -17,7 +17,8 @@
     "watch:img": "cpx \"src/img/**/*\" dist/img --watch",
     "watch:assets": "cpx \"src/assets/**/*\" dist/assets --watch",
     "serve": "live-server dist --port=8080 --open",
-    "dev": "npm run build && concurrently \"npm run watch:scss\" \"npm run watch:html\" \"npm run watch:js\" \"npm run watch:img\" \"npm run watch:assets\" \"npm run serve\"",
+    "auth-server": "node server.cjs",
+    "dev": "npm run build && concurrently \"npm run watch:scss\" \"npm run watch:html\" \"npm run watch:js\" \"npm run watch:img\" \"npm run watch:assets\" \"npm run serve\" \"npm run auth-server\"",
     "clean": "rm -rf dist/* && mkdir -p dist"
   },
   "keywords": [],
@@ -31,6 +32,8 @@
     "sass": "^1.93.2"
   },
   "dependencies": {
-    "line-awesome": "^1.3.0"
+    "express": "^5.1.0",
+    "line-awesome": "^1.3.0",
+    "node-fetch": "^2.7.0"
   }
 }

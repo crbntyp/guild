@@ -1,6 +1,7 @@
 // Character Details Page
 import characterService from './services/character-service.js';
 import guildService from './services/guild-service.js';
+import TopBar from './components/top-bar.js';
 import { getClassColor, getClassName } from './utils/wow-constants.js';
 import { formatNumber } from './utils/helpers.js';
 import { getItemQualityColor, getSlotName, getSlotIcon } from './utils/item-quality.js';
@@ -10,33 +11,38 @@ import config from './config.js';
 
 console.log('⚡ Character Details Page initialized');
 
+// Initialize top bar (login)
+document.addEventListener('DOMContentLoaded', () => {
+  new TopBar();
+});
+
 // Race-specific background mapping
 const raceBackgrounds = {
-  'human': 'img/bgs/bg-goldshire.jpg',
-  'dwarf': 'img/bgs/bg-dmorogh.jpg',
-  'night elf': 'img/bgs/bg-tglades.jpg',
-  'gnome': 'img/bgs/bg-dmorogh.jpg',
-  'draenei': 'img/bgs/bg-azuremyst.jpg',
-  'worgen': 'img/bgs/bg-gilneas.jpg',
-  'orc': 'img/bgs/bg-durotar.jpg',
-  'undead': 'img/bgs/bg-tglades.jpg',
-  'tauren': 'img/bgs/bg-mulgore.jpg',
-  'troll': 'img/bgs/bg-echoisles.jpg',
-  'blood elf': 'img/bgs/bg-eversong.jpg',
-  'goblin': 'img/bgs/bg-kezan.jpg',
-  'pandaren': 'img/bgs/bg-wisle.jpg',
-  'nightborne': 'img/bgs/bg-suramar.jpg',
-  'void elf': 'img/bgs/bg-tglades.jpg',
-  'lightforged draenei': 'img/bgs/bg-azuremyst.jpg',
-  'dark iron dwarf': 'img/bgs/bg-dmorogh.jpg',
-  'kul tiran': 'img/bgs/bg-goldshire.jpg',
-  'mechagnome': 'img/bgs/bg-dmorogh.jpg',
-  'highmountain tauren': 'img/bgs/bg-mulgore.jpg',
-  'mag\'har orc': 'img/bgs/bg-durotar.jpg',
-  'zandalari troll': 'img/bgs/bg-echoisles.jpg',
-  'vulpera': 'img/bgs/bg-durotar.jpg',
-  'dracthyr': 'img/bgs/bg-tglades.jpg',
-  'default': 'img/bgs/bg-tglades.jpg'
+  'human': '../img/bgs/bg-goldshire.jpg',
+  'dwarf': '../img/bgs/bg-dmorogh.jpg',
+  'night elf': '../img/bgs/bg-shadowglen.jpg',
+  'gnome': '../img/bgs/bg-dmorogh.jpg',
+  'draenei': '../img/bgs/bg-azuremyst.jpg',
+  'worgen': '../img/bgs/bg-gilneas.jpg',
+  'orc': '../img/bgs/bg-durotar.jpg',
+  'undead': '../img/bgs/bg-tglades.jpg',
+  'tauren': '../img/bgs/bg-mulgore.jpg',
+  'troll': '../img/bgs/bg-echoisles.jpg',
+  'blood elf': '../img/bgs/bg-eversong.jpg',
+  'goblin': '../img/bgs/bg-kezan.jpg',
+  'pandaren': '../img/bgs/bg-wisle.jpg',
+  'nightborne': '../img/bgs/bg-suramar.jpg',
+  'void elf': '../img/bgs/bg-tglades.jpg',
+  'lightforged draenei': '../img/bgs/bg-azuremyst.jpg',
+  'dark iron dwarf': '../img/bgs/bg-dmorogh.jpg',
+  'kul tiran': '../img/bgs/bg-goldshire.jpg',
+  'mechagnome': '../img/bgs/bg-dmorogh.jpg',
+  'highmountain tauren': '../img/bgs/bg-mulgore.jpg',
+  'mag\'har orc': '../img/bgs/bg-durotar.jpg',
+  'zandalari troll': '../img/bgs/bg-echoisles.jpg',
+  'vulpera': '../img/bgs/bg-durotar.jpg',
+  'dracthyr': '../img/bgs/bg-freach.jpg',
+  'default': '../img/bgs/bg-tglades.jpg'
 };
 
 function setRaceBackground(raceName) {
@@ -108,6 +114,9 @@ function renderCharacterDetails(container, data, realmSlug) {
   const itemLevel = profile?.equipped_item_level || profile?.average_item_level || 'N/A';
   const activeSpec = specs ? characterService.getActiveSpec(specs) : null;
 
+  // Get hero talent name
+  const heroTalentName = specs?.active_hero_talent_tree?.name || null;
+
   // Get different media assets
   const avatar = media?.assets?.find(asset => asset.key === 'avatar')?.value || '';
   const inset = media?.assets?.find(asset => asset.key === 'inset')?.value || '';
@@ -136,6 +145,9 @@ function renderCharacterDetails(container, data, realmSlug) {
                   <span class="meta-badge" style="background-color: ${classColor}20; color: ${classColor}">
                     ${className}
                   </span>
+                  ${heroTalentName ? `<span class="meta-badge" style="background-color: rgba(255, 215, 0, 0.2); color: #FFD700; border: 1px solid #FFD700;">
+                    <i class="las la-star"></i> ${heroTalentName}
+                  </span>` : ''}
                   <span class="meta-badge">${profile.race.name}</span>
                   <span class="meta-badge">${gender}</span>
                   ${profile.realm?.name ? `<span class="meta-badge" style="background-color: rgba(255, 255, 255, 0.1);"><i class="las la-server"></i> ${profile.realm.name}</span>` : ''}

@@ -1,0 +1,147 @@
+// Top Bar
+.top-bar {
+  height: 50px;
+  background: rgba(26, 26, 26, 0.95);
+  border-bottom: 1px solid var(--color-border);
+  backdrop-filter: blur(10px);
+
+  .top-bar-content {
+    max-width: 1290px;
+    margin: 0 auto;
+    height: 100%;
+    padding: 0 var(--spacing-md);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .top-bar-left {
+    display: flex;
+    align-items: center;
+
+    .guild-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--color-text);
+      letter-spacing: 1.5px;
+    }
+  }
+
+  .top-bar-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+
+    .nav-link {
+      color: var(--color-text-light);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-decoration: none;
+      transition: var(--transition);
+      text-transform: uppercase;
+
+      &:hover {
+        color: var(--color-primary);
+      }
+    }
+  }
+
+  .top-bar-right {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+  }
+
+  .btn-login {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 12px;
+    background: #148eff;
+    border: 1px solid #148eff;
+    border-radius: var(--border-radius);
+    color: white;
+    font-family: 'Muli', sans-serif;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    transition: var(--transition);
+
+    &:hover {
+      background: #0d7de8;
+      border-color: #0d7de8;
+    }
+
+    i {
+      font-size: 14px;
+    }
+  }
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+
+    .user-avatar-container {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid var(--color-border);
+
+      .user-avatar {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      i {
+        font-size: 16px;
+        color: var(--color-text-light);
+      }
+    }
+
+    .user-battletag {
+      color: var(--color-text);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-decoration: none;
+      transition: var(--transition);
+
+      &:hover {
+        color: var(--color-primary);
+      }
+    }
+
+    .btn-logout {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 12px;
+      background: #148eff;
+      border: 1px solid #148eff;
+      border-radius: var(--border-radius);
+      color: white;
+      font-family: 'Muli', sans-serif;
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      cursor: pointer;
+      transition: var(--transition);
+
+      &:hover {
+        background: #0d7de8;
+        border-color: #0d7de8;
+      }
+
+      i {
+        font-size: 14px;
+      }
+    }
+  }
+}
