@@ -110,6 +110,7 @@ async function loadMyCharacters() {
         faction: {
           type: char.faction.type
         },
+        gender: char.gender, // Include gender data
         itemLevel: null // Will be fetched separately
       },
       rank: 0 // Not applicable for personal characters
@@ -440,18 +441,12 @@ async function loadIcons(card, character) {
     classIconElement.classList.remove('class-icon-placeholder');
   }
 
-  // Fetch gender from character media, then load race icon
+  // Load race icon with correct gender
   try {
-    const wowAPI = (await import('./api/wow-api.js')).default;
-    const media = await wowAPI.getCharacterMedia(character.realm.slug, character.name);
-
+    // Get gender from character data (API returns { type: "MALE" } or { type: "FEMALE" })
     let gender = 'male'; // default
-    if (media?.character_media) {
-      // Check render URL for female indicator
-      const renderUrl = media.character_media.find(m => m.key === 'main-raw')?.value;
-      if (renderUrl && renderUrl.includes('female')) {
-        gender = 'female';
-      }
+    if (character.gender?.type) {
+      gender = character.gender.type.toLowerCase(); // Convert "MALE" to "male", "FEMALE" to "female"
     }
 
     // Load race icon with correct gender
