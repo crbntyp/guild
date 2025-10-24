@@ -181,10 +181,10 @@ function renderCharacters(characters) {
 
   const html = `
     <div class="guild-header">
-      <h2 style="color: var(--color-primary);">${battleTag} Accounts Characters</h2>
-      <p style="color: var(--color-text-light); margin-top: var(--spacing-sm);">
-        ${characters.length} character${characters.length !== 1 ? 's' : ''} found
-      </p>
+      <h2 style="color: var(--color-primary);">${battleTag} Characters</h2>
+      <div class="guild-header-subtitle">
+        <span>${characters.length} character${characters.length !== 1 ? 's' : ''}</span> found, some older unused characters will be suppressed.
+      </div>
     </div>
 
     <div class="roster-controls">
