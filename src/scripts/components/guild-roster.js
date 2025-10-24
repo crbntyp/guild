@@ -407,30 +407,17 @@ class GuildRoster {
               `;
             };
             img.onerror = () => {
-              // Suppress 403 errors and use fallback image
-              avatarPlaceholder.innerHTML = `
-                <img src="../img/character-fallback.svg" alt="${characterName}" class="character-avatar-img" />
-                ${memberHeaderHTML}
-              `;
+              // Hide card on 403/404 (privacy settings or invalid character)
+              card.style.display = 'none';
             };
             img.src = imageUrl;
           } else {
-            // Use fallback image
-            const memberHeader = avatarPlaceholder.querySelector('.member-header');
-            const memberHeaderHTML = memberHeader ? memberHeader.outerHTML : '';
-            avatarPlaceholder.innerHTML = `
-              <img src="../img/character-fallback.svg" alt="${characterName}" class="character-avatar-img" />
-              ${memberHeaderHTML}
-            `;
+            // Hide card if no image URL
+            card.style.display = 'none';
           }
         } catch (error) {
-          // Suppress error and use fallback image
-          const memberHeader = avatarPlaceholder.querySelector('.member-header');
-          const memberHeaderHTML = memberHeader ? memberHeader.outerHTML : '';
-          avatarPlaceholder.innerHTML = `
-            <img src="../img/character-fallback.svg" alt="${characterName}" class="character-avatar-img" />
-            ${memberHeaderHTML}
-          `;
+          // Hide card on error
+          card.style.display = 'none';
         }
       }));
 
@@ -698,23 +685,13 @@ class GuildRoster {
             };
             img.src = imageUrl;
           } else {
-            // Use fallback image
-            const memberHeader = avatarPlaceholder.querySelector('.member-header');
-            const memberHeaderHTML = memberHeader ? memberHeader.outerHTML : '';
-            avatarPlaceholder.innerHTML = `
-              <img src="../img/character-fallback.svg" alt="${characterName}" class="character-avatar-img" />
-              ${memberHeaderHTML}
-            `;
+            // Hide card if no image URL
+            card.style.display = 'none';
             failCount++;
           }
         } catch (error) {
-          // Suppress error and use fallback image
-          const memberHeader = avatarPlaceholder.querySelector('.member-header');
-          const memberHeaderHTML = memberHeader ? memberHeader.outerHTML : '';
-          avatarPlaceholder.innerHTML = `
-            <img src="../img/character-fallback.svg" alt="${characterName}" class="character-avatar-img" />
-            ${memberHeaderHTML}
-          `;
+          // Hide card on error
+          card.style.display = 'none';
           failCount++;
         }
       }));

@@ -138,7 +138,7 @@ function renderCharacterDetails(container, data, realmSlug) {
         <div class="character-details-left">
           <div class="character-details">
             <div class="character-header-section">
-              ${render ? `<img src="${render}" alt="${profile.name}" class="character-render" onerror="this.src='../img/character-fallback.svg';" />` : '<img src="../img/character-fallback.svg" alt="${profile.name}" class="character-render" />'}
+              ${render ? `<img src="${render}" alt="${profile.name}" class="character-render" onerror="this.style.display='none';" />` : ''}
               <div class="character-title-info">
                 <h2 style="color: ${classColor}">${profile.name}</h2>
                 <div class="character-meta">

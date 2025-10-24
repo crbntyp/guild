@@ -406,21 +406,21 @@ async function loadAvatar(card, character) {
           placeholder.innerHTML = `<img src="${imageUrl}" alt="${character.name}" class="character-avatar-img" />`;
         };
         img.onerror = () => {
-          // Suppress 403 errors and use fallback image
-          placeholder.innerHTML = `<img src="../img/character-fallback.svg" alt="${character.name}" class="character-avatar-img" />`;
+          // Hide card on 403/404 (privacy settings or invalid character)
+          card.style.display = 'none';
         };
         img.src = imageUrl;
       } else {
-        // Use fallback image
-        placeholder.innerHTML = `<img src="../img/character-fallback.svg" alt="${character.name}" class="character-avatar-img" />`;
+        // Hide card if no image URL
+        card.style.display = 'none';
       }
     } else {
-      // Use fallback image
-      placeholder.innerHTML = `<img src="../img/character-fallback.svg" alt="${character.name}" class="character-avatar-img" />`;
+      // Hide card if no media assets
+      card.style.display = 'none';
     }
   } catch (error) {
-    // Suppress error and use fallback image
-    placeholder.innerHTML = `<img src="../img/character-fallback.svg" alt="${character.name}" class="character-avatar-img" />`;
+    // Hide card on error
+    card.style.display = 'none';
   }
 }
 
