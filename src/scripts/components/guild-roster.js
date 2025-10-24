@@ -551,7 +551,7 @@ class GuildRoster {
     const specPlaceholders = this.container.querySelectorAll('.spec-icon-placeholder');
 
     // Limit concurrent requests to avoid overwhelming the API
-    const batchSize = 5;
+    const batchSize = 10; // Increased from 5 for faster loading
     let successCount = 0;
     let failCount = 0;
 
@@ -633,9 +633,9 @@ class GuildRoster {
         }
       }));
 
-      // Small delay between batches
+      // Small delay between batches (reduced for faster loading)
       if (i + batchSize < specPlaceholders.length) {
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 100));
       }
     }
   }
