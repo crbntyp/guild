@@ -445,20 +445,28 @@ async function loadIcons(card, character) {
     const characterService = (await import('./services/character-service.js')).default;
     const profile = await characterService.fetchCharacterProfile(character.realm.slug, character.name);
 
+    console.log(`[DEBUG] Profile for ${character.name}:`, profile);
+    console.log(`[DEBUG] Gender object:`, profile?.gender);
+    console.log(`[DEBUG] Gender type:`, profile?.gender?.type);
+
     let gender = 'male'; // default
     if (profile?.gender?.type) {
       gender = profile.gender.type.toLowerCase(); // Convert "MALE" to "male", "FEMALE" to "female"
+      console.log(`[SUCCESS] ${character.name} detected as: ${gender}`);
+    } else {
+      console.warn(`[WARNING] No gender found for ${character.name}, defaulting to male`);
     }
 
     // Load race icon with correct gender
     const raceIconUrl = getRaceIconUrl(character.playable_race.id, gender);
+    console.log(`[DEBUG] Race icon URL for ${character.name} (${gender}):`, raceIconUrl);
     const raceIconElement = card.querySelector('.race-icon-placeholder');
     if (raceIconElement && raceIconUrl) {
       raceIconElement.innerHTML = `<img src="${raceIconUrl}" class="icon-img" alt="Race" />`;
       raceIconElement.classList.remove('race-icon-placeholder');
     }
   } catch (error) {
-    console.error(`Error loading gender for ${character.name}:`, error);
+    console.error(`[ERROR] Failed to load gender for ${character.name}:`, error);
     // Fallback to male
     const raceIconUrl = getRaceIconUrl(character.playable_race.id, 'male');
     const raceIconElement = card.querySelector('.race-icon-placeholder');
