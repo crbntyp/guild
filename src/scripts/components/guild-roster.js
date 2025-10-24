@@ -22,6 +22,10 @@ class GuildRoster {
     this.characterSpecs = new Map(); // Store character specs
     this.sortDropdown = null; // Custom dropdown for sorting
     this.classDropdown = null; // Custom dropdown for class filter
+
+    // Pagination
+    this.currentPage = 1;
+    this.itemsPerPage = 100;
   }
 
   // Helper to create unique character key (name + realm)
@@ -208,21 +212,25 @@ class GuildRoster {
 
   setSortBy(sortBy) {
     this.sortBy = sortBy;
+    this.currentPage = 1; // Reset to first page
     this.applyFilters();
   }
 
   setClassFilter(classId) {
     this.filterClass = classId;
+    this.currentPage = 1; // Reset to first page
     this.applyFilters();
   }
 
   setLevelFilter(level) {
     this.filterLevel = level;
+    this.currentPage = 1; // Reset to first page
     this.applyFilters();
   }
 
   setSearchTerm(term) {
     this.searchTerm = term;
+    this.currentPage = 1; // Reset to first page
     this.applyFilters();
   }
 
@@ -243,6 +251,12 @@ class GuildRoster {
       return !this.invalidCharacters.has(characterKey);
     });
 
+    // Calculate pagination
+    const totalPages = Math.ceil(filteredRoster.length / this.itemsPerPage);
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    const paginatedRoster = filteredRoster.slice(startIndex, endIndex);
+
     // Clear old content to remove event listeners
     this.container.innerHTML = '';
 
@@ -262,15 +276,89 @@ class GuildRoster {
         <div id="class-dropdown-container"></div>
       </div>
 
+      ${this.renderPagination(totalPages, filteredRoster.length)}
+
       <div class="roster-grid">
-        ${filteredRoster.map(member => this.renderMemberCard(member)).join('')}
+        ${paginatedRoster.map(member => this.renderMemberCard(member)).join('')}
       </div>
+
+      ${this.renderPagination(totalPages, filteredRoster.length)}
     `;
 
     this.container.innerHTML = content;
     this.initializeDropdowns();
     this.attachEventListeners();
+    this.attachPaginationListeners();
     this.loadAllIcons();
+  }
+
+  renderPagination(totalPages, totalCharacters) {
+    if (totalPages <= 1) return '';
+
+    const startChar = ((this.currentPage - 1) * this.itemsPerPage) + 1;
+    const endChar = Math.min(this.currentPage * this.itemsPerPage, totalCharacters);
+
+    let pagination = '<div class="pagination">';
+    pagination += `<div class="pagination-info">Showing ${startChar}-${endChar} of ${totalCharacters}</div>`;
+    pagination += '<div class="pagination-buttons">';
+
+    // Previous button
+    if (this.currentPage > 1) {
+      pagination += `<button class="pagination-btn" data-page="${this.currentPage - 1}"><i class="las la-angle-left"></i> Previous</button>`;
+    }
+
+    // Page numbers
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, this.currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage < maxVisiblePages - 1) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    if (startPage > 1) {
+      pagination += `<button class="pagination-btn" data-page="1">1</button>`;
+      if (startPage > 2) {
+        pagination += '<span class="pagination-ellipsis">...</span>';
+      }
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      const activeClass = i === this.currentPage ? 'active' : '';
+      pagination += `<button class="pagination-btn ${activeClass}" data-page="${i}">${i}</button>`;
+    }
+
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        pagination += '<span class="pagination-ellipsis">...</span>';
+      }
+      pagination += `<button class="pagination-btn" data-page="${totalPages}">${totalPages}</button>`;
+    }
+
+    // Next button
+    if (this.currentPage < totalPages) {
+      pagination += `<button class="pagination-btn" data-page="${this.currentPage + 1}">Next <i class="las la-angle-right"></i></button>`;
+    }
+
+    pagination += '</div>';
+    pagination += '</div>';
+
+    return pagination;
+  }
+
+  attachPaginationListeners() {
+    const paginationButtons = this.container.querySelectorAll('.pagination-btn');
+    paginationButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        const page = parseInt(e.currentTarget.dataset.page);
+        if (page && page !== this.currentPage) {
+          this.currentPage = page;
+          this.render();
+          // Scroll to top of roster
+          this.container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
   }
 
   async loadAllIcons(useCache = true) {
@@ -707,8 +795,8 @@ class GuildRoster {
   async loadItemLevels() {
     const memberCards = this.container.querySelectorAll('.member-card');
 
-    // Limit concurrent requests
-    const batchSize = 5;
+    // Limit concurrent requests - increased from 5 to 30 for better performance
+    const batchSize = 30;
     let successCount = 0;
     let failCount = 0;
     let foundInvalidCharacters = false;

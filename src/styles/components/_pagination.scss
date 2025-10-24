@@ -1,0 +1,107 @@
+// Pagination Component
+.pagination {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin: var(--spacing-lg) 0;
+  padding: var(--spacing-md);
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: var(--border-radius);
+
+  .pagination-info {
+    color: var(--color-text-light);
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+
+  .pagination-buttons {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .pagination-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 var(--spacing-sm);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    color: var(--color-text);
+    font-family: 'Muli', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: var(--transition);
+
+    i {
+      font-size: 16px;
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      transform: translateY(-2px);
+    }
+
+    &.active {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #000;
+      font-weight: 700;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+
+      &:hover {
+        transform: none;
+        background: rgba(255, 255, 255, 0.05);
+        border-color: var(--color-border);
+        color: var(--color-text);
+      }
+    }
+  }
+
+  .pagination-ellipsis {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    color: var(--color-text-light);
+    font-size: 14px;
+  }
+
+  // Mobile responsive
+  @media (max-width: 768px) {
+    .pagination-info {
+      font-size: 12px;
+    }
+
+    .pagination-btn {
+      min-width: 36px;
+      height: 36px;
+      font-size: 12px;
+      padding: 0 8px;
+
+      i {
+        font-size: 14px;
+      }
+    }
+
+    .pagination-ellipsis {
+      min-width: 36px;
+      height: 36px;
+    }
+  }
+}
