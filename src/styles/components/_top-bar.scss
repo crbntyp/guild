@@ -18,6 +18,7 @@
   .top-bar-left {
     display: flex;
     align-items: center;
+    flex: 1;
 
     .guild-name {
       font-size: 16px;
@@ -25,6 +26,13 @@
       color: var(--color-text);
       letter-spacing: 1.5px;
     }
+  }
+
+  .top-bar-center {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex: 0 0 auto;
   }
 
   .top-bar-nav {
@@ -51,6 +59,8 @@
     display: flex;
     align-items: center;
     gap: var(--spacing-sm);
+    flex: 1;
+    justify-content: flex-end;
   }
 
   .btn-login {
