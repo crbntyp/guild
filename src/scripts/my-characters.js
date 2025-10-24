@@ -440,34 +440,14 @@ async function loadIcons(card, character) {
     classIconElement.classList.remove('class-icon-placeholder');
   }
 
-  // Fetch gender from character profile API using user's access token
+  // Fetch gender from character profile - use same approach as guild roster
   try {
-    const accessToken = authService.getAccessToken();
-    if (!accessToken) {
-      console.error('No access token available');
-      throw new Error('Not authenticated');
-    }
-
-    // Fetch character profile directly with user's token
-    const encodedName = encodeURIComponent(character.name.toLowerCase());
-    const profileUrl = `${config.getApiUrl()}/profile/wow/character/${character.realm.slug}/${encodedName}?namespace=${config.api.namespace.profile}&locale=${config.api.locale}`;
-
-    const response = await fetch(profileUrl, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch profile: ${response.status}`);
-    }
-
-    const profile = await response.json();
+    const characterService = (await import('./services/character-service.js')).default;
+    const profile = await characterService.fetchCharacterProfile(character.realm.slug, character.name);
 
     let gender = 'male'; // default
     if (profile?.gender?.type) {
       gender = profile.gender.type.toLowerCase(); // Convert "MALE" to "male", "FEMALE" to "female"
-      console.log(`${character.name} gender: ${gender}`);
     }
 
     // Load race icon with correct gender
