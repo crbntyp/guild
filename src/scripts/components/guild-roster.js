@@ -249,7 +249,6 @@ class GuildRoster {
     // Build new content
     const content = `
       <div class="guild-header">
-        <span class="guild-count">${filteredRoster.length} Champions</span>
         <h2>
           ${guildName}
         </h2>
