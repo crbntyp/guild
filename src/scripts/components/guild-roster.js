@@ -25,7 +25,7 @@ class GuildRoster {
 
     // Pagination
     this.currentPage = 1;
-    this.itemsPerPage = 100;
+    this.itemsPerPage = 50;
   }
 
   // Helper to create unique character key (name + realm)
@@ -275,8 +275,6 @@ class GuildRoster {
         <div id="sort-dropdown-container"></div>
         <div id="class-dropdown-container"></div>
       </div>
-
-      ${this.renderPagination(totalPages, filteredRoster.length)}
 
       <div class="roster-grid">
         ${paginatedRoster.map(member => this.renderMemberCard(member)).join('')}
