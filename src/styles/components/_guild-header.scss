@@ -1,6 +1,11 @@
 // Guild Header Component
 .guild-header {
   text-align: center;
+  min-height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
   .guild-realms{
     margin-bottom: var(--spacing-sm);
     display: block;

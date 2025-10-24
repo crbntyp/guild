@@ -249,6 +249,11 @@ class GuildRoster {
         <span class="guild-realms">Various Realms</span>
       </div>
 
+      <div class="roster-controls">
+        <div id="sort-dropdown-container"></div>
+        <div id="class-dropdown-container"></div>
+      </div>
+
       <div class="roster-grid">
         ${this.roster
           .filter(member => {

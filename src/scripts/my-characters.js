@@ -183,6 +183,11 @@ function renderCharacters(characters) {
       </p>
     </div>
 
+    <div class="roster-controls">
+      <div id="sort-dropdown-container"></div>
+      <div id="class-dropdown-container"></div>
+    </div>
+
     <div class="roster-grid">
       ${characters.map(member => createCharacterCard(member)).join('')}
     </div>
