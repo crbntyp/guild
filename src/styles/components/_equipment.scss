@@ -14,11 +14,11 @@
 
   .equipment-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: var(--spacing-sm);
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
     flex: 1;
     overflow-y: auto;
-    padding-right: var(--spacing-xs);
+    //padding-right: var(--spacing-xs);
     align-content: start;
 
     // Custom scrollbar
@@ -45,14 +45,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--spacing-xs);
-    background: var(--color-bg);
-    padding: var(--spacing-sm);
-    border-radius: var(--border-radius);
-    border: 1px solid var(--color-border);
     transition: var(--transition);
-    min-height: 80px;
-    text-align: center;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
 
     &:hover {
       border-color: var(--color-primary);
@@ -107,11 +103,13 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        display: none;
       }
 
       .item-level {
         font-size: 11px;
         color: var(--color-text-light);
+        display: none;
       }
     }
   }

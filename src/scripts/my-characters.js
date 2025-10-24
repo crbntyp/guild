@@ -2,6 +2,7 @@
 import accountService from './services/account-service.js';
 import authService from './services/auth.js';
 import TopBar from './components/top-bar.js';
+import Footer from './components/footer.js';
 import BackgroundRotator from './components/background-rotator.js';
 import CustomDropdown from './components/custom-dropdown.js';
 import config from './config.js';
@@ -21,6 +22,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Initialize top bar (login)
   const topBar = new TopBar();
   await topBar.init();
+
+  // Initialize footer
+  const footer = new Footer();
+  footer.init();
 
   // Initialize background rotator
   const backgroundImages = [

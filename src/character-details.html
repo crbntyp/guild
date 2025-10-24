@@ -9,28 +9,23 @@
     <link href="https://fonts.googleapis.com/css2?family=Muli:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
     <link rel="stylesheet" href="styles/main.css">
+
+    <!-- Wowhead Tooltips -->
+    <script>
+    const whTooltips = {
+      colorLinks: true,
+      iconizeLinks: false,
+      renameLinks: false,
+      iconSize: 'small'
+    };
+    </script>
+    <script src="https://wow.zamimg.com/js/tooltips.js"></script>
 </head>
 <body>
-    <div class="top-bar">
-        <div class="top-bar-content">
-            <div class="top-bar-left"></div>
-            <div class="top-bar-right">
-                <button class="btn-login">
-                    <i class="las la-user"></i>
-                    <span>Login with Battle.net</span>
-                </button>
-            </div>
-        </div>
-    </div>
+    <div id="top-bar-root"></div>
 
     <div class="container">
         <div class="character-details-page">
-            <div class="back-button-container">
-                <button class="btn-back" onclick="history.back()">
-                    <i class="las la-arrow-left"></i> Back to Roster
-                </button>
-            </div>
-
             <div id="character-details-container">
                 <div class="loading-spinner">
                     <i class="las la-circle-notch la-spin la-6x"></i>
@@ -39,9 +34,7 @@
             </div>
         </div>
 
-        <footer class="footer">
-            <p>&copy; 2025 Powered by Battle.net API | Made with <i class="las la-heart"></i></p>
-        </footer>
+        <!-- <div id="footer-root"></div> -->
     </div>
 
     <script type="module" src="scripts/character-details.js"></script>

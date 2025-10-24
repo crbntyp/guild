@@ -4,14 +4,29 @@ import authService from '../services/auth.js';
  * Top Bar Component - Handles Battle.net login UI
  */
 class TopBar {
-  constructor() {
-    this.rightContainer = document.querySelector('.top-bar-right');
-    this.leftContainer = document.querySelector('.top-bar-left');
+  constructor(containerId = 'top-bar-root') {
+    this.containerId = containerId;
+    this.rightContainer = null;
+    this.leftContainer = null;
     this.isMobileMenuOpen = false;
   }
 
   async init() {
-    if (!this.rightContainer) {
+    const container = document.getElementById(this.containerId);
+    if (!container) {
+      console.error(`TopBar: Container #${this.containerId} not found`);
+      return;
+    }
+
+    // Render the full top-bar structure
+    this.renderStructure(container);
+
+    // Get references to the containers
+    this.rightContainer = document.querySelector('.top-bar-right');
+    this.leftContainer = document.querySelector('.top-bar-left');
+
+    if (!this.rightContainer || !this.leftContainer) {
+      console.error('TopBar: Could not find top-bar containers');
       return;
     }
 
@@ -25,6 +40,25 @@ class TopBar {
     window.addEventListener('auth-state-changed', () => {
       this.render();
     });
+  }
+
+  /**
+   * Render the full top-bar HTML structure
+   */
+  renderStructure(container) {
+    container.innerHTML = `
+      <div class="top-bar">
+        <div class="top-bar-content">
+          <div class="top-bar-left"></div>
+          <div class="top-bar-right">
+            <button class="btn-login">
+              <i class="las la-user"></i>
+              <span>Login with Battle.net</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
   }
 
   render() {

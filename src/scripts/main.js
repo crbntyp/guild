@@ -3,6 +3,7 @@ import GuildRoster from './components/guild-roster.js';
 import GuildSearch from './components/guild-search.js';
 import BackgroundRotator from './components/background-rotator.js';
 import TopBar from './components/top-bar.js';
+import Footer from './components/footer.js';
 import config from './config.js';
 import { slugToFriendly } from './utils/helpers.js';
 
@@ -13,6 +14,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Initialize top bar (login)
   const topBar = new TopBar();
   await topBar.init();
+
+  // Initialize footer
+  const footer = new Footer();
+  footer.init();
 
   // Initialize background rotator
   const backgroundImages = [

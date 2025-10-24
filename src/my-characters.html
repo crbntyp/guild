@@ -11,33 +11,14 @@
     <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
-    <div class="top-bar">
-        <div class="top-bar-content">
-            <div class="top-bar-left"></div>
-            <div class="top-bar-right">
-                <button class="btn-login">
-                    <i class="las la-user"></i>
-                    <span>Login with Battle.net</span>
-                </button>
-            </div>
-        </div>
-    </div>
+    <div id="top-bar-root"></div>
 
     <div class="container">
         <main>
             <div id="my-characters-container"></div>
         </main>
 
-        <section class="credit">
-            <div class="logo">
-                <img src="img/logo.png" />
-                crbntyp
-            </div>
-        </section>
-
-        <footer class="footer">
-            <p>&copy; 2025 Powered by Battle.net API | Made with <i class="las la-heart"></i></p>
-        </footer>
+        <div id="footer-root"></div>
     </div>
 
     <script type="module" src="scripts/my-characters.js"></script>

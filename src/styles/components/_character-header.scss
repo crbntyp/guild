@@ -13,7 +13,8 @@
     object-fit: cover;
     border-radius: var(--border-radius);
     border: 3px solid var(--color-border);
-    background: var(--color-bg);
+    background: var(--class-bg-gradient, var(--color-bg));
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   }
 
   .character-title-info {
@@ -102,5 +103,21 @@
     strong {
       color: var(--color-text-light);
     }
+  }
+}
+
+.character-view-container{
+  height: calc(100vh - 60px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  background: var(--class-bg-gradient, transparent);
+  border-radius: var(--border-radius);
+  //border:1px solid white;
+
+  img{
+    width:95%;
+    filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.6));
   }
 }
