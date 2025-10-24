@@ -280,20 +280,18 @@ class GuildRoster {
 
       // If we have cached item levels and genders, skip the heavy API calls
       if (useCache && this.itemLevels.size > 0 && this.genders.size > 0) {
-        console.log('⚡ Using cached data, skipping API calls');
+        console.log('⚡ Using cached data, loading specs and visuals');
 
         // Update the DOM with cached data immediately
         this.updateItemLevelsInDOM();
         this.updateSpecsFromCache();
 
-        // Just load the visual icons, we already have the data
+        // Load icons and specs in parallel
         await Promise.all([
+          this.loadSpecIcons(), // Always load specs (fast with parallel requests)
           this.loadRaceFactionIcons(),
           this.loadCharacterAvatarsFromCache()
         ]);
-
-        // Note: Not refreshing specs from API since we have cached data
-        // Specs are cached for 1 hour and will refresh on next cache expiry
       } else {
         // No cache or forced refresh - do full load
         console.log('🔄 Full data fetch');
@@ -549,45 +547,20 @@ class GuildRoster {
 
   async loadSpecIcons() {
     const specPlaceholders = this.container.querySelectorAll('.spec-icon-placeholder');
+    console.log(`🔧 Loading specs for ${specPlaceholders.length} characters`);
 
-    // Limit concurrent requests to avoid overwhelming the API
-    const batchSize = 10; // Increased from 5 for faster loading
-    let successCount = 0;
-    let failCount = 0;
+    // Use individual loading pattern like my-characters page (no batching, all parallel)
+    await Promise.all(Array.from(specPlaceholders).map(async (placeholder) => {
+      const characterName = placeholder.dataset.character;
+      const realmSlug = placeholder.dataset.realm;
+      const card = placeholder.closest('.member-card');
 
-    for (let i = 0; i < specPlaceholders.length; i += batchSize) {
-      const batch = Array.from(specPlaceholders).slice(i, i + batchSize);
+      try {
+        const specs = await wowAPI.getCharacterSpecializations(realmSlug, characterName);
 
-      await Promise.all(batch.map(async (placeholder) => {
-        const characterName = placeholder.dataset.character;
-        const realmSlug = placeholder.dataset.realm;
-
-        const card = placeholder.closest('.member-card');
-        const specTextElement = card?.querySelector('.member-spec');
-
-        try {
-          const specs = await characterService.fetchCharacterSpecializations(realmSlug, characterName);
-
-          if (!specs || !specs.specializations) {
-            if (specTextElement) {
-              specTextElement.textContent = 'No spec';
-            }
-            failCount++;
-            return;
-          }
-
-          const activeSpec = characterService.getActiveSpec(specs);
-
-          if (!activeSpec || !activeSpec.specialization) {
-            if (specTextElement) {
-              specTextElement.textContent = 'No spec';
-            }
-            failCount++;
-            return;
-          }
-
-          const specId = activeSpec.specialization.id;
-          const specName = activeSpec.specialization.name;
+        if (specs?.active_specialization) {
+          const specId = specs.active_specialization.id;
+          const specName = specs.active_specialization.name;
           const heroTalentName = specs?.active_hero_talent_tree?.name;
           const specIconUrl = getSpecIconUrl(specId);
           const localSpecIconUrl = getLocalSpecIconUrl(specId);
@@ -600,21 +573,13 @@ class GuildRoster {
             heroTalentName
           });
 
+          // Update icon
           placeholder.title = specName;
           if (specIconUrl) {
             placeholder.innerHTML = `
-              <i class="las la-spinner la-spin loading-spinner"></i>
-              <img src="${specIconUrl}" alt="${specName}" class="icon-img"
-                   onload="if(this.previousElementSibling) this.previousElementSibling.style.display='none';"
-                   onerror="this.onerror=null; if(this.previousElementSibling) this.previousElementSibling.style.display='none'; this.src='${localSpecIconUrl}'; this.onerror=function() { this.style.display='none'; this.nextElementSibling.style.display='flex'; };" />
-              <i class="${getFallbackIcon('spec')}" style="display: none;"></i>
+              <img src="${specIconUrl}" alt="${specName}" class="icon-img" />
             `;
-          }
-
-          // Add spec text to the card
-          if (specTextElement) {
-            specTextElement.textContent = specName;
-            successCount++;
+            placeholder.classList.remove('spec-icon-placeholder');
           }
 
           // Add hero talent name if present
@@ -624,20 +589,17 @@ class GuildRoster {
               heroTalentElement.textContent = heroTalentName;
             }
           }
-        } catch (error) {
-          // Character might not exist or API error
-          if (specTextElement) {
-            specTextElement.textContent = 'No spec';
-          }
-          failCount++;
-        }
-      }));
 
-      // Small delay between batches (reduced for faster loading)
-      if (i + batchSize < specPlaceholders.length) {
-        await new Promise(resolve => setTimeout(resolve, 100));
+          console.log(`✅ Loaded spec for ${characterName}: ${specName}`);
+        } else {
+          console.log(`❌ No active specialization for ${characterName}`);
+        }
+      } catch (error) {
+        console.error(`Error loading spec for ${characterName}:`, error);
       }
-    }
+    }));
+
+    console.log('✅ All specs loaded');
   }
 
   async loadCharacterAvatars() {
