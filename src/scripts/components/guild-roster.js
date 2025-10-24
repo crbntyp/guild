@@ -409,7 +409,7 @@ class GuildRoster {
             img.onerror = () => {
               // Suppress 403 errors and use fallback image
               avatarPlaceholder.innerHTML = `
-                <img src="img/character-fallback.svg" alt="${characterName}" class="character-avatar-img" />
+                <img src="../img/character-fallback.svg" alt="${characterName}" class="character-avatar-img" />
                 ${memberHeaderHTML}
               `;
             };
@@ -419,7 +419,7 @@ class GuildRoster {
             const memberHeader = avatarPlaceholder.querySelector('.member-header');
             const memberHeaderHTML = memberHeader ? memberHeader.outerHTML : '';
             avatarPlaceholder.innerHTML = `
-              <img src="img/character-fallback.svg" alt="${characterName}" class="character-avatar-img" />
+              <img src="../img/character-fallback.svg" alt="${characterName}" class="character-avatar-img" />
               ${memberHeaderHTML}
             `;
           }
@@ -428,7 +428,7 @@ class GuildRoster {
           const memberHeader = avatarPlaceholder.querySelector('.member-header');
           const memberHeaderHTML = memberHeader ? memberHeader.outerHTML : '';
           avatarPlaceholder.innerHTML = `
-            <img src="img/character-fallback.svg" alt="${characterName}" class="character-avatar-img" />
+            <img src="../img/character-fallback.svg" alt="${characterName}" class="character-avatar-img" />
             ${memberHeaderHTML}
           `;
         }
@@ -692,7 +692,7 @@ class GuildRoster {
             img.onerror = (e) => {
               // Suppress 403 errors and use fallback image
               avatarPlaceholder.innerHTML = `
-                <img src="img/character-fallback.svg" alt="${characterName}" class="character-avatar-img" />
+                <img src="../img/character-fallback.svg" alt="${characterName}" class="character-avatar-img" />
                 ${memberHeaderHTML}
               `;
             };
@@ -702,7 +702,7 @@ class GuildRoster {
             const memberHeader = avatarPlaceholder.querySelector('.member-header');
             const memberHeaderHTML = memberHeader ? memberHeader.outerHTML : '';
             avatarPlaceholder.innerHTML = `
-              <img src="img/character-fallback.svg" alt="${characterName}" class="character-avatar-img" />
+              <img src="../img/character-fallback.svg" alt="${characterName}" class="character-avatar-img" />
               ${memberHeaderHTML}
             `;
             failCount++;
@@ -712,7 +712,7 @@ class GuildRoster {
           const memberHeader = avatarPlaceholder.querySelector('.member-header');
           const memberHeaderHTML = memberHeader ? memberHeader.outerHTML : '';
           avatarPlaceholder.innerHTML = `
-            <img src="img/character-fallback.svg" alt="${characterName}" class="character-avatar-img" />
+            <img src="../img/character-fallback.svg" alt="${characterName}" class="character-avatar-img" />
             ${memberHeaderHTML}
           `;
           failCount++;

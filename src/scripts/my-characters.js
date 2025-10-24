@@ -407,20 +407,20 @@ async function loadAvatar(card, character) {
         };
         img.onerror = () => {
           // Suppress 403 errors and use fallback image
-          placeholder.innerHTML = `<img src="img/character-fallback.svg" alt="${character.name}" class="character-avatar-img" />`;
+          placeholder.innerHTML = `<img src="../img/character-fallback.svg" alt="${character.name}" class="character-avatar-img" />`;
         };
         img.src = imageUrl;
       } else {
         // Use fallback image
-        placeholder.innerHTML = `<img src="img/character-fallback.svg" alt="${character.name}" class="character-avatar-img" />`;
+        placeholder.innerHTML = `<img src="../img/character-fallback.svg" alt="${character.name}" class="character-avatar-img" />`;
       }
     } else {
       // Use fallback image
-      placeholder.innerHTML = `<img src="img/character-fallback.svg" alt="${character.name}" class="character-avatar-img" />`;
+      placeholder.innerHTML = `<img src="../img/character-fallback.svg" alt="${character.name}" class="character-avatar-img" />`;
     }
   } catch (error) {
     // Suppress error and use fallback image
-    placeholder.innerHTML = `<img src="img/character-fallback.svg" alt="${character.name}" class="character-avatar-img" />`;
+    placeholder.innerHTML = `<img src="../img/character-fallback.svg" alt="${character.name}" class="character-avatar-img" />`;
   }
 }
 
