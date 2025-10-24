@@ -7,14 +7,27 @@ class TopBar {
   constructor() {
     this.rightContainer = document.querySelector('.top-bar-right');
     this.leftContainer = document.querySelector('.top-bar-left');
-    this.init();
+    this.isMobileMenuOpen = false;
   }
 
-  init() {
+  async init() {
     if (!this.rightContainer) {
       return;
     }
 
+    // Wait for initial auth check to complete
+    await authService.waitForAuthCheck();
+
+    // Render initial state
+    this.render();
+
+    // Listen for auth state changes
+    window.addEventListener('auth-state-changed', () => {
+      this.render();
+    });
+  }
+
+  render() {
     // Render navigation on left
     this.renderNavigation();
 
@@ -23,6 +36,32 @@ class TopBar {
       this.renderUserInfo();
     } else {
       this.renderLoginButton();
+    }
+
+    // Setup mobile menu toggle
+    this.setupMobileMenu();
+  }
+
+  setupMobileMenu() {
+    const hamburger = document.querySelector('.hamburger-menu');
+    const mobileNav = document.querySelector('.mobile-nav');
+
+    if (hamburger && mobileNav) {
+      hamburger.addEventListener('click', () => {
+        this.isMobileMenuOpen = !this.isMobileMenuOpen;
+        hamburger.classList.toggle('active');
+        mobileNav.classList.toggle('active');
+      });
+
+      // Close menu when clicking a link
+      const mobileLinks = mobileNav.querySelectorAll('.mobile-nav-link');
+      mobileLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          this.isMobileMenuOpen = false;
+          hamburger.classList.remove('active');
+          mobileNav.classList.remove('active');
+        });
+      });
     }
   }
 
@@ -35,9 +74,24 @@ class TopBar {
     const isAuthenticated = authService.isAuthenticated();
 
     this.leftContainer.innerHTML = `
+      <button class="hamburger-menu" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
       <nav class="top-bar-nav">
-        <a href="index.html" class="nav-link">Guild Finder</a>
-        ${isAuthenticated ? '<a href="my-characters.html" class="nav-link">My Characters</a>' : ''}
+        <a href="index.html" class="nav-link">
+          <i class="las la-search"></i>
+          <span>Guild Finder</span>
+        </a>
+        ${isAuthenticated ? '<a href="my-characters.html" class="nav-link"><i class="las la-user"></i><span>My Characters</span></a>' : ''}
+      </nav>
+      <nav class="mobile-nav">
+        <a href="index.html" class="mobile-nav-link">
+          <i class="las la-search"></i>
+          <span>Guild Finder</span>
+        </a>
+        ${isAuthenticated ? '<a href="my-characters.html" class="mobile-nav-link"><i class="las la-user"></i><span>My Characters</span></a>' : ''}
       </nav>
     `;
   }

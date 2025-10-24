@@ -31,4 +31,12 @@
   .class-filter {
     cursor: pointer;
   }
+
+  // Responsive styles for mobile (768px and below)
+  @media (max-width: 768px) {
+    #sort-dropdown-container,
+    #class-dropdown-container {
+      width: 100%;
+    }
+  }
 }

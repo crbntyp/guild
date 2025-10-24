@@ -12,8 +12,9 @@ import config from './config.js';
 console.log('⚡ Character Details Page initialized');
 
 // Initialize top bar (login)
-document.addEventListener('DOMContentLoaded', () => {
-  new TopBar();
+document.addEventListener('DOMContentLoaded', async () => {
+  const topBar = new TopBar();
+  await topBar.init();
 });
 
 // Race-specific background mapping

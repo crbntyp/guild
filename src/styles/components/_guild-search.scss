@@ -19,18 +19,19 @@
     height: 40px;
     padding: 4px 16px;
     background: transparent;
-    border: 1px solid white;
+    border: 0px solid white;
     border-radius: var(--border-radius);
     color: var(--color-text);
     font-family: 'Muli', sans-serif;
     font-size: 14px;
     letter-spacing: 1.5px;
     transition: var(--transition);
+    background: rgba(255, 255, 255, 0.05);
 
     &:focus {
       outline: none;
       border-color: var(--color-primary);
-      box-shadow: 0 0 0 3px rgba(0, 120, 255, 0.1);
+      box-shadow: 0 0 0 3px rgba(white, 0.1);
     }
 
     &::placeholder {
@@ -42,7 +43,7 @@
     flex: 1;
     max-width: 250px;
 
-    @media (max-width: 768px) {
+    @media (max-width: 386px) {
       max-width: 150px;
     }
   }
@@ -71,12 +72,13 @@
     padding: 4px 12px;
     height: 40px;
     background: transparent;
-    border: 1px solid white;
+    border: 0px solid white;
     border-radius: var(--border-radius);
     color: var(--color-text);
     font-family: 'Muli', sans-serif;
     font-size: 14px;
     letter-spacing: 1.5px;
+    background: rgba(255, 255, 255, 0.05);
     cursor: pointer;
     transition: var(--transition);
     user-select: none;
@@ -89,7 +91,7 @@
       appearance: none;
       width: 16px;
       height: 16px;
-      border: 2px solid var(--color-border);
+      border: 2px solid #0d7de8;
       border-radius: 50%;
       background: rgba(0, 0, 0, 0.5);
       cursor: pointer;
@@ -97,8 +99,11 @@
       position: relative;
 
       &:checked {
-        border-color: var(--color-primary);
-        background: var(--color-primary);
+        border-color: #0d7de8;
+        background: #0d7de8;
+        &:hover{
+          border-color: #0d7de8;
+        }
 
         &::after {
           content: '';
@@ -114,7 +119,7 @@
       }
 
       &:hover {
-        border-color: var(--color-primary);
+        border-color: #ffffff;
       }
     }
 
@@ -131,10 +136,10 @@
     gap: 6px;
     height: 40px;
     padding: 0 20px;
-    background: var(--color-primary);
-    border: 2px solid var(--color-primary);
+    background: #172329;
+    border: 1px solid #172329;
     border-radius: var(--border-radius);
-    color: #000;
+    color: white;
     font-family: 'Muli', sans-serif;
     font-size: 12px;
     font-weight: 700;
@@ -149,8 +154,8 @@
     }
 
     &:hover {
-      background: transparent;
-      color: var(--color-primary);
+      background: #1b2c34;
+      border-color: #1b2c34;
     }
 
     &:active {
@@ -158,7 +163,49 @@
     }
   }
 
-  @media (max-width: 768px) {
+  // Mobile breakpoint for very small screens (386px and below)
+  @media (max-width: 386px) {
+    height: auto;
+    flex-wrap: wrap;
+    padding: var(--spacing-sm);
+    gap: var(--spacing-xs);
+
+    .search-input {
+      max-width: 100%;
+      flex: 1 1 100%;
+    }
+
+    .search-select {
+      flex: 1 1 100%;
+
+      &.realm-select {
+        max-width: 100%;
+      }
+    }
+
+    .region-radio-group {
+      flex: 1;
+      gap: 4px;
+    }
+
+    .region-radio-label {
+      padding: 4px 8px;
+      font-size: 12px;
+
+      .region-radio-text {
+        font-size: 12px;
+      }
+    }
+
+    .btn-search {
+      flex: 0 0 auto;
+      padding: 0 12px;
+      font-size: 11px;
+    }
+  }
+
+  // Mobile breakpoint for small screens (387px to 413px)
+  @media (min-width: 387px) and (max-width: 413px) {
     height: auto;
     flex-wrap: wrap;
     padding: var(--spacing-sm);
@@ -173,8 +220,52 @@
       flex: 1 1 calc(50% - 4px);
     }
 
+    .region-radio-group {
+      flex: 1;
+    }
+
     .btn-search {
-      flex: 1 1 100%;
+      flex: 0 0 auto;
+    }
+  }
+
+  // Tablet breakpoint (414px to 768px) - keep all fields on one row
+  @media (min-width: 414px) and (max-width: 768px) {
+    height: auto;
+    padding: var(--spacing-sm);
+    gap: 6px;
+
+    .search-input {
+      max-width: none;
+      flex: 1;
+      min-width: 100px;
+    }
+
+    .search-select {
+      min-width: 80px;
+
+      &.realm-select {
+        flex: 1;
+        min-width: 120px;
+        max-width: 180px;
+      }
+    }
+
+    .region-radio-group {
+      gap: 4px;
+    }
+
+    .region-radio-label {
+      padding: 4px 8px;
+
+      .region-radio-text {
+        font-size: 13px;
+      }
+    }
+
+    .btn-search {
+      padding: 0 12px;
+      white-space: nowrap;
     }
   }
 }

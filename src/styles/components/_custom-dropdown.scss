@@ -158,4 +158,10 @@
       transform: translateY(0);
     }
   }
+
+  // Responsive styles for mobile (768px and below)
+  @media (max-width: 768px) {
+    width: 100%;
+    min-width: 100%;
+  }
 }

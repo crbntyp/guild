@@ -4,6 +4,8 @@
   background: rgba(26, 26, 26, 0.95);
   border-bottom: 1px solid var(--color-border);
   backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 9999;
 
   .top-bar-content {
     max-width: 1290px;
@@ -18,6 +20,7 @@
   .top-bar-left {
     display: flex;
     align-items: center;
+    gap: var(--spacing-md);
 
     .guild-name {
       font-size: 16px;
@@ -27,12 +30,54 @@
     }
   }
 
+  // Hamburger Menu Button (hidden on desktop)
+  .hamburger-menu {
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 24px;
+    height: 24px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 10001;
+    position: relative;
+
+    span {
+      width: 24px;
+      height: 2px;
+      background: var(--color-text);
+      border-radius: 2px;
+      transition: all 0.3s ease;
+      transform-origin: center;
+    }
+
+    &.active {
+      span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+      }
+
+      span:nth-child(2) {
+        opacity: 0;
+      }
+
+      span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+      }
+    }
+  }
+
+  // Desktop Navigation
   .top-bar-nav {
     display: flex;
     align-items: center;
     gap: var(--spacing-md);
 
     .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
       color: var(--color-text-light);
       font-size: 12px;
       font-weight: 600;
@@ -41,8 +86,62 @@
       transition: var(--transition);
       text-transform: uppercase;
 
+      i {
+        font-size: 16px;
+      }
+
       &:hover {
         color: var(--color-primary);
+      }
+    }
+  }
+
+  // Mobile Navigation (hidden on desktop)
+  .mobile-nav {
+    display: none;
+    position: fixed;
+    top: 50px;
+    left: 0;
+    width: 100%;
+    background: rgba(26, 26, 26, 0.98);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--color-border);
+    flex-direction: column;
+    padding: 8px 0;
+    z-index: 9998;
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+
+    &.active {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .mobile-nav-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--color-text-light);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+      text-decoration: none;
+      text-transform: uppercase;
+      padding: 10px 16px;
+      transition: var(--transition);
+      border-left: 2px solid transparent;
+
+      i {
+        font-size: 16px;
+      }
+
+      &:hover {
+        color: var(--color-primary);
+        background: rgba(255, 255, 255, 0.03);
+        border-left-color: var(--color-primary);
       }
     }
   }
@@ -51,6 +150,8 @@
     display: flex;
     align-items: center;
     gap: var(--spacing-sm);
+    position: relative;
+    z-index: 10000;
   }
 
   .btn-login {
@@ -141,6 +242,46 @@
 
       i {
         font-size: 14px;
+      }
+    }
+  }
+
+  // Responsive styles for mobile (767px and below)
+  @media (max-width: 767px) {
+    .hamburger-menu {
+      display: flex;
+    }
+
+    .top-bar-nav {
+      display: none;
+    }
+
+    .mobile-nav {
+      display: flex;
+    }
+
+    .top-bar-right {
+      justify-content: flex-end;
+    }
+
+    .btn-login {
+      span {
+        display: none;
+      }
+
+      i {
+        font-size: 18px;
+      }
+    }
+
+    .user-info {
+      .user-battletag {
+        display: none;
+      }
+
+      .btn-logout {
+        padding: 5px 8px;
+        font-size: 11px;
       }
     }
   }

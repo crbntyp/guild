@@ -11,7 +11,8 @@ console.log('⚡ Guild Site initialized');
 // Initialize everything when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
   // Initialize top bar (login)
-  new TopBar();
+  const topBar = new TopBar();
+  await topBar.init();
 
   // Initialize background rotator
   const backgroundImages = [

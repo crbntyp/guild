@@ -19,7 +19,8 @@ let classDropdown = null;
 // Initialize everything when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
   // Initialize top bar (login)
-  new TopBar();
+  const topBar = new TopBar();
+  await topBar.init();
 
   // Initialize background rotator
   const backgroundImages = [
@@ -183,7 +184,7 @@ function renderCharacters(characters) {
     <div class="guild-header">
       <h2 style="color: var(--color-primary);">${battleTag} Characters</h2>
       <div class="guild-header-subtitle">
-        <span>${characters.length} character${characters.length !== 1 ? 's' : ''}</span> found, some older unused characters will be suppressed.
+        <span>${characters.length} character${characters.length !== 1 ? 's' : ''} found.</span> Some older unused characters will be suppressed.
       </div>
     </div>
 

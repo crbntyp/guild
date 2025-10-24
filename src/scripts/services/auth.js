@@ -11,7 +11,14 @@ const API_PROXY_URL = 'https://guild-production.up.railway.app';
 class AuthService {
   constructor() {
     this.storageKey = 'bnet_auth';
-    this.checkAuthStatus();
+    this.authCheckPromise = this.checkAuthStatus();
+  }
+
+  /**
+   * Wait for initial auth check to complete
+   */
+  async waitForAuthCheck() {
+    return this.authCheckPromise;
   }
 
   /**
@@ -33,10 +40,9 @@ class AuthService {
       if (window.opener) {
         window.opener.postMessage({ type: 'bnet-auth-success' }, window.location.origin);
         window.close();
-      } else {
-        // Reload page to update UI
-        window.location.reload();
       }
+      // Note: On mobile/direct redirect, we don't dispatch event here
+      // The TopBar will render correctly after waitForAuthCheck() completes
     }
   }
 
@@ -81,7 +87,15 @@ class AuthService {
   }
 
   /**
-   * Initiate Battle.net OAuth login flow (popup window)
+   * Check if user is on mobile device
+   */
+  isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+           window.innerWidth <= 768;
+  }
+
+  /**
+   * Initiate Battle.net OAuth login flow (popup window on desktop, redirect on mobile)
    */
   login() {
     const authUrl = `${config.getOAuthUrl()}/authorize`;
@@ -96,7 +110,14 @@ class AuthService {
     console.log('📍 Redirect URI:', config.battlenet.redirectUri);
     console.log('🌐 Full OAuth URL:', `${authUrl}?${params.toString()}`);
 
-    // Open popup window
+    // On mobile, use full page redirect instead of popup
+    if (this.isMobileDevice()) {
+      console.log('📱 Mobile device detected, using redirect flow');
+      window.location.href = `${authUrl}?${params.toString()}`;
+      return;
+    }
+
+    // Desktop: Open popup window
     const width = 500;
     const height = 700;
     const left = window.screen.width / 2 - width / 2;
@@ -119,7 +140,8 @@ class AuthService {
       if (event.data?.type === 'bnet-auth-success') {
         console.log('✅ Auth success message received from popup');
         window.removeEventListener('message', messageHandler);
-        window.location.reload();
+        // Dispatch custom event instead of reloading page
+        window.dispatchEvent(new CustomEvent('auth-state-changed'));
       }
     };
     window.addEventListener('message', messageHandler);
@@ -130,9 +152,9 @@ class AuthService {
         if (popup.closed) {
           clearInterval(pollTimer);
           window.removeEventListener('message', messageHandler);
-          // Check if auth completed
+          // Check if auth completed and dispatch event
           if (this.isAuthenticated()) {
-            window.location.reload();
+            window.dispatchEvent(new CustomEvent('auth-state-changed'));
           }
         }
       } catch (e) {
@@ -180,7 +202,8 @@ class AuthService {
    */
   logout() {
     localStorage.removeItem(this.storageKey);
-    window.location.reload();
+    // Dispatch custom event instead of reloading page
+    window.dispatchEvent(new CustomEvent('auth-state-changed'));
   }
 
   /**
