@@ -185,9 +185,10 @@ export function getRaceIconUrl(raceId, gender = 'MALE') {
   }
 
   // Convert gender to lowercase string for URL lookup
-  // Supports: 'MALE'/'FEMALE', {type: 'MALE'}/{type: 'FEMALE'}, 0/1
+  // Supports: 'MALE'/'FEMALE', 'male'/'female', {type: 'MALE'}/{type: 'FEMALE'}, 0/1
   let genderStr = GENDER_MALE; // Default to male
-  if (gender?.type === 'FEMALE' || gender === 'FEMALE' || gender === 1) {
+  const genderUpper = typeof gender === 'string' ? gender.toUpperCase() : '';
+  if (gender?.type === 'FEMALE' || genderUpper === 'FEMALE' || gender === 1) {
     genderStr = GENDER_FEMALE;
   }
 
