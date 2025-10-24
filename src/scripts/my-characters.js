@@ -110,7 +110,6 @@ async function loadMyCharacters() {
         faction: {
           type: char.faction.type
         },
-        gender: char.gender, // Include gender data
         itemLevel: null // Will be fetched separately
       },
       rank: 0 // Not applicable for personal characters
@@ -441,12 +440,15 @@ async function loadIcons(card, character) {
     classIconElement.classList.remove('class-icon-placeholder');
   }
 
-  // Load race icon with correct gender
+  // Fetch gender from character profile API, then load race icon
   try {
-    // Get gender from character data (API returns { type: "MALE" } or { type: "FEMALE" })
+    const wowAPI = (await import('./api/wow-api.js')).default;
+    const profile = await wowAPI.getCharacterProfile(character.realm.slug, character.name);
+
     let gender = 'male'; // default
-    if (character.gender?.type) {
-      gender = character.gender.type.toLowerCase(); // Convert "MALE" to "male", "FEMALE" to "female"
+    if (profile?.gender?.type) {
+      gender = profile.gender.type.toLowerCase(); // Convert "MALE" to "male", "FEMALE" to "female"
+      console.log(`${character.name} gender: ${gender}`);
     }
 
     // Load race icon with correct gender
@@ -457,7 +459,7 @@ async function loadIcons(card, character) {
       raceIconElement.classList.remove('race-icon-placeholder');
     }
   } catch (error) {
-    console.error('Error loading race icon:', error);
+    console.error(`Error loading gender for ${character.name}:`, error);
     // Fallback to male
     const raceIconUrl = getRaceIconUrl(character.playable_race.id, 'male');
     const raceIconElement = card.querySelector('.race-icon-placeholder');
