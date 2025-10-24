@@ -272,6 +272,7 @@ class GuildRoster {
       </div>
 
       <div class="roster-controls">
+        ${this.renderMiniPagination(totalPages, filteredRoster.length, endIndex)}
         <div id="sort-dropdown-container"></div>
         <div id="class-dropdown-container"></div>
       </div>
@@ -288,6 +289,35 @@ class GuildRoster {
     this.attachEventListeners();
     this.attachPaginationListeners();
     this.loadAllIcons();
+  }
+
+  renderMiniPagination(totalPages, totalCharacters, endIndex) {
+    if (totalPages <= 1) return '';
+
+    const endChar = Math.min(endIndex, totalCharacters);
+
+    let miniPagination = '<div class="mini-pagination">';
+
+    // Previous button
+    if (this.currentPage > 1) {
+      miniPagination += `<button class="mini-pagination-btn" data-page="${this.currentPage - 1}"><i class="las la-angle-left"></i></button>`;
+    } else {
+      miniPagination += `<button class="mini-pagination-btn" disabled><i class="las la-angle-left"></i></button>`;
+    }
+
+    // Count display
+    miniPagination += `<span class="mini-pagination-count">${endChar}/${totalCharacters}</span>`;
+
+    // Next button
+    if (this.currentPage < totalPages) {
+      miniPagination += `<button class="mini-pagination-btn" data-page="${this.currentPage + 1}"><i class="las la-angle-right"></i></button>`;
+    } else {
+      miniPagination += `<button class="mini-pagination-btn" disabled><i class="las la-angle-right"></i></button>`;
+    }
+
+    miniPagination += '</div>';
+
+    return miniPagination;
   }
 
   renderPagination(totalPages, totalCharacters) {
@@ -345,7 +375,8 @@ class GuildRoster {
   }
 
   attachPaginationListeners() {
-    const paginationButtons = this.container.querySelectorAll('.pagination-btn');
+    // Handle both main pagination and mini pagination buttons
+    const paginationButtons = this.container.querySelectorAll('.pagination-btn, .mini-pagination-btn');
     paginationButtons.forEach(button => {
       button.addEventListener('click', (e) => {
         const page = parseInt(e.currentTarget.dataset.page);
