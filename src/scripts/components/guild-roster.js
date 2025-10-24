@@ -236,18 +236,25 @@ class GuildRoster {
 
     const guildName = slugToFriendly(config.guild.name);
 
+    // Calculate filtered character count
+    const filteredRoster = this.roster.filter(member => {
+      const realmSlug = member.character.realm?.slug || config.guild.realmSlug;
+      const characterKey = this.getCharacterKey(member.character.name, realmSlug);
+      return !this.invalidCharacters.has(characterKey);
+    });
+
     // Clear old content to remove event listeners
     this.container.innerHTML = '';
 
     // Build new content
     const content = `
       <div class="guild-header">
-        <span class="guild-count">${characters.length} Champions</span>
+        <span class="guild-count">${filteredRoster.length} Champions</span>
         <h2>
           ${guildName}
         </h2>
         <div class="guild-header-subtitle">
-        <span>${characters.length} character${characters.length !== 1 ? 's' : ''}</span> found, some older unused characters will be suppressed.
+        <span>${filteredRoster.length} character${filteredRoster.length !== 1 ? 's' : ''}</span> found, some older unused characters will be suppressed.
       </div>
       </div>
 
@@ -257,14 +264,7 @@ class GuildRoster {
       </div>
 
       <div class="roster-grid">
-        ${this.roster
-          .filter(member => {
-            const realmSlug = member.character.realm?.slug || config.guild.realmSlug;
-            const characterKey = this.getCharacterKey(member.character.name, realmSlug);
-            return !this.invalidCharacters.has(characterKey);
-          })
-          .map(member => this.renderMemberCard(member))
-          .join('')}
+        ${filteredRoster.map(member => this.renderMemberCard(member)).join('')}
       </div>
     `;
 
