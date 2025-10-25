@@ -135,13 +135,10 @@ class TopBar {
         </a>
         ${isAuthenticated ? `<a href="my-characters.html" class="nav-link${getActiveClass('my-characters.html')}"><i class="las la-user"></i><span>My Characters</span></a>` : ''}
         ${isAuthenticated ? `<a href="my-todos.html" class="nav-link${getActiveClass('my-todos.html')}"><i class="las la-tasks"></i><span>My Todos</span></a>` : ''}
+        ${isAuthenticated ? `<a href="my-youtube.html" class="nav-link${getActiveClass('my-youtube.html')}"><i class="lab la-youtube"></i><span>My YouTube</span></a>` : ''}
         <a href="gallery.html" class="nav-link${getActiveClass('gallery.html')}">
           <i class="las la-images"></i>
           <span>Gallery</span>
-        </a>
-        <a href="downloads.html" class="nav-link${getActiveClass('downloads.html')}">
-          <i class="las la-download"></i>
-          <span>Downloads</span>
         </a>
       </nav>
       <nav class="mobile-nav">
@@ -151,13 +148,10 @@ class TopBar {
         </a>
         ${isAuthenticated ? `<a href="my-characters.html" class="mobile-nav-link${getActiveClass('my-characters.html')}"><i class="las la-user"></i><span>My Characters</span></a>` : ''}
         ${isAuthenticated ? `<a href="my-todos.html" class="mobile-nav-link${getActiveClass('my-todos.html')}"><i class="las la-tasks"></i><span>My Todos</span></a>` : ''}
+        ${isAuthenticated ? `<a href="my-youtube.html" class="mobile-nav-link${getActiveClass('my-youtube.html')}"><i class="lab la-youtube"></i><span>My YouTube</span></a>` : ''}
         <a href="gallery.html" class="mobile-nav-link${getActiveClass('gallery.html')}">
           <i class="las la-images"></i>
           <span>Gallery</span>
-        </a>
-        <a href="downloads.html" class="mobile-nav-link${getActiveClass('downloads.html')}">
-          <i class="las la-download"></i>
-          <span>Downloads</span>
         </a>
       </nav>
     `;
