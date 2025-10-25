@@ -1,0 +1,7 @@
+# Don't deploy these to Railway
+node_modules/
+dist/
+src/
+.git/
+.DS_Store
+*.log

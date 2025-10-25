@@ -1,7 +1,8 @@
 // Character Details Page
-import BackgroundRotator from './components/background-rotator.js';
 import characterService from './services/character-service.js';
 import guildService from './services/guild-service.js';
+import TopBar from './components/top-bar.js';
+import Footer from './components/footer.js';
 import { getClassColor, getClassName } from './utils/wow-constants.js';
 import { formatNumber } from './utils/helpers.js';
 import { getItemQualityColor, getSlotName, getSlotIcon } from './utils/item-quality.js';
@@ -11,19 +12,63 @@ import config from './config.js';
 
 console.log('⚡ Character Details Page initialized');
 
+// Initialize top bar (login) and footer
+document.addEventListener('DOMContentLoaded', async () => {
+  const topBar = new TopBar();
+  await topBar.init();
+
+  const footer = new Footer();
+  footer.init();
+});
+
+// Race-specific background mapping
+const raceBackgrounds = {
+  'human': '../img/bgs/bg-goldshire.jpg',
+  'dwarf': '../img/bgs/bg-dmorogh.jpg',
+  'night elf': '../img/bgs/bg-shadowglen.jpg',
+  'gnome': '../img/bgs/bg-dmorogh.jpg',
+  'draenei': '../img/bgs/bg-azuremyst.jpg',
+  'worgen': '../img/bgs/bg-gilneas.jpg',
+  'orc': '../img/bgs/bg-durotar.jpg',
+  'undead': '../img/bgs/bg-tglades.jpg',
+  'tauren': '../img/bgs/bg-mulgore.jpg',
+  'troll': '../img/bgs/bg-echoisles.jpg',
+  'blood elf': '../img/bgs/bg-eversong.jpg',
+  'goblin': '../img/bgs/bg-kezan.jpg',
+  'pandaren': '../img/bgs/bg-wisle.jpg',
+  'nightborne': '../img/bgs/bg-suramar.jpg',
+  'void elf': '../img/bgs/bg-telogrus.jpg',
+  'lightforged draenei': '../img/bgs/bg-vindicaar.jpg',
+  'dark iron dwarf': '../img/bgs/bg-brd.jpg',
+  'kul tiran': '../img/bgs/bg-boralus.jpg',
+  'mechagnome': '../img/bgs/bg-gregan.jpg',
+  'highmountain tauren': '../img/bgs/bg-hmountain.jpg',
+  'mag\'har orc': '../img/bgs/bg-nagrand.jpg',
+  'zandalari troll': '../img/bgs/bg-zuldazar.jpg',
+  'vulpera': '../img/bgs/bg-voldun.jpg',
+  'dracthyr': '../img/bgs/bg-freach.jpg',
+  'default': '../img/bgs/bg-tglades.jpg'
+};
+
+function setRaceBackground(raceName) {
+  const detailsPage = document.querySelector('.character-details-page');
+  if (!detailsPage) {
+    console.error('Character details page element not found');
+    return;
+  }
+
+  const backgroundImage = raceBackgrounds[raceName] || raceBackgrounds['default'];
+  console.log(`Setting background for race: ${raceName} -> ${backgroundImage}`);
+
+  // Set data attribute for CSS to use
+  detailsPage.setAttribute('data-race', raceName);
+  detailsPage.style.setProperty('--race-background', `url('${backgroundImage}')`);
+
+  console.log('Background set, CSS variable:', getComputedStyle(detailsPage).getPropertyValue('--race-background'));
+}
+
 // Initialize everything when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
-  // Initialize background rotator
-  const backgroundImages = [
-    'img/bgs/bg-faction.jpg',
-    'img/bgs/bg-mulgore.jpg',
-    'img/bgs/bg-tglades.jpg',
-    'img/bgs/bg-eversong.jpg'
-  ];
-
-  const bgRotator = new BackgroundRotator(backgroundImages, 8000, 2000);
-  bgRotator.init();
-
   // Get character info from URL parameters
   const urlParams = new URLSearchParams(window.location.search);
   const characterName = urlParams.get('character');
@@ -69,35 +114,83 @@ function renderCharacterDetails(container, data, realmSlug) {
     return;
   }
 
+  console.log('🔍 Full character profile data:', profile);
+  console.log('🔍 Profile ID field:', profile.id);
+
   const classColor = getClassColor(profile.character_class.id);
   const className = getClassName(profile.character_class.id);
   const itemLevel = profile?.equipped_item_level || profile?.average_item_level || 'N/A';
   const activeSpec = specs ? characterService.getActiveSpec(specs) : null;
 
+  // Get hero talent name
+  const heroTalentName = specs?.active_hero_talent_tree?.name || null;
+
   // Get different media assets
+  console.log('📸 Character Media Assets:', media?.assets);
+  console.log('📸 Available asset keys:', media?.assets?.map(a => a.key));
+
   const avatar = media?.assets?.find(asset => asset.key === 'avatar')?.value || '';
   const inset = media?.assets?.find(asset => asset.key === 'inset')?.value || '';
   const mainRaw = media?.assets?.find(asset => asset.key === 'main-raw')?.value || '';
   const main = media?.assets?.find(asset => asset.key === 'main')?.value || '';
   const render = mainRaw || main || inset || avatar;
 
+  console.log('📸 Using render:', render);
+
   const gender = profile.gender?.name || profile.gender?.type || 'Unknown';
   const equipmentHTML = renderEquipment(equipment);
   const carouselHTML = renderCharacterCarousel(profile.name, realmSlug);
 
+  // Set race-specific background
+  const raceName = profile.race?.name?.toLowerCase() || 'default';
+  setRaceBackground(raceName);
+
+  // Set class-themed gradient for character render background
+  const classGradient = `radial-gradient(ellipse at center, ${classColor}40 0%, ${classColor}20 40%, ${classColor}05 70%, transparent 100%)`;
+
   container.innerHTML = `
     <div class="character-details-top">
-      <div class="character-details-wrapper">
+      <div class="character-header">
+        <h2 style="color: ${classColor}">${profile.name}</h2>
+      </div>
+      <div class="character-view-container" style="--class-bg-gradient: ${classGradient}; background-image: url(${render}); background-position: center center; background-repeat: no-repeat;">
+        <div>
+          
+          <span class="meta-badge">
+            ${profile.race.name} ${gender} ${activeSpec.specialization?.name || 'N/A'} ${className} 
+          </span>
+          <div style="text-transform: uppercase; font-size: 10px;">${heroTalentName || 'to low level'}</div>
+          <div class="character-detail-icons" style="display: flex;">
+                  <div class="detail-icon-wrapper">
+                    <i class="las la-spinner la-spin loading-spinner"></i>
+                  </div>
+                  <div class="detail-icon-wrapper">
+                    <i class="las la-spinner la-spin loading-spinner"></i>
+                  </div>
+                  <div class="detail-icon-wrapper">
+                    <i class="las la-spinner la-spin loading-spinner"></i>
+                  </div>
+                  <div class="detail-icon-wrapper">
+                    <i class="las la-spinner la-spin loading-spinner"></i>
+                  </div>
+                </div>
+        </div>
+       <div>${equipmentHTML}</div>
+      </div>
+      <div class="character-details-wrapper" style="display: none;">
         <div class="character-details-left">
           <div class="character-details">
             <div class="character-header-section">
-              ${render ? `<img src="${render}" alt="${profile.name}" class="character-render" />` : ''}
+              ${render ? `<img src="${render}" alt="${profile.name}" class="character-render" style="--class-bg-gradient: ${classGradient}" onerror="this.style.display='none';" />` : ''}
               <div class="character-title-info">
                 <h2 style="color: ${classColor}">${profile.name}</h2>
                 <div class="character-meta">
                   <span class="meta-badge" style="background-color: ${classColor}20; color: ${classColor}">
                     ${className}
                   </span>
+                  ${heroTalentName ? `<span class="meta-badge" style="background-color: rgba(255, 215, 0, 0.2); color: #FFD700; border: 1px solid #FFD700;">
+                    <i class="las la-star"></i> 
+                  </span>` : ''}
                   <span class="meta-badge">${profile.race.name}</span>
                   <span class="meta-badge">${gender}</span>
                   ${profile.realm?.name ? `<span class="meta-badge" style="background-color: rgba(255, 255, 255, 0.1);"><i class="las la-server"></i> ${profile.realm.name}</span>` : ''}
@@ -133,7 +226,7 @@ function renderCharacterDetails(container, data, realmSlug) {
         </div>
       </div>
     </div>
-    <div class="character-carousel-container">
+    <div class="character-carousel-container" style="display:none;">
       <button class="carousel-nav carousel-nav-left" aria-label="Scroll left">
         <i class="las la-chevron-left"></i>
       </button>
@@ -149,8 +242,7 @@ function renderCharacterDetails(container, data, realmSlug) {
   // Load character detail icons
   loadCharacterDetailIcons(profile, activeSpec);
 
-  // Attach tooltip events
-  attachTooltipEvents();
+  // Wowhead tooltips are automatically initialized by their script
 
   // Attach carousel events
   attachCarouselEvents();
@@ -200,24 +292,28 @@ function renderEquipment(equipment) {
     const itemId = item.item?.id;
     const mediaHref = item.media?.key?.href;
 
-    // Prepare tooltip data
-    const tooltipData = buildItemTooltipData(item, qualityColor);
+    // Build Wowhead data attributes
+    const wowheadData = buildWowheadData(item);
+    const wowheadUrl = itemId ? `https://www.wowhead.com/item=${itemId}` : '#';
 
     return `
-      <div class="equipment-item" style="border-left: 3px solid ${qualityColor}"
-           data-item-id="${itemId || ''}"
-           data-media-href="${mediaHref || ''}"
-           data-tooltip='${JSON.stringify(tooltipData).replace(/'/g, "&apos;")}'>
-        <div class="item-icon-wrapper" style="border: 2px solid ${qualityColor}">
+      <a href="${wowheadUrl}"
+         class="equipment-item"
+         data-item-id="${itemId || ''}"
+         data-media-href="${mediaHref || ''}"
+         ${wowheadData ? `data-wowhead="${wowheadData}"` : ''}
+         target="_blank"
+         rel="noopener noreferrer">
+        <div class="item-icon-wrapper">
           ${itemThumbnail ? `
             <img src="${itemThumbnail}" alt="${itemName}" class="item-thumbnail"
                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-            <div class="item-icon-fallback" style="display: none;">
+            <div class="item-icon-fallback">
               <i class="${slotIcon}"></i>
             </div>
           ` : `
-            <div class="item-thumbnail-loader" style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; background: var(--color-bg-secondary);">
-              <i class="${slotIcon}" style="font-size: 1.75rem; color: var(--color-text-light);"></i>
+            <div class="item-thumbnail-loader">
+              <i class="${slotIcon}"></i>
             </div>
           `}
         </div>
@@ -225,10 +321,10 @@ function renderEquipment(equipment) {
           <span>${slotName}</span>
         </div>
         <div class="equipment-details">
-          <div class="item-name" style="color: ${qualityColor}">${itemName}</div>
+          <div class="item-name">${itemName}</div>
           <div class="item-level">iLvl ${itemLevel}</div>
         </div>
-      </div>
+      </a>
     `;
   }).join('');
 
@@ -316,146 +412,50 @@ function renderCharacterCarousel(currentCharacterName, currentRealmSlug) {
 }
 
 // Helper functions (copied from guild-roster.js)
-function buildItemTooltipData(item, qualityColor) {
-  const data = {
-    name: item.name || 'Unknown Item',
-    quality: item.quality?.name || 'Common',
-    qualityColor: qualityColor,
-    itemLevel: item.level?.value || 0,
-    slot: item.slot?.name || item.slot?.type || 'Unknown',
-    stats: [],
-    sockets: []
-  };
+/**
+ * Build Wowhead data-wowhead attribute string
+ * Includes gems, enchants, item level, bonus IDs, etc.
+ */
+function buildWowheadData(item) {
+  const params = [];
 
-  if (item.stats && Array.isArray(item.stats)) {
-    data.stats = item.stats.map(stat => ({
-      type: stat.type?.name || stat.display?.display_string || 'Unknown Stat',
-      value: stat.value || stat.display?.value || 0
-    }));
+  // Add item level if available
+  if (item.level?.value) {
+    params.push(`ilvl=${item.level.value}`);
   }
 
+  // Add enchantments
+  if (item.enchantments && Array.isArray(item.enchantments)) {
+    item.enchantments.forEach(ench => {
+      if (ench.enchantment_id) {
+        params.push(`ench=${ench.enchantment_id}`);
+      }
+    });
+  }
+
+  // Add gems/sockets
   if (item.sockets && Array.isArray(item.sockets)) {
-    data.sockets = item.sockets.map(socket => ({
-      type: socket.socket_type?.name || 'Socket',
-      item: socket.item?.name || null
-    }));
+    const gemIds = item.sockets
+      .map(socket => socket.item?.id)
+      .filter(id => id)
+      .join(':');
+    if (gemIds) {
+      params.push(`gems=${gemIds}`);
+    }
   }
 
-  if (item.durability) {
-    data.durability = item.durability;
+  // Add bonus IDs (for difficulty, warforged, etc.)
+  if (item.bonus_list && Array.isArray(item.bonus_list)) {
+    const bonusIds = item.bonus_list.join(':');
+    if (bonusIds) {
+      params.push(`bonus=${bonusIds}`);
+    }
   }
 
-  if (item.requirements?.level) {
-    data.requiredLevel = item.requirements.level.display_string || item.requirements.level.value;
-  }
-
-  if (item.item_class) {
-    data.itemClass = item.item_class.name;
-  }
-  if (item.item_subclass) {
-    data.itemSubclass = item.item_subclass.name;
-  }
-
-  if (item.binding?.name) {
-    data.binding = item.binding.name;
-  }
-
-  return data;
+  return params.length > 0 ? params.join('&') : '';
 }
 
-function attachTooltipEvents() {
-  const equipmentItems = document.querySelectorAll('.equipment-item[data-tooltip]');
-  let tooltipElement = null;
-
-  equipmentItems.forEach(item => {
-    item.addEventListener('mouseenter', (e) => {
-      const tooltipData = JSON.parse(item.dataset.tooltip);
-      tooltipElement = createTooltip(tooltipData);
-      document.body.appendChild(tooltipElement);
-      positionTooltip(tooltipElement, e);
-    });
-
-    item.addEventListener('mousemove', (e) => {
-      if (tooltipElement) {
-        positionTooltip(tooltipElement, e);
-      }
-    });
-
-    item.addEventListener('mouseleave', () => {
-      if (tooltipElement) {
-        tooltipElement.remove();
-        tooltipElement = null;
-      }
-    });
-  });
-}
-
-function createTooltip(data) {
-  const tooltip = document.createElement('div');
-  tooltip.className = 'item-tooltip';
-  tooltip.style.borderColor = data.qualityColor;
-
-  let statsHTML = '';
-  if (data.stats.length > 0) {
-    statsHTML = '<div class="tooltip-stats">' +
-      data.stats.map(stat => `<div class="tooltip-stat">+${stat.value} ${stat.type}</div>`).join('') +
-      '</div>';
-  }
-
-  let socketsHTML = '';
-  if (data.sockets.length > 0) {
-    socketsHTML = '<div class="tooltip-sockets">' +
-      data.sockets.map(socket => `<div class="tooltip-socket"><i class="las la-circle"></i> ${socket.item || socket.type}</div>`).join('') +
-      '</div>';
-  }
-
-  let metaHTML = '';
-  if (data.binding || data.itemClass || data.requiredLevel) {
-    const metaParts = [];
-    if (data.binding) metaParts.push(data.binding);
-    if (data.itemClass) metaParts.push(data.itemClass);
-    if (data.itemSubclass) metaParts.push(data.itemSubclass);
-    if (data.requiredLevel) metaParts.push(`Requires Level ${data.requiredLevel}`);
-
-    metaHTML = '<div class="tooltip-meta">' +
-      metaParts.map(part => `<div>${part}</div>`).join('') +
-      '</div>';
-  }
-
-  tooltip.innerHTML = `
-    <div class="tooltip-header">
-      <div class="tooltip-name" style="color: ${data.qualityColor}">${data.name}</div>
-      <div class="tooltip-slot">${data.slot}</div>
-    </div>
-    <div class="tooltip-ilvl">Item Level ${data.itemLevel}</div>
-    ${metaHTML}
-    ${statsHTML}
-    ${socketsHTML}
-  `;
-
-  return tooltip;
-}
-
-function positionTooltip(tooltip, event) {
-  const offset = 15;
-  let x = event.clientX + offset;
-  let y = event.clientY + offset;
-
-  const tooltipRect = tooltip.getBoundingClientRect();
-  const viewportWidth = window.innerWidth;
-  const viewportHeight = window.innerHeight;
-
-  if (x + tooltipRect.width > viewportWidth) {
-    x = event.clientX - tooltipRect.width - offset;
-  }
-
-  if (y + tooltipRect.height > viewportHeight) {
-    y = event.clientY - tooltipRect.height - offset;
-  }
-
-  tooltip.style.left = `${x}px`;
-  tooltip.style.top = `${y}px`;
-}
+// Custom tooltip functions removed - now using Wowhead tooltips
 
 function loadCharacterDetailIcons(profile, activeSpec) {
   const iconContainer = document.querySelector('.character-detail-icons');

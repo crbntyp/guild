@@ -1,0 +1,166 @@
+// Member Card Component
+.member-card {
+  background: rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  min-width: 200px;
+  border-radius: 10px;
+  backdrop-filter: blur(2px);
+  @media (max-width: 650px) {
+    min-width: 150px;
+  }
+
+  .member-level{
+    position: absolute;
+    top:10px;
+    z-index: 10;
+    height: 30px;
+    font-size: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 20px;
+    width: 100%;
+    .member-ilvl{
+      display: inline-flex;
+      margin-left: 5px;
+    }
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    border-color: var(--color-primary);
+  }
+
+  .character-avatar-placeholder {
+
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    border-radius: 10px 10px 0px 0px;
+
+    .loading-spinner {
+      font-size: 24px;
+      color: var(--color-primary);
+      position: absolute;
+      z-index: 1;
+    }
+
+    .character-avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      position: relative;
+      z-index: 2;
+      border-radius: 10px 10px 0px 0px;
+    }
+  }
+
+  .member-header {
+    padding: 5px 10px;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 100%;
+    flex-direction: column;
+
+    .member-name {
+      font-size: 14px;
+      font-weight: 500;
+      text-align: center;
+    }
+    .member-hero-talent {
+      font-size: 9px;
+      text-align: center;
+      text-transform: uppercase;
+    }
+  }
+
+  .member-details {
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+
+    .member-detail-row {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+
+      .member-icon {
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        flex-shrink: 0;
+        border-radius: 50%;
+
+        .icon-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+          position: absolute;
+          top: 0;
+          left: 0;
+        }
+
+        i {
+          font-size: 14px;
+          color: var(--color-text);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: absolute;
+        }
+
+        .loading-spinner {
+          font-size: 16px;
+          color: var(--color-primary);
+        }
+      }
+    }
+
+    .member-class,
+    .member-race,
+    .member-spec,
+    .member-faction,
+    .member-realm,
+    .member-rank,
+
+    .member-class {
+      font-weight: 600;
+      color: var(--color-text);
+    }
+  }
+
+  .member-realm-badge-container {
+    display: flex;
+    justify-content: center;
+    padding-bottom: 10px;
+  }
+
+  .member-realm-badge {
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    color: var(--color-text-light);
+    text-transform: capitalize;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    z-index: 10;
+  }
+}

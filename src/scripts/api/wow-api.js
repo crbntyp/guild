@@ -110,8 +110,8 @@ class WoWAPI {
       });
       return data;
     } catch (error) {
-      // Don't log 404s - they're expected for characters that don't exist
-      if (error.status !== 404) {
+      // Don't log 404s or 403s - they're expected for characters that don't exist or have privacy settings
+      if (error.status !== 404 && error.status !== 403) {
         console.error(`Error fetching character media for ${characterName}:`, error);
       }
       throw error;

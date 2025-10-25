@@ -1,0 +1,122 @@
+// Equipment Component
+.character-equipment {
+  text-align: left;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  h3 {
+    color: var(--color-text);
+    margin-bottom: var(--spacing-md);
+    font-size: 24px;
+    text-align: center;
+  }
+
+  .equipment-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    flex: 1;
+    overflow-y: auto;
+    //padding-right: var(--spacing-xs);
+    align-content: start;
+
+    // Custom scrollbar
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: var(--color-bg);
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--color-border);
+      border-radius: 4px;
+
+      &:hover {
+        background: var(--color-primary);
+      }
+    }
+  }
+
+  .equipment-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: var(--transition);
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+
+    &:hover {
+      border-color: var(--color-primary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .item-icon-wrapper {
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+      position: relative;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+
+      .item-thumbnail {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      .item-icon-fallback {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--color-bg-secondary);
+
+        i {
+          font-size: 28px;
+          color: var(--color-text-light);
+        }
+      }
+    }
+
+    .equipment-slot {
+      color: var(--color-text-light);
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .equipment-details {
+      width: 100%;
+
+      .item-name {
+        font-weight: 600;
+        font-size: 12px;
+        margin-bottom: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: none;
+      }
+
+      .item-level {
+        font-size: 11px;
+        color: var(--color-text-light);
+        display: none;
+      }
+    }
+  }
+
+  .no-equipment {
+    text-align: center;
+    padding: var(--spacing-lg);
+    color: var(--color-text-light);
+  }
+}

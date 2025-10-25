@@ -7,6 +7,7 @@ import { slugToFriendly, formatNumber } from '../utils/helpers.js';
 import { getItemQualityColor, getSlotName, getSlotIcon } from '../utils/item-quality.js';
 import { getClassIconUrl, getLocalClassIconUrl, getRaceIconUrl, getLocalRaceIconUrl, getFactionIconUrl, getLocalFactionIconUrl, getSpecIconUrl, getLocalSpecIconUrl, getFallbackIcon } from '../utils/wow-icons.js';
 import config from '../config.js';
+import CustomDropdown from './custom-dropdown.js';
 
 class GuildRoster {
   constructor(containerId) {
@@ -18,6 +19,13 @@ class GuildRoster {
     this.itemLevels = new Map(); // Store item levels for sorting
     this.genders = new Map(); // Store character genders
     this.invalidCharacters = new Set(); // Track characters that return 404
+    this.characterSpecs = new Map(); // Store character specs
+    this.sortDropdown = null; // Custom dropdown for sorting
+    this.classDropdown = null; // Custom dropdown for class filter
+
+    // Pagination
+    this.currentPage = 1;
+    this.itemsPerPage = 50;
   }
 
   // Helper to create unique character key (name + realm)
@@ -31,21 +39,115 @@ class GuildRoster {
       return;
     }
 
-    this.showLoading();
+    // Generate cache key for this guild's enriched data
+    const enrichedCacheKey = `enriched-roster:${config.guild.realmSlug}:${config.guild.nameSlug}`;
 
+    // Check if we have cached enriched data
+    const cachedEnrichedData = this.getEnrichedDataFromCache(enrichedCacheKey);
+
+    // If we have cached data, load it immediately without showing loading screen
+    if (cachedEnrichedData) {
+      console.log('⚡ Fast loading from cache');
+
+      try {
+        await guildService.fetchGuildRoster();
+
+        // Restore cached enriched data BEFORE getting roster
+        this.itemLevels = cachedEnrichedData.itemLevels;
+        this.genders = cachedEnrichedData.genders;
+        this.invalidCharacters = cachedEnrichedData.invalidCharacters;
+        this.characterSpecs = cachedEnrichedData.characterSpecs || new Map();
+
+        // Get roster with proper sorting (use name as base for ilvl sorting)
+        this.roster = guildService.getRosterMembers({
+          sortBy: this.sortBy === 'ilvl' ? 'name' : this.sortBy
+        });
+
+        // Sort by ilvl if needed (now that we have cached item levels)
+        if (this.sortBy === 'ilvl' && this.itemLevels.size > 0) {
+          this.roster.sort((a, b) => {
+            const realmA = a.character.realm?.slug || config.guild.realmSlug;
+            const realmB = b.character.realm?.slug || config.guild.realmSlug;
+            const keyA = this.getCharacterKey(a.character.name, realmA);
+            const keyB = this.getCharacterKey(b.character.name, realmB);
+            const ilvlA = this.itemLevels.get(keyA) || 0;
+            const ilvlB = this.itemLevels.get(keyB) || 0;
+            return ilvlB - ilvlA; // Descending order (highest ilvl first)
+          });
+        }
+
+        // Render immediately with cached data
+        this.render();
+
+        // Update data in background (non-blocking)
+        this.loadAllIcons().then(() => {
+          this.saveEnrichedDataToCache(enrichedCacheKey);
+        });
+
+      } catch (error) {
+        this.showError(error.message);
+      }
+    } else {
+      // No cache, show loading screen
+      console.log('🔄 First time loading, fetching all data');
+      this.showLoading();
+
+      try {
+        await guildService.fetchGuildRoster();
+        this.roster = guildService.getRosterMembers({
+          sortBy: this.sortBy
+        });
+
+        this.render();
+
+        // Load all data and cache it
+        await this.loadAllIcons();
+        this.saveEnrichedDataToCache(enrichedCacheKey);
+      } catch (error) {
+        this.showError(error.message);
+      }
+    }
+  }
+
+  getEnrichedDataFromCache(cacheKey) {
     try {
-      await guildService.fetchGuildRoster();
-      // Get all characters
-      this.roster = guildService.getRosterMembers({
-        sortBy: this.sortBy
-      });
+      const cached = localStorage.getItem(cacheKey);
+      if (!cached) return null;
 
-      // Fetch character details for spec icons
-      await this.enrichRosterWithSpecs();
+      const data = JSON.parse(cached);
+      const age = Date.now() - data.timestamp;
 
-      this.render();
+      // Cache for 1 hour
+      if (age < 3600000) {
+        return {
+          itemLevels: new Map(data.itemLevels),
+          genders: new Map(data.genders),
+          invalidCharacters: new Set(data.invalidCharacters),
+          characterSpecs: new Map(data.characterSpecs || [])
+        };
+      }
+
+      localStorage.removeItem(cacheKey);
+      return null;
     } catch (error) {
-      this.showError(error.message);
+      console.error('Error reading enriched cache:', error);
+      return null;
+    }
+  }
+
+  saveEnrichedDataToCache(cacheKey) {
+    try {
+      const data = {
+        itemLevels: Array.from(this.itemLevels.entries()),
+        genders: Array.from(this.genders.entries()),
+        invalidCharacters: Array.from(this.invalidCharacters),
+        characterSpecs: Array.from(this.characterSpecs.entries()),
+        timestamp: Date.now()
+      };
+      localStorage.setItem(cacheKey, JSON.stringify(data));
+      console.log('💾 Saved enriched roster data to cache');
+    } catch (error) {
+      console.error('Error saving enriched cache:', error);
     }
   }
 
@@ -110,21 +212,25 @@ class GuildRoster {
 
   setSortBy(sortBy) {
     this.sortBy = sortBy;
+    this.currentPage = 1; // Reset to first page
     this.applyFilters();
   }
 
   setClassFilter(classId) {
     this.filterClass = classId;
+    this.currentPage = 1; // Reset to first page
     this.applyFilters();
   }
 
   setLevelFilter(level) {
     this.filterLevel = level;
+    this.currentPage = 1; // Reset to first page
     this.applyFilters();
   }
 
   setSearchTerm(term) {
     this.searchTerm = term;
+    this.currentPage = 1; // Reset to first page
     this.applyFilters();
   }
 
@@ -138,69 +244,304 @@ class GuildRoster {
 
     const guildName = slugToFriendly(config.guild.name);
 
+    // Calculate filtered character count
+    const filteredRoster = this.roster.filter(member => {
+      const realmSlug = member.character.realm?.slug || config.guild.realmSlug;
+      const characterKey = this.getCharacterKey(member.character.name, realmSlug);
+      return !this.invalidCharacters.has(characterKey);
+    });
+
+    // Calculate pagination
+    const totalPages = Math.ceil(filteredRoster.length / this.itemsPerPage);
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    const paginatedRoster = filteredRoster.slice(startIndex, endIndex);
+
     // Clear old content to remove event listeners
     this.container.innerHTML = '';
 
     // Build new content
     const content = `
       <div class="guild-header">
-        <span class="guild-count">${stats.total} Champions</span>
         <h2>
           ${guildName}
         </h2>
-        <span class="guild-realms">Tarren Mill, Silvermoon & Frostmane</span>
+        <div class="guild-header-subtitle">
+        <span>${filteredRoster.length} character${filteredRoster.length !== 1 ? 's' : ''}</span> found, some older unused characters will be suppressed.
+      </div>
       </div>
 
       <div class="roster-controls">
-
-        <select id="sort-select" class="sort-select">
-          <option value="ilvl" ${this.sortBy === 'ilvl' ? 'selected' : ''}>Sort by Item Level</option>
-          <option value="rank" ${this.sortBy === 'rank' ? 'selected' : ''}>Sort by Rank</option>
-          <option value="name" ${this.sortBy === 'name' ? 'selected' : ''}>Sort by Name</option>
-          <option value="level" ${this.sortBy === 'level' ? 'selected' : ''}>Sort by Level</option>
-          <option value="class" ${this.sortBy === 'class' ? 'selected' : ''}>Sort by Class</option>
-        </select>
-
-        <select id="class-filter" class="class-filter">
-          <option value="" ${!this.filterClass ? 'selected' : ''}>View All Classes</option>
-          ${this.getClassFilterOptions()}
-        </select>
+        ${this.renderMiniPagination(totalPages, filteredRoster.length, endIndex)}
+        <div id="sort-dropdown-container"></div>
+        <div id="class-dropdown-container"></div>
       </div>
 
       <div class="roster-grid">
-        ${this.roster
-          .filter(member => {
-            const realmSlug = member.character.realm?.slug || config.guild.realmSlug;
-            const characterKey = this.getCharacterKey(member.character.name, realmSlug);
-            return !this.invalidCharacters.has(characterKey);
-          })
-          .map(member => this.renderMemberCard(member))
-          .join('')}
+        ${paginatedRoster.map(member => this.renderMemberCard(member)).join('')}
       </div>
+
+      ${this.renderPagination(totalPages, filteredRoster.length)}
     `;
 
     this.container.innerHTML = content;
+    this.initializeDropdowns();
     this.attachEventListeners();
+    this.attachPaginationListeners();
     this.loadAllIcons();
   }
 
-  async loadAllIcons() {
+  renderMiniPagination(totalPages, totalCharacters, endIndex) {
+    if (totalPages <= 1) return '';
+
+    const endChar = Math.min(endIndex, totalCharacters);
+
+    let miniPagination = '<div class="mini-pagination">';
+
+    // Previous button
+    if (this.currentPage > 1) {
+      miniPagination += `<button class="mini-pagination-btn" data-page="${this.currentPage - 1}"><i class="las la-angle-left"></i></button>`;
+    } else {
+      miniPagination += `<button class="mini-pagination-btn" disabled><i class="las la-angle-left"></i></button>`;
+    }
+
+    // Count display
+    miniPagination += `<span class="mini-pagination-count">${endChar}/${totalCharacters}</span>`;
+
+    // Next button
+    if (this.currentPage < totalPages) {
+      miniPagination += `<button class="mini-pagination-btn" data-page="${this.currentPage + 1}"><i class="las la-angle-right"></i></button>`;
+    } else {
+      miniPagination += `<button class="mini-pagination-btn" disabled><i class="las la-angle-right"></i></button>`;
+    }
+
+    miniPagination += '</div>';
+
+    return miniPagination;
+  }
+
+  renderPagination(totalPages, totalCharacters) {
+    if (totalPages <= 1) return '';
+
+    const startChar = ((this.currentPage - 1) * this.itemsPerPage) + 1;
+    const endChar = Math.min(this.currentPage * this.itemsPerPage, totalCharacters);
+
+    let pagination = '<div class="pagination">';
+    pagination += `<div class="pagination-info">Showing ${startChar}-${endChar} of ${totalCharacters}</div>`;
+    pagination += '<div class="pagination-buttons">';
+
+    // Previous button
+    if (this.currentPage > 1) {
+      pagination += `<button class="pagination-btn" data-page="${this.currentPage - 1}"><i class="las la-angle-left"></i> Previous</button>`;
+    }
+
+    // Page numbers
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, this.currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage < maxVisiblePages - 1) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    if (startPage > 1) {
+      pagination += `<button class="pagination-btn" data-page="1">1</button>`;
+      if (startPage > 2) {
+        pagination += '<span class="pagination-ellipsis">...</span>';
+      }
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      const activeClass = i === this.currentPage ? 'active' : '';
+      pagination += `<button class="pagination-btn ${activeClass}" data-page="${i}">${i}</button>`;
+    }
+
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        pagination += '<span class="pagination-ellipsis">...</span>';
+      }
+      pagination += `<button class="pagination-btn" data-page="${totalPages}">${totalPages}</button>`;
+    }
+
+    // Next button
+    if (this.currentPage < totalPages) {
+      pagination += `<button class="pagination-btn" data-page="${this.currentPage + 1}">Next <i class="las la-angle-right"></i></button>`;
+    }
+
+    pagination += '</div>';
+    pagination += '</div>';
+
+    return pagination;
+  }
+
+  attachPaginationListeners() {
+    // Handle both main pagination and mini pagination buttons
+    const paginationButtons = this.container.querySelectorAll('.pagination-btn, .mini-pagination-btn');
+    paginationButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        const page = parseInt(e.currentTarget.dataset.page);
+        if (page && page !== this.currentPage) {
+          this.currentPage = page;
+          this.render();
+          // Scroll to top of roster
+          this.container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  }
+
+  async loadAllIcons(useCache = true) {
     // Load spec, race, faction icons, character avatars, and item levels asynchronously
     try {
       // Load class icons immediately (no API needed)
       this.loadClassIcons();
 
-      // Load item levels first to get gender data
-      await this.loadItemLevels();
+      // If we have cached item levels and genders, skip the heavy API calls
+      if (useCache && this.itemLevels.size > 0 && this.genders.size > 0) {
+        console.log('⚡ Using cached data, loading specs and visuals');
 
-      // Then load everything else in parallel (race icons need gender data)
-      await Promise.all([
-        this.loadSpecIcons(),
-        this.loadRaceFactionIcons(),
-        this.loadCharacterAvatars()
-      ]);
+        // Update the DOM with cached data immediately
+        this.updateItemLevelsInDOM();
+        this.updateSpecsFromCache();
+
+        // Load icons and specs in parallel
+        await Promise.all([
+          this.loadSpecIcons(), // Always load specs (fast with parallel requests)
+          this.loadRaceFactionIcons(),
+          this.loadCharacterAvatarsFromCache()
+        ]);
+      } else {
+        // No cache or forced refresh - do full load
+        console.log('🔄 Full data fetch');
+
+        // Load item levels first to get gender data
+        await this.loadItemLevels();
+
+        // Then load everything else in parallel (race icons need gender data)
+        await Promise.all([
+          this.loadSpecIcons(),
+          this.loadRaceFactionIcons(),
+          this.loadCharacterAvatars()
+        ]);
+      }
     } catch (error) {
       console.error('Error loading icons:', error);
+    }
+  }
+
+  updateItemLevelsInDOM() {
+    const memberCards = this.container.querySelectorAll('.member-card');
+    memberCards.forEach(card => {
+      const characterName = card.dataset.character;
+      const realmSlug = card.dataset.realm;
+      const characterKey = this.getCharacterKey(characterName, realmSlug);
+      const itemLevel = this.itemLevels.get(characterKey);
+
+      if (itemLevel) {
+        const ilvlElement = card.querySelector('.member-ilvl');
+        if (ilvlElement) {
+          ilvlElement.textContent = itemLevel;
+        }
+      }
+    });
+  }
+
+  async updateSpecsFromCache() {
+    if (this.characterSpecs.size === 0) return;
+
+    const { getSpecIconUrl, getLocalSpecIconUrl, getFallbackIcon } = await import('../utils/wow-icons.js');
+
+    const memberCards = this.container.querySelectorAll('.member-card');
+    memberCards.forEach(card => {
+      const characterName = card.dataset.character;
+      const realmSlug = card.dataset.realm;
+      const characterKey = this.getCharacterKey(characterName, realmSlug);
+      const specData = this.characterSpecs.get(characterKey);
+
+      if (specData) {
+        const specIconPlaceholder = card.querySelector('.spec-icon-placeholder');
+        if (specIconPlaceholder) {
+          const specIconUrl = getSpecIconUrl(specData.specId);
+          const localSpecIconUrl = getLocalSpecIconUrl(specData.specId);
+
+          specIconPlaceholder.title = specData.specName;
+          specIconPlaceholder.innerHTML = `
+            <img src="${specIconUrl}" alt="${specData.specName}" class="icon-img"
+                 onerror="this.onerror=null; this.src='${localSpecIconUrl}'; this.onerror=function() { this.style.display='none'; this.nextElementSibling.style.display='flex'; };" />
+            <i class="${getFallbackIcon('spec')}" style="display: none;"></i>
+          `;
+          specIconPlaceholder.classList.remove('spec-icon-placeholder');
+        }
+
+        // Update hero talent
+        if (specData.heroTalentName) {
+          const heroTalentElement = card.querySelector('.member-hero-talent');
+          if (heroTalentElement) {
+            heroTalentElement.textContent = specData.heroTalentName;
+          }
+        }
+      }
+    });
+  }
+
+  async loadCharacterAvatarsFromCache() {
+    // This just loads the visual avatars using the existing avatar URLs
+    // We already have the data, just need to populate the images
+    const memberCards = this.container.querySelectorAll('.member-card');
+
+    const batchSize = 10;
+    const cardsArray = Array.from(memberCards);
+
+    for (let i = 0; i < cardsArray.length; i += batchSize) {
+      const batch = cardsArray.slice(i, i + batchSize);
+
+      await Promise.all(batch.map(async (card) => {
+        const characterName = card.dataset.character;
+        const realmSlug = card.dataset.realm;
+        const avatarPlaceholder = card.querySelector('.character-avatar-placeholder');
+
+        if (!avatarPlaceholder) return;
+
+        try {
+          const characterService = (await import('../services/character-service.js')).default;
+          const media = await characterService.fetchCharacterMedia(realmSlug, characterName);
+
+          if (!media || !media.assets) return;
+
+          const insetAsset = media.assets.find(asset => asset.key === 'inset');
+          const avatarAsset = media.assets.find(asset => asset.key === 'avatar');
+          const imageUrl = insetAsset?.value || avatarAsset?.value;
+
+          if (imageUrl) {
+            const memberHeader = avatarPlaceholder.querySelector('.member-header');
+            const memberHeaderHTML = memberHeader ? memberHeader.outerHTML : '';
+
+            // Create image with fallback handling
+            const img = new Image();
+            img.onload = () => {
+              avatarPlaceholder.innerHTML = `
+                <img src="${imageUrl}" alt="${characterName}" class="character-avatar-img" />
+                ${memberHeaderHTML}
+              `;
+            };
+            img.onerror = () => {
+              // Hide card on 403/404 (privacy settings or invalid character)
+              card.style.display = 'none';
+            };
+            img.src = imageUrl;
+          } else {
+            // Hide card if no image URL
+            card.style.display = 'none';
+          }
+        } catch (error) {
+          // Hide card on error
+          card.style.display = 'none';
+        }
+      }));
+
+      if (i + batchSize < cardsArray.length) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
     }
   }
 
@@ -283,8 +624,8 @@ class GuildRoster {
             item.placeholder.innerHTML = `
               <i class="las la-spinner la-spin loading-spinner"></i>
               <img src="${raceIconUrl}" alt="${raceName}" class="icon-img"
-                   onload="this.previousElementSibling.style.display='none';"
-                   onerror="this.onerror=null; this.previousElementSibling.style.display='none'; this.src='${localRaceIconUrl}'; this.onerror=function() { this.style.display='none'; this.nextElementSibling.style.display='flex'; };" />
+                   onload="if(this.previousElementSibling) this.previousElementSibling.style.display='none';"
+                   onerror="this.onerror=null; if(this.previousElementSibling) this.previousElementSibling.style.display='none'; this.src='${localRaceIconUrl}'; this.onerror=function() { this.style.display='none'; this.nextElementSibling.style.display='flex'; };" />
               <i class="${getFallbackIcon('race')}" style="display: none;"></i>
             `;
           }
@@ -311,8 +652,8 @@ class GuildRoster {
             item.placeholder.innerHTML = `
               <i class="las la-spinner la-spin loading-spinner"></i>
               <img src="${factionIconUrl}" alt="${factionName}" class="icon-img"
-                   onload="this.previousElementSibling.style.display='none';"
-                   onerror="this.onerror=null; this.previousElementSibling.style.display='none'; this.src='${localFactionIconUrl}'; this.onerror=function() { this.style.display='none'; this.nextElementSibling.style.display='flex'; };" />
+                   onload="if(this.previousElementSibling) this.previousElementSibling.style.display='none';"
+                   onerror="this.onerror=null; if(this.previousElementSibling) this.previousElementSibling.style.display='none'; this.src='${localFactionIconUrl}'; this.onerror=function() { this.style.display='none'; this.nextElementSibling.style.display='flex'; };" />
               <i class="${getFallbackIcon('race')}" style="display: none;"></i>
             `;
 
@@ -337,78 +678,66 @@ class GuildRoster {
 
   async loadSpecIcons() {
     const specPlaceholders = this.container.querySelectorAll('.spec-icon-placeholder');
+    console.log(`🔧 Loading specs for ${specPlaceholders.length} characters`);
 
-    // Limit concurrent requests to avoid overwhelming the API
-    const batchSize = 5;
-    let successCount = 0;
-    let failCount = 0;
+    // Use individual loading pattern like my-characters page (no batching, all parallel)
+    await Promise.all(Array.from(specPlaceholders).map(async (placeholder) => {
+      const characterName = placeholder.dataset.character;
+      const realmSlug = placeholder.dataset.realm;
+      const card = placeholder.closest('.member-card');
 
-    for (let i = 0; i < specPlaceholders.length; i += batchSize) {
-      const batch = Array.from(specPlaceholders).slice(i, i + batchSize);
+      try {
+        const specs = await wowAPI.getCharacterSpecializations(realmSlug, characterName);
 
-      await Promise.all(batch.map(async (placeholder) => {
-        const characterName = placeholder.dataset.character;
-        const realmSlug = placeholder.dataset.realm;
-
-        const card = placeholder.closest('.member-card');
-        const specTextElement = card?.querySelector('.member-spec');
-
-        try {
-          const specs = await characterService.fetchCharacterSpecializations(realmSlug, characterName);
-
-          if (!specs || !specs.specializations) {
-            if (specTextElement) {
-              specTextElement.textContent = 'No spec';
-            }
-            failCount++;
-            return;
-          }
-
-          const activeSpec = characterService.getActiveSpec(specs);
-
-          if (!activeSpec || !activeSpec.specialization) {
-            if (specTextElement) {
-              specTextElement.textContent = 'No spec';
-            }
-            failCount++;
-            return;
-          }
-
-          const specId = activeSpec.specialization.id;
-          const specName = activeSpec.specialization.name;
+        if (specs?.active_specialization) {
+          const specId = specs.active_specialization.id;
+          const specName = specs.active_specialization.name;
+          const heroTalentName = specs?.active_hero_talent_tree?.name;
           const specIconUrl = getSpecIconUrl(specId);
           const localSpecIconUrl = getLocalSpecIconUrl(specId);
 
+          // Store spec data in cache
+          const characterKey = this.getCharacterKey(characterName, realmSlug);
+          this.characterSpecs.set(characterKey, {
+            specId,
+            specName,
+            heroTalentName
+          });
+
+          // Update icon
           placeholder.title = specName;
           if (specIconUrl) {
-            placeholder.innerHTML = `
-              <i class="las la-spinner la-spin loading-spinner"></i>
-              <img src="${specIconUrl}" alt="${specName}" class="icon-img"
-                   onload="this.previousElementSibling.style.display='none';"
-                   onerror="this.onerror=null; this.previousElementSibling.style.display='none'; this.src='${localSpecIconUrl}'; this.onerror=function() { this.style.display='none'; this.nextElementSibling.style.display='flex'; };" />
-              <i class="${getFallbackIcon('spec')}" style="display: none;"></i>
-            `;
+            // Create image element with proper error handling
+            const img = new Image();
+            img.onload = () => {
+              placeholder.innerHTML = `<img src="${specIconUrl}" alt="${specName}" class="icon-img" />`;
+              placeholder.classList.remove('spec-icon-placeholder');
+            };
+            img.onerror = () => {
+              // Silently fail, leave placeholder as is
+              console.log(`Failed to load spec icon for ${characterName}`);
+            };
+            img.src = specIconUrl;
           }
 
-          // Add spec text to the card
-          if (specTextElement) {
-            specTextElement.textContent = specName;
-            successCount++;
+          // Add hero talent name if present
+          if (heroTalentName) {
+            const heroTalentElement = card?.querySelector('.member-hero-talent');
+            if (heroTalentElement) {
+              heroTalentElement.textContent = heroTalentName;
+            }
           }
-        } catch (error) {
-          // Character might not exist or API error
-          if (specTextElement) {
-            specTextElement.textContent = 'No spec';
-          }
-          failCount++;
+
+          console.log(`✅ Loaded spec for ${characterName}: ${specName}`);
+        } else {
+          console.log(`❌ No active specialization for ${characterName}`);
         }
-      }));
-
-      // Small delay between batches
-      if (i + batchSize < specPlaceholders.length) {
-        await new Promise(resolve => setTimeout(resolve, 500));
+      } catch (error) {
+        console.error(`Error loading spec for ${characterName}:`, error);
       }
-    }
+    }));
+
+    console.log('✅ All specs loaded');
   }
 
   async loadCharacterAvatars() {
@@ -456,17 +785,31 @@ class GuildRoster {
             const memberHeader = avatarPlaceholder.querySelector('.member-header');
             const memberHeaderHTML = memberHeader ? memberHeader.outerHTML : '';
 
-            avatarPlaceholder.innerHTML = `
-              <i class="las la-spinner la-spin loading-spinner"></i>
-              <img src="${imageUrl}" alt="${characterName}" class="character-avatar-img"
-                   onload="if(this.previousElementSibling) this.previousElementSibling.style.display='none';" />
-              ${memberHeaderHTML}
-            `;
-            successCount++;
+            // Create image with fallback handling
+            const img = new Image();
+            img.onload = () => {
+              avatarPlaceholder.innerHTML = `
+                <img src="${imageUrl}" alt="${characterName}" class="character-avatar-img" />
+                ${memberHeaderHTML}
+              `;
+              successCount++;
+            };
+            img.onerror = (e) => {
+              // Suppress 403 errors and use fallback image
+              avatarPlaceholder.innerHTML = `
+                <img src="../img/character-fallback.svg" alt="${characterName}" class="character-avatar-img" />
+                ${memberHeaderHTML}
+              `;
+            };
+            img.src = imageUrl;
           } else {
+            // Hide card if no image URL
+            card.style.display = 'none';
             failCount++;
           }
         } catch (error) {
+          // Hide card on error
+          card.style.display = 'none';
           failCount++;
         }
       }));
@@ -481,8 +824,8 @@ class GuildRoster {
   async loadItemLevels() {
     const memberCards = this.container.querySelectorAll('.member-card');
 
-    // Limit concurrent requests
-    const batchSize = 5;
+    // Limit concurrent requests - increased from 5 to 30 for better performance
+    const batchSize = 30;
     let successCount = 0;
     let failCount = 0;
     let foundInvalidCharacters = false;
@@ -644,6 +987,68 @@ class GuildRoster {
       .join('');
   }
 
+  initializeDropdowns() {
+    // Initialize Sort Dropdown
+    const sortOptions = [
+      { value: 'ilvl', label: 'Sort by Item Level' },
+      { value: 'rank', label: 'Sort by Rank' },
+      { value: 'name', label: 'Sort by Name' },
+      { value: 'level', label: 'Sort by Level' },
+      { value: 'class', label: 'Sort by Class' }
+    ];
+
+    this.sortDropdown = new CustomDropdown({
+      id: 'sort-dropdown',
+      label: 'Sort By',
+      options: sortOptions,
+      selectedValue: this.sortBy,
+      onChange: (value) => this.setSortBy(value)
+    });
+
+    const sortContainer = document.getElementById('sort-dropdown-container');
+    if (sortContainer) {
+      this.sortDropdown.attachToElement(sortContainer);
+    }
+
+    // Initialize Class Filter Dropdown
+    const classCounts = new Map();
+    this.roster.forEach(member => {
+      const classId = member.character.playable_class.id;
+      classCounts.set(classId, (classCounts.get(classId) || 0) + 1);
+    });
+
+    const classOptions = [
+      { value: '', label: 'View All Classes', icon: null, count: this.roster.length }
+    ];
+
+    Array.from(classCounts.keys())
+      .sort((a, b) => a - b)
+      .forEach(classId => {
+        classOptions.push({
+          value: classId,
+          label: getClassName(classId),
+          icon: getClassIconUrl(classId),
+          count: classCounts.get(classId)
+        });
+      });
+
+    this.classDropdown = new CustomDropdown({
+      id: 'class-dropdown',
+      label: 'Filter by Class',
+      options: classOptions,
+      selectedValue: this.filterClass || '',
+      onChange: (value) => {
+        const classId = value === '' ? null : parseInt(value);
+        this.setClassFilter(classId);
+      }
+    });
+
+    const classContainer = document.getElementById('class-dropdown-container');
+    if (classContainer) {
+      this.classDropdown.attachToElement(classContainer);
+    }
+  }
+
   renderMemberCard(member) {
     const character = member.character;
     const classColor = getClassColor(character.playable_class.id);
@@ -675,18 +1080,19 @@ class GuildRoster {
 
     return `
       <div class="member-card" data-character="${character.name}" data-realm="${realmSlug}" style="border-bottom: 0px solid ${classColor};">
-        <div class="member-level">${character.level}</div>
+        <div class="member-level">
+        ${character.level}<span class="member-ilvl">${character.itemLevel || '<i class="las la-spinner la-spin"></i>'}</span>
+      </div>
         <div class="character-avatar-placeholder">
           <i class="las la-spinner la-spin loading-spinner"></i>
             
         </div>
         
         <div class="member-header">
-            <div class="member-name-with-icon">
-              <div class="member-name" style="color: ${classColor}">
-                ${character.name}
-              </div>
+            <div class="member-name" style="color: ${classColor}">
+              ${character.name}
             </div>
+            <div class="member-hero-talent"></div>
         </div>
 
         <div class="member-details">
@@ -709,7 +1115,6 @@ class GuildRoster {
             <div class="member-icon faction-icon-small faction-icon-placeholder" title="Faction" data-race-id="${character.playable_race?.id}">
               <i class="las la-spinner la-spin"></i>
             </div>
-            <div class="member-ilvl"><i class="las la-spinner la-spin"></i></div>
           </div>
         </div>
         <div class="member-realm-badge-container">
@@ -728,22 +1133,8 @@ class GuildRoster {
       });
     }
 
-    // Sort select
-    const sortSelect = document.getElementById('sort-select');
-    if (sortSelect) {
-      sortSelect.addEventListener('change', (e) => {
-        this.setSortBy(e.target.value);
-      });
-    }
-
-    // Class filter
-    const classFilter = document.getElementById('class-filter');
-    if (classFilter) {
-      classFilter.addEventListener('change', (e) => {
-        const classId = e.target.value ? parseInt(e.target.value) : null;
-        this.setClassFilter(classId);
-      });
-    }
+    // Note: Sort and Class filter dropdowns are now handled by CustomDropdown component
+    // Event listeners are attached in initializeDropdowns()
 
     // Member card clicks
     const memberCards = this.container.querySelectorAll('.member-card');

@@ -1,0 +1,40 @@
+// Footer
+.footer {
+  text-align: center;
+  padding: var(--spacing-md);
+  color: white;
+  font-size: 14px;
+  margin-top: auto;
+  border-top: 1px solid rgba(white, 0.1);
+
+  p {
+    margin: 0;
+
+    i {
+      color: var(--color-danger);
+    }
+  }
+}
+
+// Credit Section
+.credit {
+  text-align: center;
+  padding: var(--spacing-md);
+  color: var(--color-text-light);
+  font-size: 14px;
+  margin-top: auto;
+
+  .logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-weight: 600;
+    color: var(--color-text);
+    flex-direction: column;
+    img {
+      width: 30px;
+      height: 30px;
+    }
+  }
+}

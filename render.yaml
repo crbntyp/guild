@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: guild-oauth-server
+    runtime: node
+    buildCommand: npm install
+    startCommand: node server.cjs
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: BNET_CLIENT_ID
+        value: 86af3b20703442e78f9a90778846ce3b
+      - key: BNET_CLIENT_SECRET
+        sync: false

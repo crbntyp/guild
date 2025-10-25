@@ -1,0 +1,310 @@
+// Top Bar
+.top-bar {
+  height: 50px;
+  background: rgba(26, 26, 26, 0.95);
+  border-bottom: 1px solid var(--color-border);
+  backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 9999;
+
+  .top-bar-content {
+    max-width: 1290px;
+    margin: 0 auto;
+    height: 100%;
+    padding: 0 var(--spacing-md);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .top-bar-left {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+
+    .guild-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--color-text);
+      letter-spacing: 1.5px;
+    }
+  }
+
+  // Hamburger Menu Button (hidden on desktop)
+  .hamburger-menu {
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 24px;
+    height: 24px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 10001;
+    position: relative;
+
+    span {
+      width: 24px;
+      height: 2px;
+      background: var(--color-text);
+      border-radius: 2px;
+      transition: all 0.3s ease;
+      transform-origin: center;
+    }
+
+    &.active {
+      span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+      }
+
+      span:nth-child(2) {
+        opacity: 0;
+      }
+
+      span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+      }
+    }
+  }
+
+  // Desktop Navigation
+  .top-bar-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--color-text-light);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-decoration: none;
+      transition: var(--transition);
+      text-transform: uppercase;
+
+      i {
+        font-size: 16px;
+      }
+
+      &:hover {
+        color: var(--color-primary);
+      }
+
+      &.active {
+        color: #148eff;
+      }
+    }
+  }
+
+  // Mobile Navigation (hidden on desktop)
+  .mobile-nav {
+    display: none;
+    position: fixed;
+    top: 50px;
+    left: 0;
+    width: 100%;
+    background: rgba(26, 26, 26, 0.98);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--color-border);
+    flex-direction: column;
+    padding: 8px 0;
+    z-index: 9998;
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+
+    &.active {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .mobile-nav-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--color-text-light);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+      text-decoration: none;
+      text-transform: uppercase;
+      padding: 10px 16px;
+      transition: var(--transition);
+      border-left: 2px solid transparent;
+
+      i {
+        font-size: 16px;
+      }
+
+      &:hover {
+        color: var(--color-primary);
+        background: rgba(255, 255, 255, 0.03);
+        border-left-color: var(--color-primary);
+      }
+
+      &.active {
+        color: #148eff;
+        background: rgba(20, 142, 255, 0.1);
+        border-left-color: #148eff;
+      }
+    }
+  }
+
+  .top-bar-right {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    position: relative;
+    z-index: 10000;
+  }
+
+  .btn-login {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 12px;
+    background: #148eff;
+    border: 1px solid #148eff;
+    border-radius: var(--border-radius);
+    color: white;
+    font-family: 'Muli', sans-serif;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    transition: var(--transition);
+    pointer-events: auto;
+    position: relative;
+    z-index: 10001;
+
+    &:hover {
+      background: #0d7de8;
+      border-color: #0d7de8;
+    }
+
+    i {
+      font-size: 14px;
+      pointer-events: none;
+    }
+
+    span {
+      pointer-events: none;
+    }
+  }
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+
+    .user-avatar-container {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid var(--color-border);
+
+      .user-avatar {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      i {
+        font-size: 16px;
+        color: var(--color-text-light);
+      }
+    }
+
+    .user-battletag {
+      color: var(--color-text);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-decoration: none;
+      transition: var(--transition);
+
+      &:hover {
+        color: var(--color-primary);
+      }
+    }
+
+    .btn-logout {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 12px;
+      background: #148eff;
+      border: 1px solid #148eff;
+      border-radius: var(--border-radius);
+      color: white;
+      font-family: 'Muli', sans-serif;
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      cursor: pointer;
+      transition: var(--transition);
+      pointer-events: auto;
+      position: relative;
+      z-index: 10001;
+
+      &:hover {
+        background: #0d7de8;
+        border-color: #0d7de8;
+      }
+
+      i {
+        font-size: 14px;
+        pointer-events: none;
+      }
+    }
+  }
+
+  // Responsive styles for mobile (767px and below)
+  @media (max-width: 767px) {
+    .hamburger-menu {
+      display: flex;
+    }
+
+    .top-bar-nav {
+      display: none;
+    }
+
+    .mobile-nav {
+      display: flex;
+    }
+
+    .top-bar-right {
+      justify-content: flex-end;
+    }
+
+    .btn-login {
+      span {
+        display: none;
+      }
+
+      i {
+        font-size: 18px;
+      }
+    }
+
+    .user-info {
+      .user-battletag {
+        display: none;
+      }
+
+      .btn-logout {
+        padding: 5px 8px;
+        font-size: 11px;
+      }
+    }
+  }
+}

@@ -1,0 +1,62 @@
+// Guild Header Component
+.guild-header {
+  text-align: center;
+  min-height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  border-bottom: 1px solid rgba(white, 0.1);
+  margin-bottom: 10px;
+  .guild-header-subtitle{
+    font-size: 14px;
+    display: block;
+    span{
+      background: rgba(255, 255, 255, 0.1);
+      display: inline-block; margin-right: 6px; border-radius: 15px; padding: 0px 10px;
+      font-weight: 700;
+    }
+  }
+  .guild-realms{
+    margin-bottom: var(--spacing-sm);
+    display: block;
+  }
+  .guild-count{
+    font-size: 12px;
+    background: var(--color-success);
+    height: 20px;
+    border-radius: 20px;
+    letter-spacing: 0px;
+    padding: 5px 10px;
+  }
+  h2 {
+    color: var(--color-primary);
+    font-size: 32px;
+    text-transform: capitalize;
+    position: relative;
+  }
+
+  .guild-stats {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-xl);
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      .stat-label {
+        color: var(--color-text-light);
+        font-size: 14px;
+        text-transform: uppercase;
+      }
+
+      .stat-value {
+        color: var(--color-primary);
+        font-size: 24px;
+        font-weight: 700;
+      }
+    }
+  }
+}

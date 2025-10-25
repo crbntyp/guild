@@ -149,8 +149,8 @@ class BattleNetClient {
           await this.getClientAccessToken();
           return this.request(endpoint, options);
         }
-        // Don't log 404s as errors - they're expected for characters that don't exist
-        if (response.status !== 404) {
+        // Don't log 404s or 403s as errors - they're expected for characters that don't exist or have privacy settings
+        if (response.status !== 404 && response.status !== 403) {
           console.error(`API Error: ${response.status} ${response.statusText} - ${endpoint}`);
         }
         const error = new Error(`API request failed: ${response.status} ${response.statusText}`);
@@ -160,8 +160,8 @@ class BattleNetClient {
 
       return await response.json();
     } catch (error) {
-      // Don't log 404s as errors - they're expected for characters that don't exist
-      if (error.status !== 404) {
+      // Don't log 404s or 403s as errors - they're expected for characters that don't exist or have privacy settings
+      if (error.status !== 404 && error.status !== 403) {
         console.error('API request error:', error);
       }
       throw error;
