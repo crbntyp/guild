@@ -164,11 +164,12 @@ class YouTubeManager {
 
       this.saveChannels();
 
-      // Re-fetch videos if tags changed
+      // Render immediately to show updated channel info
+      this.renderChannels();
+
+      // Re-fetch videos in background if tags changed
       if (oldTags !== channelData.tags) {
         await this.fetchChannelVideos(id);
-      } else {
-        this.renderChannels();
       }
     }
   }
@@ -222,14 +223,14 @@ class YouTubeManager {
             </div>
 
             <div class="form-group">
-              <label for="channel-tags">Search Tags *</label>
-              <input type="text" id="channel-tags" placeholder="e.g. warcraft, guides, tips (comma-separated)" required>
-              <small>Tags help filter videos from this channel</small>
+              <label for="channel-tags">Search Tags (optional)</label>
+              <input type="text" id="channel-tags" placeholder="e.g. warcraft, guides, tips (comma-separated)">
+              <small>Leave empty to fetch all latest videos, or add tags to filter specific content</small>
             </div>
 
             <div class="form-actions">
               <button type="button" class="btn-cancel" id="btn-cancel">Cancel</button>
-              <button type="submit" class="btn-save">Add Channel</button>
+              <button type="submit" class="btn-save">Save</button>
             </div>
           </form>
         </div>
@@ -264,34 +265,34 @@ class YouTubeManager {
 
     channelsContainer.innerHTML = this.channels.map(channel => `
       <div class="channel-row" data-id="${channel.id}">
-        <div class="channel-row-header">
-          <div class="channel-info">
+        <div class="channel-actions">
+          <button class="channel-edit" data-id="${channel.id}" title="Edit channel">
+            <i class="las la-pen"></i>
+          </button>
+          <button class="channel-delete" data-id="${channel.id}" title="Delete channel">
+            <i class="las la-trash"></i>
+          </button>
+        </div>
+        <div class="channel-content">
+          <div class="channel-info-col">
             <h3 class="channel-name">${this.escapeHtml(channel.name)}</h3>
             <div class="channel-tags">
-              ${channel.tags.split(',').map(tag => `<span class="tag">${this.escapeHtml(tag.trim())}</span>`).join('')}
+              ${channel.tags ? channel.tags.split(',').map(tag => `<span class="tag">${this.escapeHtml(tag.trim())}</span>`).join('') : '<span class="tag">All Videos</span>'}
             </div>
           </div>
-          <div class="channel-actions">
-            <button class="channel-edit" data-id="${channel.id}" title="Edit channel">
-              <i class="las la-pen"></i>
-            </button>
-            <button class="channel-delete" data-id="${channel.id}" title="Delete channel">
-              <i class="las la-trash"></i>
-            </button>
+          <div class="channel-videos">
+            ${channel.videos && channel.videos.length > 0 ? channel.videos.map(video => `
+              <a href="${video.url}" target="_blank" rel="noopener" class="video-card">
+                <div class="video-thumbnail">
+                  <img src="${video.thumbnail}" alt="${this.escapeHtml(video.title)}">
+                </div>
+                <div class="video-info">
+                  <div class="video-title">${this.escapeHtml(video.title)}</div>
+                  <div class="video-date">${this.formatDate(video.publishedAt)}</div>
+                </div>
+              </a>
+            `).join('') : '<div class="no-videos">No videos found for this channel</div>'}
           </div>
-        </div>
-        <div class="channel-videos">
-          ${channel.videos && channel.videos.length > 0 ? channel.videos.map(video => `
-            <a href="${video.url}" target="_blank" rel="noopener" class="video-card">
-              <div class="video-thumbnail">
-                <img src="${video.thumbnail}" alt="${this.escapeHtml(video.title)}">
-              </div>
-              <div class="video-info">
-                <div class="video-title">${this.escapeHtml(video.title)}</div>
-                <div class="video-date">${this.formatDate(video.addedAt)}</div>
-              </div>
-            </a>
-          `).join('') : '<div class="no-videos">No videos found for this channel</div>'}
         </div>
       </div>
     `).join('');
@@ -390,18 +391,13 @@ class YouTubeManager {
       return;
     }
 
-    if (!tags) {
-      alert('Please enter search tags');
-      return;
-    }
-
     // Extract channel name from URL
     const name = this.extractChannelName(url);
 
     const channelData = {
       name,
       url,
-      tags
+      tags: tags || '' // Allow empty tags
     };
 
     if (this.editingChannelId) {

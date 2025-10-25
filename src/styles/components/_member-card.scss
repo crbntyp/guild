@@ -163,4 +163,15 @@
     border: 1px solid rgba(255, 255, 255, 0.15);
     z-index: 10;
   }
+
+  .guildmaster-crown {
+    position: absolute;
+    left: -4px;
+    top: -4px;
+    font-size: 24px;
+    color: #FFD700;
+    transform: rotate(-25deg);
+    z-index: 100;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+  }
 }

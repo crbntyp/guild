@@ -1080,12 +1080,13 @@ class GuildRoster {
 
     return `
       <div class="member-card" data-character="${character.name}" data-realm="${realmSlug}" style="border-bottom: 0px solid ${classColor};">
+        ${member.rank === 0 ? '<i class="las la-crown guildmaster-crown"></i>' : ''}
         <div class="member-level">
         ${character.level}<span class="member-ilvl">${character.itemLevel || '<i class="las la-spinner la-spin"></i>'}</span>
       </div>
         <div class="character-avatar-placeholder">
           <i class="las la-spinner la-spin loading-spinner"></i>
-            
+
         </div>
         
         <div class="member-header">

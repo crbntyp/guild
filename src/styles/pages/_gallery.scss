@@ -1,35 +1,66 @@
 // Gallery page styles
 
 #gallery-container {
+  max-width: 1290px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0px 20px 20px 20px;
   display: flex;
-  align-items: flex-end;
-  justify-content: center;
+  flex-direction: column;
   min-height: calc(100vh - 200px);
 
-  .gallery-info {
-    text-align: center;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    border-radius: 50px;
-    border: 1px solid rgba(white, 0.03);
+  .gallery-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 20px 0px;
+    position: relative;
+
+    .gallery-header-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      .info-description {
+        width: 80%;
+        text-align: center;
+        display: inline-block;
+        margin-bottom: 20px;
+      }
+    }
 
     h1 {
+      font-size: 25px;
       letter-spacing: 2px;
     }
+  }
+
+  .gallery-info {
+    margin-top: auto;
+    margin-bottom: 40px;
 
     .location-display {
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
       animation: fadeIn 0.5s ease-in;
+      display: flex;
+      justify-content: center;
 
       .location-name {
         color: #fff;
         letter-spacing: 1px;
         padding: 10px 20px;
         font-size: 12px;
-        display: flex;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 16px;
+        text-align: center;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        border-radius: 50px;
+        border: 1px solid rgba(white, 0.03);
 
         .download-btn {
           background: rgba(white, 0.2);
@@ -76,5 +107,22 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  #gallery-container {
+    padding: 20px 16px;
+
+    .gallery-header {
+      flex-direction: column;
+      gap: 16px;
+      align-items: flex-start;
+
+      h1 {
+        font-size: 24px;
+      }
+    }
   }
 }

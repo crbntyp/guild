@@ -1,8 +1,14 @@
-# WoW Guild Roster Site
+# My Personal Warcraft
 
-A World of Warcraft guild roster website powered by the Battle.net API, showing real-time guild member information for **Geez-yer-shoes-n-jaykit** cross-realm guild (EU).
+A comprehensive World of Warcraft companion site featuring guild roster management, YouTube channel curation, todo organization, and a stunning background gallery. Built with the Battle.net API for **Geez-yer-shoes-n-jaykit** cross-realm guild (EU).
 
 ## Features
+
+### Battle.net Authentication
+- OAuth 2.0 integration with Battle.net
+- Secure popup-based login flow
+- Automatic token management and refresh
+- Protected routes for authenticated features
 
 ### Guild Roster Display
 - Real-time guild roster data from Battle.net API
@@ -41,6 +47,35 @@ A World of Warcraft guild roster website powered by the Battle.net API, showing 
 - Click any carousel character to instantly switch to their page
 - Auto-scroll to center active character
 
+### Background Gallery
+- Curated collection of stunning Warcraft backgrounds
+- Automatic background rotation every 8 seconds
+- Smooth fade transitions (2 seconds)
+- Location names with race/class attribution
+- Download button for each background
+- High-quality images from iconic WoW locations
+
+### My Todos (Authentication Required)
+- Personal todo management with localStorage persistence
+- Add todos with title, description, and optional URL
+- **Metadata auto-fill** from URL (title, description, image)
+- Checkbox to control auto-fill behavior
+- Masonry grid layout for dynamic card heights
+- Edit and complete todo functionality
+- 30-day persistence with automatic cleanup
+- Image previews from Open Graph metadata
+
+### My YouTube (Authentication Required)
+- Curate favorite Warcraft YouTube channels
+- Add channels with optional search tags
+- Automatic video fetching via YouTube Data API v3
+- Horizontal scrolling video rows per channel
+- Channel editing with tag management
+- Videos auto-remove after 30 days
+- Two-column layout: channel info + videos
+- Edit/delete channel functionality
+- Responsive card design
+
 ### Visual Polish
 - **Rotating background images** with smooth fade transitions
 - Custom background image set with 8-second rotation
@@ -62,49 +97,79 @@ A World of Warcraft guild roster website powered by the Battle.net API, showing 
 
 - **Frontend**: Vanilla JavaScript (ES6 Modules)
 - **Styling**: SCSS with WoW class colors and dark theme
-- **API**: Battle.net REST API
-- **Icons**: Wowhead CDN (class, race, spec icons)
+- **APIs**:
+  - Battle.net REST API (OAuth, Guild Roster, Character Data)
+  - YouTube Data API v3 (Video Fetching)
+  - Open Graph Metadata (URL Previews)
+- **Backend**: Node.js + Express (OAuth proxy, metadata fetching)
+- **Icons**: Wowhead CDN, Line Awesome
+- **Layout**: Masonry.js (Todo grid)
 - **Build**: Sass, Live Server, CPX
 - **Font**: Muli from Google Fonts
+- **Deployment**: Railway (backend), Static hosting (frontend)
 
 ## Project Structure
 
 ```
 src/
 ├── assets/
-│   ├── fonts/                      # Empty (removed custom fonts)
-│   └── icons/                      # Local placeholders only
+│   ├── fonts/                      # Icon fonts
+│   └── icons/                      # Local placeholders
 ├── img/
-│   ├── bgs/                        # Background images for rotation
-│   │   ├── bg-faction.jpg
-│   │   ├── bg-mulgore.jpg
-│   │   ├── bg-tglades.jpg
-│   │   └── bg-eversong.jpg
-│   ├── logo.png                    # Guild logo
-│   └── placeholder.png             # Fallback placeholder
+│   └── bgs/                        # Background images (15+ locations)
+│       ├── bg-faction.jpg
+│       ├── bg-mulgore.jpg
+│       ├── bg-boralus.jpg
+│       ├── bg-zuldazar.jpg
+│       └── ...
 ├── scripts/
 │   ├── api/
-│   │   ├── battlenet-client.js    # Battle.net OAuth & API client
-│   │   └── wow-api.js              # WoW-specific API endpoints
+│   │   ├── battlenet-client.js    # Battle.net OAuth & API
+│   │   └── wow-api.js              # WoW API endpoints
 │   ├── services/
-│   │   ├── cache-service.js        # LocalStorage caching with TTL
+│   │   ├── auth.js                 # OAuth authentication
+│   │   ├── cache-service.js        # LocalStorage caching
 │   │   ├── guild-service.js        # Guild roster management
-│   │   └── character-service.js    # Character profile/equipment data
+│   │   └── character-service.js    # Character data
 │   ├── components/
-│   │   ├── guild-roster.js         # Roster UI component
-│   │   └── background-rotator.js   # Background image rotation
+│   │   ├── top-bar.js              # Navigation component
+│   │   ├── guild-roster.js         # Roster UI
+│   │   ├── background-rotator.js   # Background rotation
+│   │   ├── todo-manager.js         # Todo management
+│   │   └── youtube-manager.js      # YouTube channels
 │   ├── utils/
 │   │   ├── wow-constants.js        # Class colors and names
-│   │   ├── wow-icons.js            # Wowhead CDN icon URLs
-│   │   ├── item-quality.js         # Item quality colors and slots
-│   │   └── helpers.js              # Utility functions
-│   ├── config.js                   # API configuration (auto-detects environment)
-│   ├── main.js                     # Roster page initialization
-│   └── character-details.js        # Character details page
+│   │   ├── wow-icons.js            # Wowhead icons
+│   │   └── item-quality.js         # Item quality colors
+│   ├── data/
+│   │   └── backgrounds.js          # Background image data
+│   ├── main.js                     # Roster page
+│   ├── character-details.js        # Character details
+│   ├── gallery.js                  # Gallery page
+│   ├── my-todos.js                 # Todos page
+│   ├── my-youtube.js               # YouTube page
+│   └── my-characters.js            # My Characters page
 ├── styles/
-│   └── main.scss                   # Complete WoW-themed styles
-├── index.html                      # Main roster page
-└── character-details.html          # Character details page
+│   ├── base/                       # Base styles
+│   ├── components/                 # Component styles
+│   ├── layout/                     # Layout styles
+│   ├── pages/                      # Page-specific styles
+│   │   ├── _roster.scss
+│   │   ├── _character-details.scss
+│   │   ├── _gallery.scss
+│   │   ├── _my-todos.scss
+│   │   └── _my-youtube.scss
+│   └── main.scss                   # Main stylesheet
+├── index.html                      # Guild roster
+├── character-details.html          # Character details
+├── gallery.html                    # Background gallery
+├── my-todos.html                   # Personal todos
+├── my-youtube.html                 # YouTube channels
+└── my-characters.html              # My characters
+
+# Backend
+server.cjs                          # Express server
+.env                                # Environment variables
 ```
 
 ## Setup

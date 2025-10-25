@@ -80,29 +80,42 @@ async function loadMyCharacters() {
       return;
     }
 
+    // Fetch guild roster to get ranks
+    const guildService = (await import('./services/guild-service.js')).default;
+    await guildService.fetchGuildRoster();
+    const guildMembers = guildService.getRosterMembers();
+
     // Format characters to match guild roster member structure
-    const formattedCharacters = characters.map(char => ({
-      character: {
-        name: char.name,
-        id: char.id,
-        realm: {
-          slug: char.realm.slug,
-          name: char.realm.name || char.realm.slug
+    const formattedCharacters = characters.map(char => {
+      // Find character in guild roster to get rank
+      const guildMember = guildMembers.find(m =>
+        m.character.name.toLowerCase() === char.name.toLowerCase() &&
+        (m.character.realm?.slug || config.guild.realmSlug) === char.realm.slug
+      );
+
+      return {
+        character: {
+          name: char.name,
+          id: char.id,
+          realm: {
+            slug: char.realm.slug,
+            name: char.realm.name || char.realm.slug
+          },
+          level: char.level,
+          playable_class: {
+            id: char.playable_class.id
+          },
+          playable_race: {
+            id: char.playable_race.id
+          },
+          faction: {
+            type: char.faction.type
+          },
+          itemLevel: null // Will be fetched separately
         },
-        level: char.level,
-        playable_class: {
-          id: char.playable_class.id
-        },
-        playable_race: {
-          id: char.playable_race.id
-        },
-        faction: {
-          type: char.faction.type
-        },
-        itemLevel: null // Will be fetched separately
-      },
-      rank: 0 // Not applicable for personal characters
-    }));
+        rank: guildMember ? guildMember.rank : null // Get actual rank from guild
+      };
+    });
 
     // Store all characters
     allCharacters = formattedCharacters;
@@ -292,8 +305,9 @@ function createCharacterCard(member) {
     <div class="member-card"
          style="border: 0px solid ${classColor};"
          data-character="${character.name.toLowerCase()}"
-         data-realm="${character.realm.slug}">
-
+         data-realm="${character.realm.slug}"
+         data-rank="${member.rank || ''}">
+      ${member.rank === 0 ? '<i class="las la-crown guildmaster-crown"></i>' : ''}
       <div class="member-level">
         ${character.level}<span class="member-ilvl">${character.itemLevel || '<i class="las la-spinner la-spin"></i>'}</span>
       </div>

@@ -208,20 +208,63 @@
 
     .channel-row {
       margin-bottom: 40px;
+      position: relative;
 
-      .channel-row-header {
+      .channel-actions {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        margin-bottom: 16px;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-bottom: 8px;
 
-        .channel-info {
+        .channel-edit {
+          background: none;
+          border: none;
+          color: #148eff;
+          font-size: 18px;
+          cursor: pointer;
+          padding: 8px;
+          transition: all 0.2s ease;
+
+          &:hover {
+            color: #0d7de8;
+            transform: scale(1.1);
+          }
+        }
+
+        .channel-delete {
+          background: none;
+          border: none;
+          color: #ff4444;
+          font-size: 20px;
+          cursor: pointer;
+          padding: 8px;
+          transition: all 0.2s ease;
+
+          &:hover {
+            color: #ff6666;
+            transform: scale(1.1);
+          }
+        }
+      }
+
+      .channel-content {
+        display: flex;
+        gap: 24px;
+        align-items: flex-start;
+
+        .channel-info-col {
+          flex: 0 0 200px;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+
           .channel-name {
             font-size: 20px;
             font-weight: 700;
             color: #fff;
-            margin-bottom: 8px;
             letter-spacing: 1px;
+            line-height: 1.2;
           }
 
           .channel-tags {
@@ -242,129 +285,94 @@
           }
         }
 
-        .channel-actions {
+        .channel-videos {
+          flex: 1;
           display: flex;
-          align-items: center;
-          gap: 8px;
+          gap: 16px;
+          overflow-x: auto;
+          overflow-y: hidden;
+          padding-bottom: 16px;
+          scroll-behavior: smooth;
 
-          .channel-edit {
-            background: none;
-            border: none;
-            color: #148eff;
-            font-size: 18px;
-            cursor: pointer;
-            padding: 8px;
-            transition: all 0.2s ease;
-
-            &:hover {
-              color: #0d7de8;
-              transform: scale(1.1);
-            }
+          // Custom scrollbar
+          &::-webkit-scrollbar {
+            height: 8px;
           }
 
-          .channel-delete {
-            background: none;
-            border: none;
-            color: #ff4444;
-            font-size: 20px;
-            cursor: pointer;
-            padding: 8px;
-            transition: all 0.2s ease;
-
-            &:hover {
-              color: #ff6666;
-              transform: scale(1.1);
-            }
-          }
-        }
-      }
-
-      .channel-videos {
-        display: flex;
-        gap: 16px;
-        overflow-x: auto;
-        overflow-y: hidden;
-        padding-bottom: 16px;
-        scroll-behavior: smooth;
-
-        // Custom scrollbar
-        &::-webkit-scrollbar {
-          height: 8px;
-        }
-
-        &::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.05);
-          border-radius: 4px;
-        }
-
-        &::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.2);
-          border-radius: 4px;
-
-          &:hover {
-            background: rgba(255, 255, 255, 0.3);
-          }
-        }
-
-        .video-card {
-          flex: 0 0 280px;
-          background: rgba(26, 26, 26, 0.3);
-          backdrop-filter: blur(5px);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 12px;
-          overflow: hidden;
-          transition: all 0.3s ease;
-          text-decoration: none;
-          color: inherit;
-
-          &:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-            border-color: rgba(255, 255, 255, 0.2);
-          }
-
-          .video-thumbnail {
-            width: 100%;
-            height: 157px;
-            overflow: hidden;
+          &::-webkit-scrollbar-track {
             background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+          }
 
-            img {
+          &::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+
+            &:hover {
+              background: rgba(255, 255, 255, 0.3);
+            }
+          }
+
+          .video-card {
+            flex: 0 0 220px;
+            background: rgba(26, 26, 26, 0.3);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+
+            &:hover {
+              transform: translateY(-4px);
+              box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+              border-color: rgba(255, 255, 255, 0.2);
+            }
+
+            .video-thumbnail {
               width: 100%;
-              height: 100%;
-              object-fit: cover;
-            }
-          }
-
-          .video-info {
-            padding: 12px;
-
-            .video-title {
-              font-size: 14px;
-              font-weight: 600;
-              color: #fff;
-              margin-bottom: 8px;
-              line-height: 1.4;
-              display: -webkit-box;
-              -webkit-line-clamp: 2;
-              -webkit-box-orient: vertical;
+              height: 124px;
               overflow: hidden;
+              background: rgba(255, 255, 255, 0.05);
+
+              img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+              }
             }
 
-            .video-date {
-              font-size: 11px;
-              color: rgba(255, 255, 255, 0.5);
-              text-transform: uppercase;
-              letter-spacing: 0.5px;
+            .video-info {
+              padding: 10px;
+
+              .video-title {
+                font-size: 13px;
+                font-weight: 600;
+                color: #fff;
+                margin-bottom: 6px;
+                line-height: 1.3;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+              }
+
+              .video-date {
+                font-size: 10px;
+                color: rgba(255, 255, 255, 0.5);
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+              }
             }
           }
-        }
 
-        .no-videos {
-          padding: 40px;
-          text-align: center;
-          color: rgba(255, 255, 255, 0.5);
-          font-size: 14px;
+          .no-videos {
+            padding: 40px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+          }
         }
       }
     }
@@ -383,6 +391,23 @@
 
       h1 {
         font-size: 24px;
+      }
+    }
+
+    .youtube-channels {
+      .channel-row {
+        .channel-content {
+          flex-direction: column;
+          gap: 16px;
+
+          .channel-info-col {
+            flex: 1;
+          }
+
+          .channel-videos {
+            width: 100%;
+          }
+        }
       }
     }
   }

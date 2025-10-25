@@ -152,8 +152,8 @@ app.post('/api/fetch-metadata', async (req, res) => {
 app.post('/api/fetch-youtube', async (req, res) => {
   const { channelUrl, tags } = req.body;
 
-  if (!channelUrl || !tags) {
-    return res.status(400).json({ error: 'Missing channelUrl or tags' });
+  if (!channelUrl) {
+    return res.status(400).json({ error: 'Missing channelUrl' });
   }
 
   // Extract channel ID from URL
@@ -215,9 +215,15 @@ app.post('/api/fetch-youtube', async (req, res) => {
       }
     }
 
-    // Fetch videos from the channel with search query
-    const searchQuery = `${tags.split(',').map(t => t.trim()).join(' ')}`;
-    const videosUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${actualChannelId}&q=${encodeURIComponent(searchQuery)}&type=video&order=date&maxResults=10&key=${YOUTUBE_API_KEY}`;
+    // Fetch videos from the channel with search query (if tags provided)
+    let videosUrl;
+    if (tags && tags.trim()) {
+      const searchQuery = tags.split(',').map(t => t.trim()).join(' ');
+      videosUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${actualChannelId}&q=${encodeURIComponent(searchQuery)}&type=video&order=date&maxResults=10&key=${YOUTUBE_API_KEY}`;
+    } else {
+      // No tags - fetch latest videos from channel
+      videosUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${actualChannelId}&type=video&order=date&maxResults=10&key=${YOUTUBE_API_KEY}`;
+    }
 
     const response = await fetch(videosUrl);
 
