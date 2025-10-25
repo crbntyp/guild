@@ -10,7 +10,7 @@ class TodoManager {
     // Use environment-based API URL
     this.apiUrl = window.location.hostname === 'localhost'
       ? 'http://localhost:3001/api/fetch-metadata'
-      : '/api/fetch-metadata';
+      : 'https://guild-production.up.railway.app/api/fetch-metadata';
     this.masonry = null;
     this.editingTodoId = null;
   }
