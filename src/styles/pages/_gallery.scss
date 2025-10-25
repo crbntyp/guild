@@ -1,0 +1,80 @@
+// Gallery page styles
+
+#gallery-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  min-height: calc(100vh - 200px);
+
+  .gallery-info {
+    text-align: center;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border-radius: 50px;
+    border: 1px solid rgba(white, 0.03);
+
+    h1 {
+      letter-spacing: 2px;
+    }
+
+    .location-display {
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      animation: fadeIn 0.5s ease-in;
+
+      .location-name {
+        color: #fff;
+        letter-spacing: 1px;
+        padding: 10px 20px;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+
+        .download-btn {
+          background: rgba(white, 0.2);
+          border: 2px solid white;
+          color: white;
+          padding: 4px;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 30px;
+          height: 30px;
+
+          i {
+            font-size: 16px;
+          }
+
+          &:hover {
+            background: rgba(white, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(white, 0.3);
+          }
+
+          &:active {
+            transform: translateY(0);
+          }
+        }
+      }
+
+      .race-name {
+        letter-spacing: 2px;
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

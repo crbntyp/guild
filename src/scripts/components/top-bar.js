@@ -81,9 +81,13 @@ class TopBar {
     const mobileNav = document.querySelector('.mobile-nav');
 
     if (hamburger && mobileNav) {
-      hamburger.addEventListener('click', () => {
+      // Remove existing listeners by cloning and replacing
+      const newHamburger = hamburger.cloneNode(true);
+      hamburger.parentNode.replaceChild(newHamburger, hamburger);
+
+      newHamburger.addEventListener('click', () => {
         this.isMobileMenuOpen = !this.isMobileMenuOpen;
-        hamburger.classList.toggle('active');
+        newHamburger.classList.toggle('active');
         mobileNav.classList.toggle('active');
       });
 
@@ -92,7 +96,7 @@ class TopBar {
       mobileLinks.forEach(link => {
         link.addEventListener('click', () => {
           this.isMobileMenuOpen = false;
-          hamburger.classList.remove('active');
+          newHamburger.classList.remove('active');
           mobileNav.classList.remove('active');
         });
       });
@@ -107,6 +111,17 @@ class TopBar {
 
     const isAuthenticated = authService.isAuthenticated();
 
+    // Get current page filename
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+
+    // Helper function to add active class
+    const getActiveClass = (page) => {
+      if (page === 'my-characters.html' && currentPage === 'character-details.html') {
+        return ' active';
+      }
+      return currentPage === page ? ' active' : '';
+    };
+
     this.leftContainer.innerHTML = `
       <button class="hamburger-menu" aria-label="Toggle menu">
         <span></span>
@@ -114,18 +129,36 @@ class TopBar {
         <span></span>
       </button>
       <nav class="top-bar-nav">
-        <a href="index.html" class="nav-link">
+        <a href="index.html" class="nav-link${getActiveClass('index.html')}">
           <i class="las la-search"></i>
           <span>Guild Finder</span>
         </a>
-        ${isAuthenticated ? '<a href="my-characters.html" class="nav-link"><i class="las la-user"></i><span>My Characters</span></a>' : ''}
+        ${isAuthenticated ? `<a href="my-characters.html" class="nav-link${getActiveClass('my-characters.html')}"><i class="las la-user"></i><span>My Characters</span></a>` : ''}
+        ${isAuthenticated ? `<a href="my-todos.html" class="nav-link${getActiveClass('my-todos.html')}"><i class="las la-tasks"></i><span>My Todos</span></a>` : ''}
+        <a href="gallery.html" class="nav-link${getActiveClass('gallery.html')}">
+          <i class="las la-images"></i>
+          <span>Gallery</span>
+        </a>
+        <a href="downloads.html" class="nav-link${getActiveClass('downloads.html')}">
+          <i class="las la-download"></i>
+          <span>Downloads</span>
+        </a>
       </nav>
       <nav class="mobile-nav">
-        <a href="index.html" class="mobile-nav-link">
+        <a href="index.html" class="mobile-nav-link${getActiveClass('index.html')}">
           <i class="las la-search"></i>
           <span>Guild Finder</span>
         </a>
-        ${isAuthenticated ? '<a href="my-characters.html" class="mobile-nav-link"><i class="las la-user"></i><span>My Characters</span></a>' : ''}
+        ${isAuthenticated ? `<a href="my-characters.html" class="mobile-nav-link${getActiveClass('my-characters.html')}"><i class="las la-user"></i><span>My Characters</span></a>` : ''}
+        ${isAuthenticated ? `<a href="my-todos.html" class="mobile-nav-link${getActiveClass('my-todos.html')}"><i class="las la-tasks"></i><span>My Todos</span></a>` : ''}
+        <a href="gallery.html" class="mobile-nav-link${getActiveClass('gallery.html')}">
+          <i class="las la-images"></i>
+          <span>Gallery</span>
+        </a>
+        <a href="downloads.html" class="mobile-nav-link${getActiveClass('downloads.html')}">
+          <i class="las la-download"></i>
+          <span>Downloads</span>
+        </a>
       </nav>
     `;
   }
@@ -141,12 +174,18 @@ class TopBar {
       </button>
     `;
 
-    // Attach event listener
+    // Attach event listener with error handling
     const loginBtn = document.getElementById('bnet-login-btn');
     if (loginBtn) {
-      loginBtn.addEventListener('click', () => {
+      console.log('✅ Login button found, attaching event listener');
+      loginBtn.addEventListener('click', (e) => {
+        console.log('🔵 Login button clicked!', e);
+        e.preventDefault();
+        e.stopPropagation();
         authService.login();
       });
+    } else {
+      console.error('❌ Login button not found!');
     }
   }
 
@@ -175,9 +214,15 @@ class TopBar {
     // Attach logout event listener
     const logoutBtn = document.getElementById('bnet-logout-btn');
     if (logoutBtn) {
-      logoutBtn.addEventListener('click', () => {
+      console.log('✅ Logout button found, attaching event listener');
+      logoutBtn.addEventListener('click', (e) => {
+        console.log('🔵 Logout button clicked!', e);
+        e.preventDefault();
+        e.stopPropagation();
         authService.logout();
       });
+    } else {
+      console.error('❌ Logout button not found!');
     }
 
     // Load user's main character avatar

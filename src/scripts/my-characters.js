@@ -6,6 +6,7 @@ import Footer from './components/footer.js';
 import BackgroundRotator from './components/background-rotator.js';
 import CustomDropdown from './components/custom-dropdown.js';
 import config from './config.js';
+import backgrounds from './data/backgrounds.js';
 
 console.log('⚡ My Characters Page initialized');
 
@@ -28,24 +29,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   footer.init();
 
   // Initialize background rotator
-  const backgroundImages = [
-    'img/bgs/bg-mulgore.jpg',
-    'img/bgs/bg-tglades.jpg',
-    'img/bgs/bg-eversong.jpg',
-    'img/bgs/bg-shadowglen.jpg',
-    'img/bgs/bg-suramar.jpg',
-    'img/bgs/bg-echoisles.jpg',
-    'img/bgs/bg-freach.jpg',
-    'img/bgs/bg-dmorogh.jpg',
-    'img/bgs/bg-goldshire.jpg',
-    'img/bgs/bg-azuremyst.jpg',
-    'img/bgs/bg-gilneas.jpg',
-    'img/bgs/bg-wisle.jpg',
-    'img/bgs/bg-durotar.jpg',
-    'img/bgs/bg-kezan.jpg'
-  ];
-
-  const bgRotator = new BackgroundRotator(backgroundImages, 8000, 2000);
+  const bgRotator = new BackgroundRotator(backgrounds, 8000, 2000);
   bgRotator.init();
 
   // Check if user is logged in

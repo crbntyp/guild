@@ -37,15 +37,15 @@ const raceBackgrounds = {
   'goblin': '../img/bgs/bg-kezan.jpg',
   'pandaren': '../img/bgs/bg-wisle.jpg',
   'nightborne': '../img/bgs/bg-suramar.jpg',
-  'void elf': '../img/bgs/bg-tglades.jpg',
-  'lightforged draenei': '../img/bgs/bg-azuremyst.jpg',
-  'dark iron dwarf': '../img/bgs/bg-dmorogh.jpg',
-  'kul tiran': '../img/bgs/bg-goldshire.jpg',
-  'mechagnome': '../img/bgs/bg-dmorogh.jpg',
-  'highmountain tauren': '../img/bgs/bg-mulgore.jpg',
-  'mag\'har orc': '../img/bgs/bg-durotar.jpg',
-  'zandalari troll': '../img/bgs/bg-echoisles.jpg',
-  'vulpera': '../img/bgs/bg-durotar.jpg',
+  'void elf': '../img/bgs/bg-telogrus.jpg',
+  'lightforged draenei': '../img/bgs/bg-vindicaar.jpg',
+  'dark iron dwarf': '../img/bgs/bg-brd.jpg',
+  'kul tiran': '../img/bgs/bg-boralus.jpg',
+  'mechagnome': '../img/bgs/bg-gregan.jpg',
+  'highmountain tauren': '../img/bgs/bg-hmountain.jpg',
+  'mag\'har orc': '../img/bgs/bg-nagrand.jpg',
+  'zandalari troll': '../img/bgs/bg-zuldazar.jpg',
+  'vulpera': '../img/bgs/bg-voldun.jpg',
   'dracthyr': '../img/bgs/bg-freach.jpg',
   'default': '../img/bgs/bg-tglades.jpg'
 };
@@ -150,13 +150,16 @@ function renderCharacterDetails(container, data, realmSlug) {
 
   container.innerHTML = `
     <div class="character-details-top">
+      <div class="character-header">
+        <h2 style="color: ${classColor}">${profile.name}</h2>
+      </div>
       <div class="character-view-container" style="--class-bg-gradient: ${classGradient}; background-image: url(${render}); background-position: center center; background-repeat: no-repeat;">
         <div>
-          <h2 style="color: ${classColor}">${profile.name}</h2>
+          
           <span class="meta-badge">
             ${profile.race.name} ${gender} ${activeSpec.specialization?.name || 'N/A'} ${className} 
           </span>
-          <div style="text-transform: uppercase; font-size: 10px;">${heroTalentName}</div>
+          <div style="text-transform: uppercase; font-size: 10px;">${heroTalentName || 'to low level'}</div>
           <div class="character-detail-icons" style="display: flex;">
                   <div class="detail-icon-wrapper">
                     <i class="las la-spinner la-spin loading-spinner"></i>

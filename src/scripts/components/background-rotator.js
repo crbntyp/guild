@@ -58,7 +58,9 @@ class BackgroundRotator {
 
   setBackground(imageIndex, targetLayer) {
     const layer = targetLayer === 1 ? this.layers.layer1 : this.layers.layer2;
-    const imagePath = this.images[imageIndex];
+    const imageData = this.images[imageIndex];
+    // Support both string paths and objects with {path, location}
+    const imagePath = typeof imageData === 'string' ? imageData : imageData.path;
     layer.style.backgroundImage = `url('${imagePath}')`;
     console.log(`BackgroundRotator: Set layer ${targetLayer} to ${imagePath}`);
   }

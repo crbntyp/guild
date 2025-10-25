@@ -139,8 +139,8 @@ export const RACE_ICON_URLS = {
     female: 'https://static.wikia.nocookie.net/wowpedia/images/4/4f/IconSmall_Vulpera_Female.gif'
   },
   36: {  // Mag'har Orc
-    male: 'https://static.wikia.nocookie.net/wowpedia/images/a/aa/IconSmall_OrcBrown_Male.gif',
-    female: 'https://static.wikia.nocookie.net/wowpedia/images/5/5f/IconSmall_OrcBrown_Female.gif'
+    male: 'https://warcraft.wiki.gg/images/IconSmall_OrcBrown_Male.gif',
+    female: 'https://warcraft.wiki.gg/images/IconSmall_OrcBrown_Female.gif'
   },
   37: {  // Mechagnome (Junker - already correct)
     male: 'https://static.wikia.nocookie.net/wowpedia/images/5/56/IconSmall_Junker_Male.gif',

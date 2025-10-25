@@ -93,6 +93,10 @@
       &:hover {
         color: var(--color-primary);
       }
+
+      &.active {
+        color: #148eff;
+      }
     }
   }
 
@@ -143,6 +147,12 @@
         background: rgba(255, 255, 255, 0.03);
         border-left-color: var(--color-primary);
       }
+
+      &.active {
+        color: #148eff;
+        background: rgba(20, 142, 255, 0.1);
+        border-left-color: #148eff;
+      }
     }
   }
 
@@ -168,6 +178,9 @@
     letter-spacing: 1.5px;
     cursor: pointer;
     transition: var(--transition);
+    pointer-events: auto;
+    position: relative;
+    z-index: 10001;
 
     &:hover {
       background: #0d7de8;
@@ -176,6 +189,11 @@
 
     i {
       font-size: 14px;
+      pointer-events: none;
+    }
+
+    span {
+      pointer-events: none;
     }
   }
 
@@ -234,6 +252,9 @@
       letter-spacing: 1.5px;
       cursor: pointer;
       transition: var(--transition);
+      pointer-events: auto;
+      position: relative;
+      z-index: 10001;
 
       &:hover {
         background: #0d7de8;
@@ -242,6 +263,7 @@
 
       i {
         font-size: 14px;
+        pointer-events: none;
       }
     }
   }
