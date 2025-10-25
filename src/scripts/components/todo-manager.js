@@ -176,8 +176,12 @@ class TodoManager {
             </div>
 
             <div class="form-group">
-              <label for="todo-url">Image URL (optional)</label>
-              <input type="url" id="todo-url" placeholder="Paste URL to fetch image from page">
+              <label for="todo-url">URL (optional)</label>
+              <input type="url" id="todo-url" placeholder="Paste URL to fetch metadata from page">
+              <div class="form-checkbox">
+                <input type="checkbox" id="auto-fill-metadata" checked>
+                <label for="auto-fill-metadata">Autofill from video metadata</label>
+              </div>
               <div class="url-status" id="url-status"></div>
             </div>
 
@@ -382,20 +386,33 @@ class TodoManager {
   async handleUrlInput(url) {
     const status = document.getElementById('url-status');
     const titleInput = document.getElementById('todo-title');
+    const descriptionInput = document.getElementById('todo-description');
+    const autoFillCheckbox = document.getElementById('auto-fill-metadata');
 
-    status.textContent = 'Fetching image...';
+    status.textContent = 'Fetching metadata...';
     status.className = 'url-status loading';
 
     const metadata = await this.fetchMetadata(url);
 
     if (metadata) {
-      status.textContent = metadata.image ? '✓ Image loaded' : '✓ No image found';
-      status.className = metadata.image ? 'url-status success' : 'url-status error';
+      // Auto-fill title and description if checkbox is checked
+      if (autoFillCheckbox.checked) {
+        if (metadata.title && !titleInput.value) {
+          titleInput.value = metadata.title;
+        }
+        if (metadata.description && !descriptionInput.value) {
+          descriptionInput.value = metadata.description;
+        }
+        status.textContent = '✓ Metadata loaded';
+      } else {
+        status.textContent = metadata.image ? '✓ Image loaded' : '✓ No image found';
+      }
+      status.className = 'url-status success';
 
-      // Store metadata (only image) for later
+      // Store metadata for later
       titleInput.dataset.metadata = JSON.stringify(metadata);
     } else {
-      status.textContent = 'Could not fetch image';
+      status.textContent = 'Could not fetch metadata';
       status.className = 'url-status error';
     }
   }

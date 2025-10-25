@@ -2,6 +2,7 @@
 import BackgroundRotator from './components/background-rotator.js';
 import TopBar from './components/top-bar.js';
 import Footer from './components/footer.js';
+import YouTubeManager from './components/youtube-manager.js';
 import backgrounds from './data/backgrounds.js';
 import authService from './services/auth.js';
 
@@ -27,6 +28,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.location.href = 'index.html';
     return;
   }
+
+  // Initialize YouTube Manager
+  const youtubeManager = new YouTubeManager('my-youtube-container');
+  youtubeManager.init();
 
   console.log('✅ My YouTube loaded');
 });

@@ -1,4 +1,5 @@
 // Simple OAuth proxy server for Battle.net authentication
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
@@ -8,8 +9,8 @@ const PORT = process.env.PORT || 3001;
 
 // Battle.net OAuth configuration
 const BNET_CONFIG = {
-  clientId: process.env.BNET_CLIENT_ID || '86af3b20703442e78f9a90778846ce3b',
-  clientSecret: process.env.BNET_CLIENT_SECRET || 'xHpqmVAnuwV8DFcMQncEYxCio35MSUHq',
+  clientId: process.env.BNET_CLIENT_ID,
+  clientSecret: process.env.BNET_CLIENT_SECRET,
   tokenUrl: 'https://oauth.battle.net/token',
   userinfoUrl: 'https://oauth.battle.net/userinfo'
 };
@@ -144,6 +145,104 @@ app.post('/api/fetch-metadata', async (req, res) => {
   } catch (error) {
     console.error('Error fetching metadata:', error);
     res.status(500).json({ error: 'Failed to fetch metadata', details: error.message });
+  }
+});
+
+// Fetch YouTube videos for a channel with search tags
+app.post('/api/fetch-youtube', async (req, res) => {
+  const { channelUrl, tags } = req.body;
+
+  if (!channelUrl || !tags) {
+    return res.status(400).json({ error: 'Missing channelUrl or tags' });
+  }
+
+  // Extract channel ID from URL
+  const extractChannelId = (url) => {
+    try {
+      const urlObj = new URL(url);
+      const pathname = urlObj.pathname;
+
+      // Handle @username format
+      if (pathname.includes('/@')) {
+        return pathname.split('/@')[1].split('/')[0];
+      }
+      // Handle /c/ format
+      if (pathname.includes('/c/')) {
+        return pathname.split('/c/')[1].split('/')[0];
+      }
+      // Handle /channel/ format (direct channel ID)
+      if (pathname.includes('/channel/')) {
+        return pathname.split('/channel/')[1].split('/')[0];
+      }
+      // Handle /user/ format
+      if (pathname.includes('/user/')) {
+        return pathname.split('/user/')[1].split('/')[0];
+      }
+
+      return null;
+    } catch (error) {
+      return null;
+    }
+  };
+
+  const channelId = extractChannelId(channelUrl);
+  if (!channelId) {
+    return res.status(400).json({ error: 'Invalid YouTube channel URL' });
+  }
+
+  // Get YouTube API key from environment variable
+  const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
+  if (!YOUTUBE_API_KEY) {
+    console.error('YOUTUBE_API_KEY not set in environment variables');
+    return res.status(500).json({ error: 'YouTube API key not configured' });
+  }
+
+  try {
+    // First, resolve channel handle to channel ID if needed
+    let actualChannelId = channelId;
+
+    // If it's a handle (starts with @ or is a custom URL), we need to search for it
+    if (!channelId.startsWith('UC')) {
+      const searchResponse = await fetch(
+        `https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${encodeURIComponent(channelId)}&key=${YOUTUBE_API_KEY}&maxResults=1`
+      );
+
+      if (searchResponse.ok) {
+        const searchData = await searchResponse.json();
+        if (searchData.items && searchData.items.length > 0) {
+          actualChannelId = searchData.items[0].snippet.channelId;
+        }
+      }
+    }
+
+    // Fetch videos from the channel with search query
+    const searchQuery = `${tags.split(',').map(t => t.trim()).join(' ')}`;
+    const videosUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${actualChannelId}&q=${encodeURIComponent(searchQuery)}&type=video&order=date&maxResults=10&key=${YOUTUBE_API_KEY}`;
+
+    const response = await fetch(videosUrl);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('YouTube API request failed:', response.status, errorText);
+      return res.status(response.status).json({ error: 'Failed to fetch YouTube videos' });
+    }
+
+    const data = await response.json();
+
+    // Transform the data into a simpler format
+    const videos = data.items.map(item => ({
+      id: item.id.videoId,
+      title: item.snippet.title,
+      thumbnail: item.snippet.thumbnails.medium.url,
+      url: `https://www.youtube.com/watch?v=${item.id.videoId}`,
+      publishedAt: item.snippet.publishedAt
+    }));
+
+    console.log(`📺 Fetched ${videos.length} videos for channel: ${channelId}`);
+    res.json(videos);
+  } catch (error) {
+    console.error('Error fetching YouTube videos:', error);
+    res.status(500).json({ error: 'Failed to fetch YouTube videos', details: error.message });
   }
 });
 
