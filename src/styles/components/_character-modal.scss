@@ -1,0 +1,365 @@
+// Character Modal Styles
+
+.character-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+
+  &.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .character-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    //background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(15px);
+  }
+
+  .character-modal-content {
+    position: relative;
+    max-width: 500px;
+    max-height: 90vh;
+    z-index: 1;
+    animation: modal-slide-in 0.3s ease;
+  }
+
+  .character-modal-close {
+    position: absolute;
+    top: -50px;
+    left: calc(127px - 18px);
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.1);
+    }
+  }
+
+  .character-modal-body {
+    background: rgba(black, 0.4);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+  }
+
+  .modal-loading,
+  .modal-error {
+    text-align: center;
+    padding: 60px 20px;
+    color: rgba(255, 255, 255, 0.7);
+
+    i {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    p {
+      font-size: 16px;
+    }
+  }
+
+  .modal-error {
+    color: #ff4444;
+  }
+
+  .modal-character-card {
+    position: relative;
+    //background: rgba(0, 0, 0, 0.5);
+    border-radius: 20px;
+    backdrop-filter: blur(2px);
+    min-width: 254;
+
+    .guildmaster-crown {
+      position: absolute;
+      left: -4px;
+      top: -4px;
+      font-size: 24px;
+      color: #FFD700;
+      transform: rotate(-25deg);
+      z-index: 100;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+    }
+
+    .modal-member-level {
+      position: absolute;
+      top: 10px;
+      z-index: 10;
+      height: 30px;
+      font-size: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0px 20px;
+      width: 100%;
+
+      .modal-member-ilvl {
+        display: inline-flex;
+        margin-left: 5px;
+      }
+    }
+
+    .modal-avatar-container {
+      background: rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      border-radius: 10px 10px 0px 0px;
+
+      .modal-character-avatar {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        position: relative;
+        border-radius: 10px 10px 0px 0px;
+      }
+    }
+
+    .modal-member-header {
+      padding: 5px 10px;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      max-width: 100%;
+      flex-direction: column;
+
+      .modal-member-name {
+        font-size: 14px;
+        font-weight: 500;
+        text-align: center;
+      }
+
+      .modal-member-hero-talent {
+        font-size: 9px;
+        text-align: center;
+        text-transform: uppercase;
+      }
+    }
+
+    .modal-member-details {
+      padding: 10px;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      gap: 10px;
+
+      .modal-member-detail-row {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-xs);
+
+        .modal-member-icon {
+          width: 20px;
+          height: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          overflow: hidden;
+          flex-shrink: 0;
+          border-radius: 50%;
+
+          .icon-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+          }
+
+          i {
+            font-size: 14px;
+            color: var(--color-text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+          }
+        }
+      }
+    }
+
+    .modal-member-realm-badge-container {
+      display: flex;
+      justify-content: center;
+      padding-bottom: 10px;
+    }
+
+    .modal-member-realm-badge {
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      color: var(--color-text-light);
+      text-transform: capitalize;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      z-index: 10;
+    }
+
+    .modal-equipment {
+      padding: 15px 5px 5px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      max-height: 400px;
+      overflow-y: auto;
+
+      &::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 4px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.3);
+        }
+      }
+
+      h3 {
+        font-size: 14px;
+        font-weight: 300;
+        color: white;
+        margin-bottom: 10px;
+        text-align: center;
+      }
+
+      .modal-equipment-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 4px;
+      }
+
+      .modal-equipment-item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        color: inherit;
+        aspect-ratio: 1;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.05);
+          border-color: rgba(255, 255, 255, 0.2);
+          transform: scale(1.05);
+        }
+
+        .modal-item-icon {
+          width: 100%;
+          height: 100%;
+          border-radius: 4px;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          background: rgba(0, 0, 0, 0.3);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+
+          img {
+            width: 100%;
+            height: 100%;
+            border-radius: 4px;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            position: relative;
+            z-index: 1;
+          }
+
+          i {
+            font-size: 32px;
+            color: rgba(255, 255, 255, 0.3);
+            z-index: 0;
+          }
+
+          .modal-item-slot-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.5);
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 8px;
+            font-weight: 600;
+            text-align: center;
+            padding: 2px 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-radius: 4px 4px 0 0;
+            z-index: 10;
+          }
+
+          .modal-item-ilvl-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            color: #FFD700;
+            font-size: 10px;
+            font-weight: 700;
+            text-align: center;
+            padding: 2px 4px;
+            border-radius: 0 0 4px 4px;
+            z-index: 10;
+            display: none;
+          }
+        }
+      }
+
+      .no-equipment {
+        text-align: center;
+        padding: 40px 20px;
+        color: rgba(255, 255, 255, 0.5);
+
+        p {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+}
+
+@keyframes modal-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+

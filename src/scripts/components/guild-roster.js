@@ -8,6 +8,7 @@ import { getItemQualityColor, getSlotName, getSlotIcon } from '../utils/item-qua
 import { getClassIconUrl, getLocalClassIconUrl, getRaceIconUrl, getLocalRaceIconUrl, getFactionIconUrl, getLocalFactionIconUrl, getSpecIconUrl, getLocalSpecIconUrl, getFallbackIcon } from '../utils/wow-icons.js';
 import config from '../config.js';
 import CustomDropdown from './custom-dropdown.js';
+import characterModal from './character-modal.js';
 
 class GuildRoster {
   constructor(containerId) {
@@ -1144,8 +1145,8 @@ class GuildRoster {
         const characterName = newCard.dataset.character;
         const realmSlug = newCard.dataset.realm;
 
-        // Navigate to character details page
-        window.location.href = `character-details.html?character=${encodeURIComponent(characterName)}&realm=${encodeURIComponent(realmSlug)}`;
+        // Open character modal
+        characterModal.open(characterName, realmSlug, 'eu');
       });
       // Add cursor pointer style
       newCard.style.cursor = 'pointer';

@@ -112,7 +112,12 @@ class AuthService {
    * Check if user is on mobile device
    */
   isMobileDevice() {
+    // Check for iPad specifically (including iPadOS 13+ which reports as Macintosh)
+    const isIPad = /iPad/.test(navigator.userAgent) ||
+                   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+           isIPad ||
            window.innerWidth <= 768;
   }
 
@@ -260,15 +265,31 @@ class AuthService {
    * Store auth data in localStorage
    */
   storeAuthData(data) {
-    localStorage.setItem(this.storageKey, JSON.stringify(data));
+    try {
+      localStorage.setItem(this.storageKey, JSON.stringify(data));
+      // Verify it was stored (Safari private browsing fails silently)
+      const stored = localStorage.getItem(this.storageKey);
+      if (!stored) {
+        console.error('❌ localStorage.setItem failed silently (possibly private browsing)');
+        alert('Login failed: Please disable private browsing mode and try again.');
+      }
+    } catch (error) {
+      console.error('❌ localStorage error:', error);
+      alert('Login failed: localStorage is blocked. Please check your browser settings (Safari → Prevent Cross-Site Tracking)');
+    }
   }
 
   /**
    * Get auth data from localStorage
    */
   getAuthData() {
-    const data = localStorage.getItem(this.storageKey);
-    return data ? JSON.parse(data) : null;
+    try {
+      const data = localStorage.getItem(this.storageKey);
+      return data ? JSON.parse(data) : null;
+    } catch (error) {
+      console.error('❌ Error reading from localStorage:', error);
+      return null;
+    }
   }
 
   /**

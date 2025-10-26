@@ -4,6 +4,7 @@ import GuildSearch from './components/guild-search.js';
 import BackgroundRotator from './components/background-rotator.js';
 import TopBar from './components/top-bar.js';
 import Footer from './components/footer.js';
+import characterModal from './components/character-modal.js';
 import config from './config.js';
 import { slugToFriendly } from './utils/helpers.js';
 import backgrounds from './data/backgrounds.js';
@@ -15,6 +16,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Initialize top bar (login)
   const topBar = new TopBar();
   await topBar.init();
+
+  // Initialize character modal
+  characterModal.init();
 
   // Initialize footer
   const footer = new Footer();
@@ -87,12 +91,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       tw: 'zh_TW'
     };
     config.api.locale = localeMap[regionLower] || 'en_US';
-
-      guild: config.guild,
-      region: config.battlenet.region,
-      namespace: config.api.namespace,
-      locale: config.api.locale
-    });
 
     // Clear roster state
     guildRoster.roster = null;

@@ -5,6 +5,7 @@ import TopBar from './components/top-bar.js';
 import Footer from './components/footer.js';
 import BackgroundRotator from './components/background-rotator.js';
 import CustomDropdown from './components/custom-dropdown.js';
+import characterModal from './components/character-modal.js';
 import config from './config.js';
 import backgrounds from './data/backgrounds.js';
 
@@ -17,6 +18,24 @@ let sortBy = 'ilvl'; // Default sort
 let filterClass = null;
 let sortDropdown = null;
 let classDropdown = null;
+
+// Track characters that return 404 (deleted/transferred) to avoid repeated requests
+const invalidCharacters = new Set();
+
+// Helper to create character key
+function getCharacterKey(character) {
+  return `${character.realm.slug}-${character.name.toLowerCase()}`;
+}
+
+// Helper to check if character is invalid
+function isInvalidCharacter(character) {
+  return invalidCharacters.has(getCharacterKey(character));
+}
+
+// Helper to mark character as invalid
+function markCharacterInvalid(character) {
+  invalidCharacters.add(getCharacterKey(character));
+}
 
 // Initialize everything when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
@@ -31,6 +50,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Initialize background rotator
   const bgRotator = new BackgroundRotator(backgrounds, 8000, 2000);
   bgRotator.init();
+
+  // Initialize character modal
+  characterModal.init();
 
   // Check if user is logged in
   if (!authService.isAuthenticated()) {
@@ -386,10 +408,10 @@ async function initializeCharacterCards(characters) {
       }
     });
 
-    // Add click handler to view character details
+    // Add click handler to open character modal
     card.style.cursor = 'pointer';
     card.addEventListener('click', () => {
-      window.location.href = `character-details.html?character=${encodeURIComponent(character.name)}&realm=${encodeURIComponent(character.realm.slug)}`;
+      characterModal.open(character.name, character.realm.slug, 'eu');
     });
   }
 }
@@ -443,6 +465,18 @@ async function loadIcons(card, character) {
     classIconElement.classList.remove('class-icon-placeholder');
   }
 
+  // Skip API request if character is known to be invalid (404)
+  if (isInvalidCharacter(character)) {
+    // Use fallback male icon
+    const raceIconUrl = getRaceIconUrl(character.playable_race.id, 'male');
+    const raceIconElement = card.querySelector('.race-icon-placeholder');
+    if (raceIconElement && raceIconUrl) {
+      raceIconElement.innerHTML = `<img src="${raceIconUrl}" class="icon-img" alt="Race" />`;
+      raceIconElement.classList.remove('race-icon-placeholder');
+    }
+    return;
+  }
+
   // Fetch gender from character profile - use same approach as guild roster
   try {
     const characterService = (await import('./services/character-service.js')).default;
@@ -461,7 +495,12 @@ async function loadIcons(card, character) {
       raceIconElement.classList.remove('race-icon-placeholder');
     }
   } catch (error) {
-    console.error(`Error loading gender for ${character.name}:`, error);
+    // Mark character as invalid on 404
+    if (error.message?.includes('404')) {
+      markCharacterInvalid(character);
+    } else {
+      console.error(`Error loading gender for ${character.name}:`, error);
+    }
     // Fallback to male
     const raceIconUrl = getRaceIconUrl(character.playable_race.id, 'male');
     const raceIconElement = card.querySelector('.race-icon-placeholder');
@@ -471,8 +510,9 @@ async function loadIcons(card, character) {
     }
   }
 
-  // Load faction icon
-  const factionIconUrl = getFactionIconUrl(character.faction.type.toLowerCase());
+  // Load faction icon - getFactionIconUrl expects boolean (isAlliance)
+  const isAlliance = character.faction.type.toUpperCase() === 'ALLIANCE';
+  const factionIconUrl = getFactionIconUrl(isAlliance);
   const factionIconElement = card.querySelector('.faction-icon-placeholder');
   if (factionIconElement && factionIconUrl) {
     factionIconElement.innerHTML = `<img src="${factionIconUrl}" class="icon-img" alt="Faction" />`;
@@ -481,6 +521,11 @@ async function loadIcons(card, character) {
 }
 
 async function loadSpec(card, character) {
+  // Skip API request if character is known to be invalid (404)
+  if (isInvalidCharacter(character)) {
+    return;
+  }
+
   try {
     const wowAPI = (await import('./api/wow-api.js')).default;
     const specs = await wowAPI.getCharacterSpecializations(character.realm.slug, character.name);
@@ -509,11 +554,25 @@ async function loadSpec(card, character) {
 
     }
   } catch (error) {
-    console.error(`Error loading spec for ${character.name}:`, error);
+    // Mark character as invalid on 404
+    if (error.message?.includes('404')) {
+      markCharacterInvalid(character);
+    } else {
+      console.error(`Error loading spec for ${character.name}:`, error);
+    }
   }
 }
 
 async function loadItemLevel(card, character) {
+  // Skip API request if character is known to be invalid (404)
+  if (isInvalidCharacter(character)) {
+    const ilvlElement = card.querySelector('.member-ilvl');
+    if (ilvlElement) {
+      ilvlElement.textContent = 'N/A';
+    }
+    return;
+  }
+
   try {
     const characterService = (await import('./services/character-service.js')).default;
     const profile = await characterService.fetchCharacterProfile(character.realm.slug, character.name);
@@ -536,7 +595,12 @@ async function loadItemLevel(card, character) {
       }
     }
   } catch (error) {
-    console.error(`Error loading item level for ${character.name}:`, error);
+    // Mark character as invalid on 404
+    if (error.message?.includes('404')) {
+      markCharacterInvalid(character);
+    } else {
+      console.error(`Error loading item level for ${character.name}:`, error);
+    }
     const ilvlElement = card.querySelector('.member-ilvl');
     if (ilvlElement) {
       ilvlElement.textContent = 'N/A';
@@ -577,7 +641,6 @@ function reSortCards() {
 
   // Re-append cards in sorted order (this moves them in the DOM)
   cards.forEach(card => rosterGrid.appendChild(card));
-
 }
 
 // Helper functions (imported from wow-constants)
