@@ -8,10 +8,8 @@ class TodoManager {
     this.todos = [];
     this.authService = authService;
     this.storageKey = this.getStorageKey();
-    // Use environment-based API URL
-    this.apiUrl = window.location.hostname === 'localhost'
-      ? 'http://localhost:3001/api/fetch-metadata'
-      : 'https://guild-production.up.railway.app/api/fetch-metadata';
+    // Always use production Railway backend for sync
+    this.apiUrl = 'https://guild-production.up.railway.app/api/fetch-metadata';
     this.masonry = null;
     this.editingTodoId = null;
   }

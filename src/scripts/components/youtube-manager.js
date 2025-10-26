@@ -9,10 +9,8 @@ class YouTubeManager {
     this.authService = authService;
     this.storageKey = this.getStorageKey();
     this.editingChannelId = null;
-    // Use environment-based API URL for YouTube data fetching
-    this.apiUrl = window.location.hostname === 'localhost'
-      ? 'http://localhost:3001/api/fetch-youtube'
-      : 'https://guild-production.up.railway.app/api/fetch-youtube';
+    // Always use production Railway backend for sync
+    this.apiUrl = 'https://guild-production.up.railway.app/api/fetch-youtube';
   }
 
   /**
