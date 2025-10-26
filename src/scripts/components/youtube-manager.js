@@ -360,6 +360,9 @@ class YouTubeManager {
           <button class="channel-edit" data-id="${channel.id}" title="Edit channel">
             <i class="las la-pen"></i>
           </button>
+          <button class="channel-refresh" data-id="${channel.id}" title="Refresh videos">
+            <i class="las la-sync"></i>
+          </button>
           <button class="channel-delete" data-id="${channel.id}" title="Delete channel">
             <i class="las la-trash"></i>
           </button>
@@ -394,6 +397,19 @@ class YouTubeManager {
         e.stopPropagation();
         const id = parseInt(btn.dataset.id);
         this.editChannel(id);
+      });
+    });
+
+    // Attach refresh handlers
+    channelsContainer.querySelectorAll('.channel-refresh').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const id = parseInt(btn.dataset.id);
+        // Add spinning animation
+        const icon = btn.querySelector('i');
+        icon.classList.add('spinning');
+        await this.fetchChannelVideos(id);
+        icon.classList.remove('spinning');
       });
     });
 
