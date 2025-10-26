@@ -58,6 +58,7 @@ class TodoManager {
     try {
       // Try backend first if user is authenticated
       if (this.authService?.isAuthenticated()) {
+        console.log('🔄 Attempting to load todos from backend...');
         const backendData = await this.loadFromBackend();
         if (backendData) {
           this.todos = backendData;
@@ -65,17 +66,23 @@ class TodoManager {
           localStorage.setItem(this.storageKey, JSON.stringify(this.todos));
           console.log('✅ Loaded', this.todos.length, 'todos from backend');
           return;
+        } else {
+          console.log('⚠️ Backend returned no data, falling back to localStorage');
         }
+      } else {
+        console.log('⚠️ User not authenticated, using localStorage only');
       }
 
       // Fallback to localStorage
       const stored = localStorage.getItem(this.storageKey);
       if (stored) {
         this.todos = JSON.parse(stored);
-        console.log('✅ Loaded', this.todos.length, 'todos from localStorage');
+        console.log('✅ Loaded', this.todos.length, 'todos from localStorage (key:', this.storageKey, ')');
+      } else {
+        console.log('ℹ️ No todos found in localStorage (key:', this.storageKey, ')');
       }
     } catch (error) {
-      console.error('Error loading todos:', error);
+      console.error('❌ Error loading todos:', error);
       this.todos = [];
     }
   }
@@ -113,16 +120,19 @@ class TodoManager {
     try {
       // Save to localStorage (instant)
       localStorage.setItem(this.storageKey, JSON.stringify(this.todos));
-      console.log('💾 Saved', this.todos.length, 'todos to localStorage');
+      console.log('💾 Saved', this.todos.length, 'todos to localStorage (key:', this.storageKey, ')');
 
       // Save to backend (async) if authenticated
       if (this.authService?.isAuthenticated()) {
+        console.log('☁️ Syncing todos to backend...');
         this.saveToBackend().catch(err => {
-          console.error('Failed to sync todos to backend:', err);
+          console.error('❌ Failed to sync todos to backend:', err);
         });
+      } else {
+        console.log('⚠️ Not syncing to backend - user not authenticated');
       }
     } catch (error) {
-      console.error('Error saving todos:', error);
+      console.error('❌ Error saving todos:', error);
     }
   }
 
