@@ -58,11 +58,32 @@ class TodoManager {
       if (this.authService?.isAuthenticated()) {
         console.log('🔄 Attempting to load todos from backend...');
         const backendData = await this.loadFromBackend();
-        if (backendData !== null) {  // Check for null explicitly, not just truthiness
+
+        // Only use backend data if it's not null AND (has data OR localStorage is empty)
+        if (backendData !== null) {
+          const stored = localStorage.getItem(this.storageKey);
+          const localData = stored ? JSON.parse(stored) : [];
+
+          // If backend has data, use it
+          if (backendData.length > 0) {
+            this.todos = backendData;
+            localStorage.setItem(this.storageKey, JSON.stringify(this.todos));
+            console.log('✅ Loaded', this.todos.length, 'todos from backend');
+            return;
+          }
+
+          // If backend is empty but localStorage has data, keep localStorage and sync to backend
+          if (backendData.length === 0 && localData.length > 0) {
+            this.todos = localData;
+            console.log('⚠️ Backend empty, using', this.todos.length, 'todos from localStorage');
+            // Sync localStorage to backend
+            this.saveToBackend();
+            return;
+          }
+
+          // Both empty, use backend empty array
           this.todos = backendData;
-          // Also save to localStorage for offline access
-          localStorage.setItem(this.storageKey, JSON.stringify(this.todos));
-          console.log('✅ Loaded', this.todos.length, 'todos from backend');
+          console.log('✅ Loaded', this.todos.length, 'todos from backend (empty)');
           return;
         } else {
           console.log('⚠️ Backend returned no data, falling back to localStorage');

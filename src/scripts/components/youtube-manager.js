@@ -59,11 +59,32 @@ class YouTubeManager {
       // Try backend first if user is authenticated
       if (this.authService?.isAuthenticated()) {
         const backendData = await this.loadFromBackend();
-        if (backendData !== null) {  // Check for null explicitly, not just truthiness
+
+        // Only use backend data if it's not null AND (has data OR localStorage is empty)
+        if (backendData !== null) {
+          const stored = localStorage.getItem(this.storageKey);
+          const localData = stored ? JSON.parse(stored) : [];
+
+          // If backend has data, use it
+          if (backendData.length > 0) {
+            this.channels = backendData;
+            localStorage.setItem(this.storageKey, JSON.stringify(this.channels));
+            console.log('✅ Loaded', this.channels.length, 'channels from backend');
+            return;
+          }
+
+          // If backend is empty but localStorage has data, keep localStorage and sync to backend
+          if (backendData.length === 0 && localData.length > 0) {
+            this.channels = localData;
+            console.log('⚠️ Backend empty, using', this.channels.length, 'channels from localStorage');
+            // Sync localStorage to backend
+            this.saveToBackend();
+            return;
+          }
+
+          // Both empty, use backend empty array
           this.channels = backendData;
-          // Also save to localStorage for offline access
-          localStorage.setItem(this.storageKey, JSON.stringify(this.channels));
-          console.log('✅ Loaded', this.channels.length, 'channels from backend');
+          console.log('✅ Loaded', this.channels.length, 'channels from backend (empty)');
           return;
         }
       }
@@ -75,7 +96,7 @@ class YouTubeManager {
         console.log('✅ Loaded', this.channels.length, 'channels from localStorage');
       }
     } catch (error) {
-      console.error('Error loading channels:', error);
+      console.error('❌ Error loading channels:', error);
       this.channels = [];
     }
   }
