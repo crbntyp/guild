@@ -116,9 +116,6 @@ class TopBar {
 
     // Helper function to add active class
     const getActiveClass = (page) => {
-      if (page === 'my-characters.html' && currentPage === 'character-details.html') {
-        return ' active';
-      }
       return currentPage === page ? ' active' : '';
     };
 

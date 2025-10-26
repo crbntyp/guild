@@ -9,6 +9,8 @@ import { getClassIconUrl, getLocalClassIconUrl, getRaceIconUrl, getLocalRaceIcon
 import config from '../config.js';
 import CustomDropdown from './custom-dropdown.js';
 import characterModal from './character-modal.js';
+import IconLoader from '../services/icon-loader.js';
+import CharacterCard from './character-card.js';
 
 class GuildRoster {
   constructor(containerId) {
@@ -208,6 +210,8 @@ class GuildRoster {
     }
 
     this.render();
+    // Restore cached data after re-render
+    this.loadAllIcons(true);
   }
 
   setSortBy(sortBy) {
@@ -278,7 +282,19 @@ class GuildRoster {
       </div>
 
       <div class="roster-grid">
-        ${paginatedRoster.map(member => this.renderMemberCard(member)).join('')}
+        ${paginatedRoster.map(member => {
+          // Enrich character data with cached values before rendering
+          const realmSlug = member.character.realm?.slug || config.guild.realmSlug;
+          const characterKey = this.getCharacterKey(member.character.name, realmSlug);
+          const cachedItemLevel = this.itemLevels.get(characterKey);
+
+          // Add itemLevel to character object (same pattern as my-characters.js)
+          if (cachedItemLevel) {
+            member.character.itemLevel = cachedItemLevel;
+          }
+
+          return this.renderMemberCard(member);
+        }).join('')}
       </div>
 
       ${this.renderPagination(totalPages, filteredRoster.length)}
@@ -383,6 +399,8 @@ class GuildRoster {
         if (page && page !== this.currentPage) {
           this.currentPage = page;
           this.render();
+          // Restore cached data after re-render
+          this.loadAllIcons(true);
           // Scroll to top of roster
           this.container.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
@@ -396,9 +414,8 @@ class GuildRoster {
       // Load class icons immediately (no API needed)
       this.loadClassIcons();
 
-      // If we have cached item levels and genders, skip the heavy API calls
+      // If we have cached item levels and genders, use cache but still load missing data
       if (useCache && this.itemLevels.size > 0 && this.genders.size > 0) {
-
         // Update the DOM with cached data immediately
         this.updateItemLevelsInDOM();
         this.updateSpecsFromCache();
@@ -409,6 +426,19 @@ class GuildRoster {
           this.loadRaceFactionIcons(),
           this.loadCharacterAvatarsFromCache()
         ]);
+
+        // Check if any cards are missing item level data and load them
+        const memberCards = this.container.querySelectorAll('.member-card');
+        const missingCards = Array.from(memberCards).filter(card => {
+          const characterName = card.dataset.character;
+          const realmSlug = card.dataset.realm;
+          const characterKey = this.getCharacterKey(characterName, realmSlug);
+          return !this.itemLevels.has(characterKey);
+        });
+
+        if (missingCards.length > 0) {
+          await this.loadItemLevelsForCards(missingCards);
+        }
       } else {
         // No cache or forced refresh - do full load
 
@@ -544,195 +574,21 @@ class GuildRoster {
   }
 
   loadClassIcons() {
-    const classIconPlaceholders = this.container.querySelectorAll('.class-icon-placeholder');
-
-    classIconPlaceholders.forEach(placeholder => {
-      const classId = placeholder.dataset.classId;
-      const className = placeholder.dataset.className;
-      const classColor = placeholder.dataset.classColor;
-
-      const classIconUrl = getClassIconUrl(classId);
-      const localClassIconUrl = getLocalClassIconUrl(classId);
-      const classFallback = getFallbackIcon('class');
-
-      if (classIconUrl) {
-        // Add small delay to ensure spinner is visible
-        setTimeout(() => {
-          placeholder.innerHTML = `
-            <i class="las la-spinner la-spin loading-spinner"></i>
-            <img src="${classIconUrl}" alt="${className}" class="icon-img"
-                 onload="if(this.previousElementSibling) this.previousElementSibling.style.display='none';"
-                 onerror="this.onerror=null; if(this.previousElementSibling) this.previousElementSibling.style.display='none'; this.src='${localClassIconUrl}'; this.onerror=function() { this.style.display='none'; this.nextElementSibling.style.display='flex'; };" />
-            <i class="${classFallback}" style="display: none; color: ${classColor}"></i>
-          `;
-        }, 50);
-      }
-    });
+    IconLoader.loadClassIcons('.class-icon-placeholder');
   }
 
   async loadRaceFactionIcons() {
-    const raceIconsToLoad = new Map(); // Map of raceId+gender to list of placeholders
-    const factionIconsToLoad = new Map(); // Map of raceId to list of placeholders
-
-    // Collect all placeholders and group them by race/gender
-    const memberCards = this.container.querySelectorAll('.member-card');
-
-    for (const card of memberCards) {
-      const raceIconPlaceholder = card.querySelector('.race-icon-placeholder');
-      if (raceIconPlaceholder) {
-        const raceId = raceIconPlaceholder.dataset.raceId;
-        const gender = raceIconPlaceholder.dataset.gender;
-        const key = `${raceId}-${gender}`;
-
-        if (!raceIconsToLoad.has(key)) {
-          raceIconsToLoad.set(key, []);
-        }
-        raceIconsToLoad.get(key).push({ placeholder: raceIconPlaceholder, raceId, gender });
-      }
-
-      const factionIconPlaceholder = card.querySelector('.faction-icon-placeholder');
-      if (factionIconPlaceholder) {
-        const raceId = factionIconPlaceholder.dataset.raceId;
-
-        if (!factionIconsToLoad.has(raceId)) {
-          factionIconsToLoad.set(raceId, []);
-        }
-        factionIconsToLoad.get(raceId).push({ placeholder: factionIconPlaceholder, raceId });
-      }
-    }
-
-    // Fetch race data to get race name and faction info
-    for (const [key, items] of raceIconsToLoad.entries()) {
-      const { raceId, gender } = items[0];
-
-      try {
-        const raceData = await wowAPI.getPlayableRace(parseInt(raceId));
-        const raceName = raceData.name;
-        const factionType = raceData.faction?.type || 'UNKNOWN';
-        const isAlliance = factionType === 'ALLIANCE';
-
-        // Get race icon URLs from Wowhead CDN with local fallback
-        const raceIconUrl = getRaceIconUrl(parseInt(raceId), gender);
-        const localRaceIconUrl = getLocalRaceIconUrl(parseInt(raceId), gender);
-
-        // Update race placeholders with actual icons
-        items.forEach(item => {
-          item.placeholder.title = raceName;
-          if (raceIconUrl) {
-            item.placeholder.innerHTML = `
-              <i class="las la-spinner la-spin loading-spinner"></i>
-              <img src="${raceIconUrl}" alt="${raceName}" class="icon-img"
-                   onload="if(this.previousElementSibling) this.previousElementSibling.style.display='none';"
-                   onerror="this.onerror=null; if(this.previousElementSibling) this.previousElementSibling.style.display='none'; this.src='${localRaceIconUrl}'; this.onerror=function() { this.style.display='none'; this.nextElementSibling.style.display='flex'; };" />
-              <i class="${getFallbackIcon('race')}" style="display: none;"></i>
-            `;
-          }
-
-          // Update race text in the card
-          const card = item.placeholder.closest('.member-card');
-          if (card) {
-            const raceTextElement = card.querySelector('.member-race');
-            if (raceTextElement) {
-              raceTextElement.textContent = raceName;
-            }
-          }
-        });
-
-        // Update faction placeholders with actual icons
-        const factionItems = factionIconsToLoad.get(raceId);
-        if (factionItems) {
-          const factionIconUrl = getFactionIconUrl(isAlliance);
-          const localFactionIconUrl = getLocalFactionIconUrl(isAlliance);
-          const factionName = isAlliance ? 'Alliance' : 'Horde';
-
-          factionItems.forEach(item => {
-            item.placeholder.title = factionName;
-            item.placeholder.innerHTML = `
-              <i class="las la-spinner la-spin loading-spinner"></i>
-              <img src="${factionIconUrl}" alt="${factionName}" class="icon-img"
-                   onload="if(this.previousElementSibling) this.previousElementSibling.style.display='none';"
-                   onerror="this.onerror=null; if(this.previousElementSibling) this.previousElementSibling.style.display='none'; this.src='${localFactionIconUrl}'; this.onerror=function() { this.style.display='none'; this.nextElementSibling.style.display='flex'; };" />
-              <i class="${getFallbackIcon('race')}" style="display: none;"></i>
-            `;
-
-            // Update faction text in the card
-            const card = item.placeholder.closest('.member-card');
-            if (card) {
-              const factionTextElement = card.querySelector('.member-faction');
-              if (factionTextElement) {
-                factionTextElement.textContent = factionName;
-              }
-            }
-          });
-        }
-      } catch (error) {
-        console.error(`Error loading race data for race ${raceId}:`, error);
-      }
-
-      // Small delay between requests
-      await new Promise(resolve => setTimeout(resolve, 100));
-    }
+    await IconLoader.loadRaceFactionIcons(this.container);
   }
 
   async loadSpecIcons() {
-    const specPlaceholders = this.container.querySelectorAll('.spec-icon-placeholder');
-
-    // Use individual loading pattern like my-characters page (no batching, all parallel)
-    await Promise.all(Array.from(specPlaceholders).map(async (placeholder) => {
-      const characterName = placeholder.dataset.character;
-      const realmSlug = placeholder.dataset.realm;
-      const card = placeholder.closest('.member-card');
-
-      try {
-        const specs = await wowAPI.getCharacterSpecializations(realmSlug, characterName);
-
-        if (specs?.active_specialization) {
-          const specId = specs.active_specialization.id;
-          const specName = specs.active_specialization.name;
-          const heroTalentName = specs?.active_hero_talent_tree?.name;
-          const specIconUrl = getSpecIconUrl(specId);
-          const localSpecIconUrl = getLocalSpecIconUrl(specId);
-
-          // Store spec data in cache
-          const characterKey = this.getCharacterKey(characterName, realmSlug);
-          this.characterSpecs.set(characterKey, {
-            specId,
-            specName,
-            heroTalentName
-          });
-
-          // Update icon
-          placeholder.title = specName;
-          if (specIconUrl) {
-            // Create image element with proper error handling
-            const img = new Image();
-            img.onload = () => {
-              placeholder.innerHTML = `<img src="${specIconUrl}" alt="${specName}" class="icon-img" />`;
-              placeholder.classList.remove('spec-icon-placeholder');
-            };
-            img.onerror = () => {
-              // Silently fail, leave placeholder as is
-
-            };
-            img.src = specIconUrl;
-          }
-
-          // Add hero talent name if present
-          if (heroTalentName) {
-            const heroTalentElement = card?.querySelector('.member-hero-talent');
-            if (heroTalentElement) {
-              heroTalentElement.textContent = heroTalentName;
-            }
-          }
-
-        } else {
-
-        }
-      } catch (error) {
-        console.error(`Error loading spec for ${characterName}:`, error);
+    const specDataMap = await IconLoader.loadSpecIcons('.spec-icon-placeholder', {
+      getCharacterKey: (name, realm) => this.getCharacterKey(name, realm),
+      onSpecLoad: (characterKey, specData) => {
+        // Store spec data in cache
+        this.characterSpecs.set(characterKey, specData);
       }
-    }));
-
+    });
   }
 
   async loadCharacterAvatars() {
@@ -806,6 +662,63 @@ class GuildRoster {
           // Hide card on error
           card.style.display = 'none';
           failCount++;
+        }
+      }));
+
+      // Small delay between batches
+      if (i + batchSize < cardsArray.length) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+    }
+  }
+
+  async loadItemLevelsForCards(cards) {
+    // Limit concurrent requests
+    const batchSize = 30;
+
+    const cardsArray = Array.from(cards);
+    for (let i = 0; i < cardsArray.length; i += batchSize) {
+      const batch = cardsArray.slice(i, i + batchSize);
+
+      await Promise.all(batch.map(async (card) => {
+        const characterName = card.dataset.character;
+        const realmSlug = card.dataset.realm;
+        const ilvlElement = card.querySelector('.member-ilvl');
+
+        if (!ilvlElement) return;
+
+        try {
+          // Fetch character profile
+          const profile = await characterService.fetchCharacterProfile(realmSlug, characterName);
+
+          if (!profile) {
+            ilvlElement.textContent = 'N/A';
+            return;
+          }
+
+          const itemLevel = profile.equipped_item_level || profile.average_item_level;
+          const characterKey = this.getCharacterKey(characterName, realmSlug);
+
+          // Store gender from profile
+          if (profile.gender) {
+            this.genders.set(characterKey, profile.gender.type);
+          }
+
+          if (itemLevel) {
+            ilvlElement.textContent = itemLevel;
+            this.itemLevels.set(characterKey, itemLevel);
+          } else {
+            ilvlElement.textContent = 'N/A';
+          }
+        } catch (error) {
+          const is404 = error.status === 404 || (error.message && error.message.includes('404'));
+          if (is404) {
+            const characterKey = this.getCharacterKey(characterName, realmSlug);
+            this.invalidCharacters.add(characterKey);
+          } else {
+            console.error(`Error loading item level for ${characterName}:`, error);
+          }
+          ilvlElement.textContent = 'N/A';
         }
       }));
 
@@ -891,6 +804,8 @@ class GuildRoster {
     // Re-render roster if we found any invalid characters
     if (foundInvalidCharacters) {
       this.render();
+      // Restore cached item levels after re-render
+      this.updateItemLevelsInDOM();
       return; // Skip the rest since we're re-rendering
     }
 
@@ -1046,78 +961,25 @@ class GuildRoster {
 
   renderMemberCard(member) {
     const character = member.character;
-    const classColor = getClassColor(character.playable_class.id);
-    const className = getClassName(character.playable_class.id);
 
     // Get realm from character data (cross-realm guilds have characters from different realms)
     const realmSlug = character.realm?.slug || config.guild.realmSlug;
     const realmName = character.realm?.name || slugToFriendly(realmSlug);
 
-    // Get class icon URLs from Wowhead CDN with local fallback
-    const classIconUrl = getClassIconUrl(character.playable_class.id);
-    const localClassIconUrl = getLocalClassIconUrl(character.playable_class.id);
-
-    // Fallback icons
-    const classFallback = getFallbackIcon('class');
-    const raceFallback = getFallbackIcon('race');
-    const specFallback = getFallbackIcon('spec');
-    const factionFallback = getFallbackIcon('race');
-
     // Get gender from stored data (fetched from character profile)
     const characterKey = this.getCharacterKey(character.name, realmSlug);
     const storedGender = this.genders.get(characterKey);
-    const gender = storedGender || 'MALE';
-    const genderName = storedGender || 'Unknown';
+    const gender = storedGender || null;
 
-    // Get race icon URLs from Wowhead CDN with local fallback
-    const raceIconUrl = getRaceIconUrl(character.playable_race?.id, gender);
-    const localRaceIconUrl = getLocalRaceIconUrl(character.playable_race?.id, gender);
-
-    return `
-      <div class="member-card" data-character="${character.name}" data-realm="${realmSlug}" style="border-bottom: 0px solid ${classColor};">
-        ${member.rank === 0 ? '<i class="las la-crown guildmaster-crown"></i>' : ''}
-        <div class="member-level">
-        ${character.level}<span class="member-ilvl">${character.itemLevel || '<i class="las la-spinner la-spin"></i>'}</span>
-      </div>
-        <div class="character-avatar-placeholder">
-          <i class="las la-spinner la-spin loading-spinner"></i>
-
-        </div>
-        
-        <div class="member-header">
-            <div class="member-name" style="color: ${classColor}">
-              ${character.name}
-            </div>
-            <div class="member-hero-talent"></div>
-        </div>
-
-        <div class="member-details">
-          <div class="member-detail-row">
-            <div class="member-icon class-icon-small class-icon-placeholder" title="${className}" data-class-id="${character.playable_class.id}" data-class-name="${className}" data-class-color="${classColor}">
-              <i class="las la-spinner la-spin loading-spinner"></i>
-            </div>
-          </div>
-          <div class="member-detail-row">
-            <div class="member-icon race-icon-small race-icon-placeholder" title="${genderName}" data-race-id="${character.playable_race?.id}" data-gender="${gender}">
-              <i class="las la-spinner la-spin loading-spinner"></i>
-            </div>
-          </div>
-          <div class="member-detail-row">
-            <div class="member-icon spec-icon-small spec-icon-placeholder" title="Specialization" data-character="${character.name}" data-realm="${realmSlug}">
-              <i class="las la-spinner la-spin"></i>
-            </div>
-          </div>
-          <div class="member-detail-row">
-            <div class="member-icon faction-icon-small faction-icon-placeholder" title="Faction" data-race-id="${character.playable_race?.id}">
-              <i class="las la-spinner la-spin"></i>
-            </div>
-          </div>
-        </div>
-        <div class="member-realm-badge-container">
-          <div class="member-realm-badge">${realmName}</div>
-        </div>
-      </div>
-    `;
+    // Use CharacterCard component with detailed attributes for icon loading
+    return CharacterCard.render(member, {
+      includeDetailedAttributes: true,
+      gender: gender,
+      itemLevel: character.itemLevel,
+      realmSlugOverride: realmSlug,
+      realmNameOverride: realmName,
+      lowercaseCharacterName: false
+    });
   }
 
   attachEventListeners() {
@@ -1152,9 +1014,6 @@ class GuildRoster {
       newCard.style.cursor = 'pointer';
     });
   }
-
-  // All modal-related methods have been removed
-  // Character details are now shown on a separate page (character-details.html)
 }
 
 export default GuildRoster;

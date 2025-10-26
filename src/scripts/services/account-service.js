@@ -1,12 +1,12 @@
 import authService from './auth.js';
 import config from '../config.js';
+import cacheService from './cache-service.js';
 
 /**
  * WoW Account Service - Fetch user's WoW characters
  */
 class AccountService {
   constructor() {
-    this.cacheKey = 'wow_account_characters';
     this.cacheTTL = 300000; // 5 minutes
   }
 
@@ -20,14 +20,13 @@ class AccountService {
     }
 
     // Check cache first
-    const cached = this.getFromCache();
+    const cacheKey = cacheService.generateKey('account-characters', authService.getUser()?.id || 'default');
+    const cached = cacheService.get(cacheKey);
     if (cached) {
-
       return cached;
     }
 
     try {
-
       // First, get the account profile to find WoW accounts
       const profileUrl = `${config.getApiUrl()}/profile/user/wow?namespace=${config.api.namespace.profile}&locale=${config.api.locale}`;
 
@@ -57,7 +56,7 @@ class AccountService {
       }
 
       // Cache the results
-      this.saveToCache(allCharacters);
+      cacheService.set(cacheKey, allCharacters, this.cacheTTL);
 
       return allCharacters;
     } catch (error) {
@@ -85,45 +84,11 @@ class AccountService {
   }
 
   /**
-   * Save characters to cache
-   */
-  saveToCache(data) {
-    const cacheData = {
-      data: data,
-      timestamp: Date.now()
-    };
-    localStorage.setItem(this.cacheKey, JSON.stringify(cacheData));
-  }
-
-  /**
-   * Get characters from cache if not expired
-   */
-  getFromCache() {
-    const cached = localStorage.getItem(this.cacheKey);
-    if (!cached) return null;
-
-    try {
-      const cacheData = JSON.parse(cached);
-      const age = Date.now() - cacheData.timestamp;
-
-      if (age < this.cacheTTL) {
-        return cacheData.data;
-      }
-
-      // Cache expired
-      localStorage.removeItem(this.cacheKey);
-      return null;
-    } catch (error) {
-      console.error('Error reading cache:', error);
-      return null;
-    }
-  }
-
-  /**
    * Clear the cache
    */
   clearCache() {
-    localStorage.removeItem(this.cacheKey);
+    const cacheKey = cacheService.generateKey('account-characters', authService.getUser()?.id || 'default');
+    cacheService.clear(cacheKey);
   }
 }
 

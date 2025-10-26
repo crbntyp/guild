@@ -1,7 +1,6 @@
 // Gallery page - displays background images with location names
 import BackgroundRotator from './components/background-rotator.js';
-import TopBar from './components/top-bar.js';
-import Footer from './components/footer.js';
+import PageInitializer from './utils/page-initializer.js';
 import backgrounds from './data/backgrounds.js';
 import { getRaceName } from './utils/wow-constants.js';
 
@@ -39,9 +38,9 @@ class GalleryBackgroundRotator extends BackgroundRotator {
 
       // Override race name for specific hero class locations
       if (location === 'Acherus') {
-        raceName = 'Death Knight';
+        raceName = 'Death Knight starting area';
       } else if (location === 'Mardum') {
-        raceName = 'Demon Hunter';
+        raceName = 'Demon Hunter starting area';
       }
 
       locationDisplay.innerHTML = `
@@ -79,16 +78,7 @@ class GalleryBackgroundRotator extends BackgroundRotator {
 
 // Initialize everything when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
-  // Initialize top bar
-  const topBar = new TopBar();
-  await topBar.init();
-
-  // Initialize footer
-  const footer = new Footer();
-  footer.init();
-
-  // Initialize gallery background rotator
-  const bgRotator = new GalleryBackgroundRotator(backgrounds, 8000, 2000);
-  bgRotator.init();
-
+  await PageInitializer.init({
+    backgroundRotatorClass: GalleryBackgroundRotator
+  });
 });

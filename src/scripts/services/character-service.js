@@ -4,7 +4,6 @@ import config from '../config.js';
 
 class CharacterService {
   constructor() {
-    this.characterCache = new Map();
     this.loading = new Set();
   }
 
@@ -38,7 +37,6 @@ class CharacterService {
     try {
       const data = await wowAPI.getCharacterProfile(realmSlug, characterName);
       cacheService.set(cacheKey, data, config.cache.characterTTL);
-      this.characterCache.set(cacheKey, data);
       return data;
     } catch (error) {
       // Don't log 404s - they're expected for characters that don't exist
@@ -181,7 +179,6 @@ class CharacterService {
     keys.forEach(type => {
       const cacheKey = cacheService.generateKey(type, realmSlug, characterName);
       cacheService.clear(cacheKey);
-      this.characterCache.delete(cacheKey);
     });
   }
 }

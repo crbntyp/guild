@@ -1,36 +1,24 @@
 // Main application JavaScript
 import GuildRoster from './components/guild-roster.js';
 import GuildSearch from './components/guild-search.js';
-import BackgroundRotator from './components/background-rotator.js';
-import TopBar from './components/top-bar.js';
-import Footer from './components/footer.js';
+import PageInitializer from './utils/page-initializer.js';
 import characterModal from './components/character-modal.js';
 import config from './config.js';
 import { slugToFriendly } from './utils/helpers.js';
-import backgrounds from './data/backgrounds.js';
+import { updateRegionConfig, updateGuildConfig, clearRosterState } from './utils/config-utils.js';
 
 console.log('⚡ Guild Site initialized');
 
 // Initialize everything when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
-  // Initialize top bar (login)
-  const topBar = new TopBar();
-  await topBar.init();
+  await PageInitializer.init({
+    onInit: async () => {
+      // Initialize character modal
+      characterModal.init();
 
-  // Initialize character modal
-  characterModal.init();
-
-  // Initialize footer
-  const footer = new Footer();
-  footer.init();
-
-  // Initialize background rotator
-  const bgRotator = new BackgroundRotator(backgrounds, 8000, 2000);
-  bgRotator.init();
-
-  // Initialize guild search
-  const guildSearch = new GuildSearch('guild-search-container');
-  await guildSearch.render();
+      // Initialize guild search
+      const guildSearch = new GuildSearch('guild-search-container');
+      await guildSearch.render();
 
   // Create guild roster instance (initially hidden)
   const guildRoster = new GuildRoster('guild-roster-container');
@@ -69,35 +57,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     localStorage.removeItem(oldEnrichedCacheKey);
 
     // Update config with search parameters
-    const regionLower = region.toLowerCase();
-    config.guild.name = guildName.toLowerCase().replace(/\s+/g, '-');
-    config.guild.realm = realm.toLowerCase().replace(/\s+/g, '-');
-    config.guild.realmSlug = realm.toLowerCase().replace(/\s+/g, '-');
-    config.guild.nameSlug = guildName.toLowerCase().replace(/\s+/g, '-');
-    config.battlenet.region = regionLower;
-
-    // Update namespace based on region
-    config.api.namespace = {
-      static: `static-${regionLower}`,
-      dynamic: `dynamic-${regionLower}`,
-      profile: `profile-${regionLower}`
-    };
-
-    // Update locale based on region
-    const localeMap = {
-      eu: 'en_GB',
-      us: 'en_US',
-      kr: 'ko_KR',
-      tw: 'zh_TW'
-    };
-    config.api.locale = localeMap[regionLower] || 'en_US';
+    updateGuildConfig(guildName, realm);
+    updateRegionConfig(region);
 
     // Clear roster state
-    guildRoster.roster = null;
-    guildRoster.itemLevels.clear();
-    guildRoster.genders.clear();
-    guildRoster.invalidCharacters.clear();
-    guildRoster.characterSpecs.clear();
+    clearRosterState(guildRoster);
 
     // Load the guild roster
     try {
@@ -115,28 +79,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (guildParam && realmParam && regionParam) {
     // Load guild from URL parameters
-    const regionLower = regionParam.toLowerCase();
-    config.guild.name = guildParam.toLowerCase();
-    config.guild.realm = realmParam.toLowerCase();
-    config.guild.realmSlug = realmParam.toLowerCase();
-    config.guild.nameSlug = guildParam.toLowerCase();
-    config.battlenet.region = regionLower;
-
-    // Update namespace based on region
-    config.api.namespace = {
-      static: `static-${regionLower}`,
-      dynamic: `dynamic-${regionLower}`,
-      profile: `profile-${regionLower}`
-    };
-
-    // Update locale based on region
-    const localeMap = {
-      eu: 'en_GB',
-      us: 'en_US',
-      kr: 'ko_KR',
-      tw: 'zh_TW'
-    };
-    config.api.locale = localeMap[regionLower] || 'en_US';
+    updateGuildConfig(guildParam, realmParam);
+    updateRegionConfig(regionParam);
 
     // Clear cache
     const guildService = (await import('./services/guild-service.js')).default;
@@ -159,38 +103,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         guildSearch.setOnSearchCallback(guildSearch.onSearch);
 
         // Load the guild directly
-        const regionLower = searchParams.region.toLowerCase();
-        config.guild.name = searchParams.guildName.toLowerCase().replace(/\s+/g, '-');
-        config.guild.realm = searchParams.realm.toLowerCase().replace(/\s+/g, '-');
-        config.guild.realmSlug = searchParams.realm.toLowerCase().replace(/\s+/g, '-');
-        config.guild.nameSlug = searchParams.guildName.toLowerCase().replace(/\s+/g, '-');
-        config.battlenet.region = regionLower;
-
-        // Update namespace based on region
-        config.api.namespace = {
-          static: `static-${regionLower}`,
-          dynamic: `dynamic-${regionLower}`,
-          profile: `profile-${regionLower}`
-        };
-
-        // Update locale based on region
-        const localeMap = {
-          eu: 'en_GB',
-          us: 'en_US',
-          kr: 'ko_KR',
-          tw: 'zh_TW'
-        };
-        config.api.locale = localeMap[regionLower] || 'en_US';
+        updateGuildConfig(searchParams.guildName, searchParams.realm);
+        updateRegionConfig(searchParams.region);
 
         // Clear cache
         const guildService = (await import('./services/guild-service.js')).default;
         guildService.clearCache();
 
         // Clear roster state
-        guildRoster.roster = null;
-        guildRoster.itemLevels.clear();
-        guildRoster.genders.clear();
-        guildRoster.invalidCharacters.clear();
+        clearRosterState(guildRoster);
 
         await guildRoster.load();
       } catch (error) {
@@ -203,4 +124,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       showInfoPanel();
     }
   }
+    }
+  });
 });

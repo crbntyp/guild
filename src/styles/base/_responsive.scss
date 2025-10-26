@@ -1,13 +1,5 @@
 // Responsive
 @media (max-width: 768px) {
-  .header h1 {
-    font-size: 32px;
-  }
-
-  .main-content {
-    grid-template-columns: 1fr;
-  }
-
   .container {
     padding: var(--spacing-sm);
   }
@@ -15,73 +7,6 @@
   .guild-header .guild-stats {
     gap: var(--spacing-md);
     flex-wrap: wrap;
-  }
-
-  .roster-controls {
-    flex-direction: column;
-
-    .search-input,
-    .sort-select,
-    .class-filter {
-      width: 100%;
-    }
-  }
-
-  .character-modal .modal-content {
-    width: 90vw;
-    height: 90vh;
-    padding: var(--spacing-lg);
-  }
-
-  .character-details-wrapper {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-lg);
-  }
-
-  .character-details-left,
-  .character-details-right {
-    padding: 0;
-    border: none;
-  }
-
-  .character-details-right {
-    border-top: 2px solid var(--color-border);
-    padding-top: var(--spacing-lg);
-  }
-
-  .character-header-section {
-    flex-direction: column;
-    text-align: center;
-
-    .character-render {
-      width: 140px;
-      height: 140px;
-    }
-
-    .character-title-info {
-      text-align: center;
-
-      h2 {
-        font-size: 24px;
-      }
-
-      .character-meta {
-        justify-content: center;
-      }
-    }
-  }
-
-  .equipment-item {
-    .equipment-slot {
-      min-width: 60px;
-      font-size: 12px;
-    }
-
-    .equipment-details {
-      .item-name {
-        font-size: 12px;
-      }
-    }
   }
 }
 

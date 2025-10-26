@@ -14,8 +14,7 @@
   justify-content: center;
   gap: var(--spacing-sm);
 
-  .search-input,
-  .search-select {
+  .search-input {
     height: 40px;
     padding: 4px 16px;
     background: transparent;
@@ -27,6 +26,8 @@
     letter-spacing: 1.5px;
     transition: var(--transition);
     background: rgba(255, 255, 255, 0.05);
+    flex: 1;
+    max-width: 250px;
 
     &:focus {
       outline: none;
@@ -37,25 +38,9 @@
     &::placeholder {
       color: var(--color-text-light);
     }
-  }
-
-  .search-input {
-    flex: 1;
-    max-width: 250px;
 
     @media (max-width: 386px) {
       max-width: 150px;
-    }
-  }
-
-  .search-select {
-    width: 100px;
-    cursor: pointer;
-
-    &.realm-select {
-      width: 200px;
-      flex: 1;
-      max-width: 250px;
     }
   }
 
@@ -175,14 +160,6 @@
       flex: 1 1 100%;
     }
 
-    .search-select {
-      flex: 1 1 100%;
-
-      &.realm-select {
-        max-width: 100%;
-      }
-    }
-
     .region-radio-group {
       flex: 1;
       gap: 4px;
@@ -216,10 +193,6 @@
       flex: 1 1 calc(50% - 4px);
     }
 
-    .search-select {
-      flex: 1 1 calc(50% - 4px);
-    }
-
     .region-radio-group {
       flex: 1;
     }
@@ -239,16 +212,6 @@
       max-width: none;
       flex: 1;
       min-width: 100px;
-    }
-
-    .search-select {
-      min-width: 80px;
-
-      &.realm-select {
-        flex: 1;
-        min-width: 120px;
-        max-width: 180px;
-      }
     }
 
     .region-radio-group {

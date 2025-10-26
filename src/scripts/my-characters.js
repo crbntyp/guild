@@ -1,13 +1,13 @@
 // My Characters Page - Shows user's WoW characters
 import accountService from './services/account-service.js';
 import authService from './services/auth.js';
-import TopBar from './components/top-bar.js';
-import Footer from './components/footer.js';
-import BackgroundRotator from './components/background-rotator.js';
+import PageInitializer from './utils/page-initializer.js';
 import CustomDropdown from './components/custom-dropdown.js';
 import characterModal from './components/character-modal.js';
+import CharacterCard from './components/character-card.js';
 import config from './config.js';
-import backgrounds from './data/backgrounds.js';
+import { getClassName, getClassColor } from './utils/wow-constants.js';
+import { getClassIconUrl } from './utils/wow-icons.js';
 
 console.log('⚡ My Characters Page initialized');
 
@@ -39,29 +39,21 @@ function markCharacterInvalid(character) {
 
 // Initialize everything when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
-  // Initialize top bar (login)
-  const topBar = new TopBar();
-  await topBar.init();
+  await PageInitializer.init({
+    onInit: async ({ authService }) => {
+      // Initialize character modal
+      characterModal.init();
 
-  // Initialize footer
-  const footer = new Footer();
-  footer.init();
+      // Check if user is logged in
+      if (!authService.isAuthenticated()) {
+        showNotAuthenticated();
+        return;
+      }
 
-  // Initialize background rotator
-  const bgRotator = new BackgroundRotator(backgrounds, 8000, 2000);
-  bgRotator.init();
-
-  // Initialize character modal
-  characterModal.init();
-
-  // Check if user is logged in
-  if (!authService.isAuthenticated()) {
-    showNotAuthenticated();
-    return;
-  }
-
-  // Load my characters
-  await loadMyCharacters();
+      // Load my characters
+      await loadMyCharacters();
+    }
+  });
 });
 
 function showNotAuthenticated() {
@@ -254,9 +246,6 @@ function initializeDropdowns() {
   }
 
   // Initialize Class Filter Dropdown
-  const { getClassName } = getWowConstants();
-  const { getClassIconUrl } = getWowIcons();
-
   const classCounts = new Map();
   allCharacters.forEach(member => {
     const classId = member.character.playable_class.id;
@@ -295,84 +284,12 @@ function initializeDropdowns() {
   }
 }
 
-// Helper to get wow-constants functions
-function getWowConstants() {
-  return {
-    getClassName: (classId) => {
-      const names = {
-        1: 'Warrior', 2: 'Paladin', 3: 'Hunter', 4: 'Rogue',
-        5: 'Priest', 6: 'Death Knight', 7: 'Shaman', 8: 'Mage',
-        9: 'Warlock', 10: 'Monk', 11: 'Druid', 12: 'Demon Hunter', 13: 'Evoker'
-      };
-      return names[classId] || 'Unknown';
-    }
-  };
-}
-
-// Helper to get wow-icons functions
-function getWowIcons() {
-  return {
-    getClassIconUrl: (classId) => {
-      return `https://wow.zamimg.com/images/wow/icons/large/classicon_${getWowConstants().getClassName(classId).toLowerCase()}.jpg`;
-    }
-  };
-}
-
 function createCharacterCard(member) {
-  const character = member.character;
-  const classColor = getClassColor(character.playable_class.id);
-  const className = getClassName(character.playable_class.id);
-
-  return `
-    <div class="member-card"
-         style="border: 0px solid ${classColor};"
-         data-character="${character.name.toLowerCase()}"
-         data-realm="${character.realm.slug}"
-         data-rank="${member.rank || ''}">
-      ${member.rank === 0 ? '<i class="las la-crown guildmaster-crown"></i>' : ''}
-      <div class="member-level">
-        ${character.level}<span class="member-ilvl">${character.itemLevel || '<i class="las la-spinner la-spin"></i>'}</span>
-      </div>
-
-      <div class="character-avatar-placeholder">
-        <i class="las la-circle-notch la-spin loading-spinner"></i>
-      </div>
-
-      <div class="member-header">
-        <div class="member-name" style="color: ${classColor};">
-          ${character.name}
-        </div>
-        <div class="member-hero-talent"></div>
-      </div>
-
-      <div class="member-details">
-        <div class="member-detail-row">
-          <div class="member-icon class-icon-small class-icon-placeholder">
-            <i class="las la-spinner la-spin loading-spinner"></i>
-          </div>
-        </div>
-        <div class="member-detail-row">
-          <div class="member-icon race-icon-small race-icon-placeholder">
-            <i class="las la-spinner la-spin loading-spinner"></i>
-          </div>
-        </div>
-        <div class="member-detail-row">
-          <div class="member-icon spec-icon-small spec-icon-placeholder">
-            <i class="las la-spinner la-spin"></i>
-          </div>
-        </div>
-        <div class="member-detail-row">
-          <div class="member-icon faction-icon-small faction-icon-placeholder">
-            <i class="las la-spinner la-spin"></i>
-          </div>
-        </div>
-      </div>
-
-      <div class="member-realm-badge-container">
-        <span class="member-realm-badge">${character.realm.name || character.realm.slug}</span>
-      </div>
-    </div>
-  `;
+  // Use CharacterCard component with simpler attributes (no detailed icon data)
+  return CharacterCard.render(member, {
+    includeDetailedAttributes: false,
+    lowercaseCharacterName: true
+  });
 }
 
 async function initializeCharacterCards(characters) {
@@ -641,23 +558,4 @@ function reSortCards() {
 
   // Re-append cards in sorted order (this moves them in the DOM)
   cards.forEach(card => rosterGrid.appendChild(card));
-}
-
-// Helper functions (imported from wow-constants)
-function getClassColor(classId) {
-  const colors = {
-    1: '#C79C6E', 2: '#F58CBA', 3: '#ABD473', 4: '#FFF569',
-    5: '#FFFFFF', 6: '#C41F3B', 7: '#0070DE', 8: '#40C7EB',
-    9: '#8787ED', 10: '#00FF96', 11: '#FF7D0A', 12: '#A330C9', 13: '#33937F'
-  };
-  return colors[classId] || '#FFFFFF';
-}
-
-function getClassName(classId) {
-  const names = {
-    1: 'Warrior', 2: 'Paladin', 3: 'Hunter', 4: 'Rogue',
-    5: 'Priest', 6: 'Death Knight', 7: 'Shaman', 8: 'Mage',
-    9: 'Warlock', 10: 'Monk', 11: 'Druid', 12: 'Demon Hunter', 13: 'Evoker'
-  };
-  return names[classId] || 'Unknown';
 }

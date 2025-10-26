@@ -29,7 +29,7 @@ class Footer {
       </section>
 
       <footer class="footer">
-        <p>&copy; 2025 Powered by Battle.net API | Made with <i class="las la-heart"></i></p>
+        <p>Powered by Battle.net API | Made with <i class="las la-heart"></i></p>
       </footer>
     `;
   }

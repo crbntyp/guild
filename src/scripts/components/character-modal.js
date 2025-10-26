@@ -9,6 +9,7 @@ import { getClassColor, getClassName } from '../utils/wow-constants.js';
 import { getItemQualityColor, getSlotName } from '../utils/item-quality.js';
 import { getClassIconUrl, getRaceIconUrl, getSpecIconUrl, getFactionIconUrl, getFallbackIcon } from '../utils/wow-icons.js';
 import { slugToFriendly } from '../utils/helpers.js';
+import IconLoader from '../services/icon-loader.js';
 
 class CharacterModal {
   constructor() {
@@ -269,56 +270,27 @@ class CharacterModal {
       return;
     }
 
-    const items = equipment.equipped_items;
+    // Sort items in the same order as renderEquipment
+    const slotOrder = {
+      'HEAD': 1, 'NECK': 2, 'SHOULDER': 3, 'BACK': 4, 'CHEST': 5,
+      'WRIST': 6, 'HANDS': 7, 'WAIST': 8, 'LEGS': 9, 'FEET': 10,
+      'FINGER_1': 11, 'FINGER_2': 12, 'TRINKET_1': 13, 'TRINKET_2': 14,
+      'MAIN_HAND': 15, 'OFF_HAND': 16, 'TABARD': 17
+    };
+
+    const items = [...equipment.equipped_items].sort((a, b) => {
+      return (slotOrder[a.slot?.type] || 999) - (slotOrder[b.slot?.type] || 999);
+    });
+
     const itemElements = this.modal.querySelectorAll('.modal-equipment-item');
 
-    for (let i = 0; i < itemElements.length && i < items.length; i++) {
-      const itemElement = itemElements[i];
-      const item = items[i];
-      const itemId = item.item?.id;
-
-      if (!itemId) {
-        // No item ID, show fallback icon
-        const iconContainer = itemElement.querySelector('.modal-item-icon');
-        if (iconContainer) {
-          // Preserve overlays
-          const slotOverlay = iconContainer.querySelector('.modal-item-slot-overlay');
-          const ilvlOverlay = iconContainer.querySelector('.modal-item-ilvl-overlay');
-          const overlaysHTML = (slotOverlay ? slotOverlay.outerHTML : '') + (ilvlOverlay ? ilvlOverlay.outerHTML : '');
-          iconContainer.innerHTML = `<i class="las la-shield-alt"></i>${overlaysHTML}`;
-        }
-        continue;
-      }
-
-      try {
-        // Fetch item media from the API
-        const mediaData = await wowAPI.getItemMedia(itemId);
-
-        if (mediaData?.assets) {
-          const iconAsset = mediaData.assets.find(asset => asset.key === 'icon');
-          if (iconAsset?.value) {
-            const iconContainer = itemElement.querySelector('.modal-item-icon');
-            if (iconContainer) {
-              // Preserve overlays
-              const slotOverlay = iconContainer.querySelector('.modal-item-slot-overlay');
-              const ilvlOverlay = iconContainer.querySelector('.modal-item-ilvl-overlay');
-              const overlaysHTML = (slotOverlay ? slotOverlay.outerHTML : '') + (ilvlOverlay ? ilvlOverlay.outerHTML : '');
-              iconContainer.innerHTML = `<img src="${iconAsset.value}" alt="${item.name}" />${overlaysHTML}`;
-            }
-          }
-        }
-      } catch (error) {
-        // On error, show fallback icon
-        const iconContainer = itemElement.querySelector('.modal-item-icon');
-        if (iconContainer) {
-          // Preserve overlays
-          const slotOverlay = iconContainer.querySelector('.modal-item-slot-overlay');
-          const ilvlOverlay = iconContainer.querySelector('.modal-item-ilvl-overlay');
-          const overlaysHTML = (slotOverlay ? slotOverlay.outerHTML : '') + (ilvlOverlay ? ilvlOverlay.outerHTML : '');
-          iconContainer.innerHTML = `<i class="las la-shield-alt"></i>${overlaysHTML}`;
-        }
-      }
-    }
+    await IconLoader.loadItemIcons(items, itemElements, {
+      fallbackIcon: 'las la-shield-alt',
+      slotOverlaySelector: '.modal-item-slot-overlay',
+      ilvlOverlaySelector: '.modal-item-ilvl-overlay',
+      iconContainerSelector: '.modal-item-icon',
+      fetchItemMedia: async (itemId) => await wowAPI.getItemMedia(itemId)
+    });
   }
 
   /**

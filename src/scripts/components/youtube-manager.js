@@ -1,48 +1,58 @@
+import FormModal from './form-modal.js';
+import ItemManager from './item-manager.js';
+import PageHeader from './page-header.js';
+import videoModal from './video-modal.js';
+
 /**
  * YouTube Manager - Manages YouTube channels with localStorage persistence
  */
-class YouTubeManager {
+class YouTubeManager extends ItemManager {
   constructor(containerId, authService) {
-    this.containerId = containerId;
-    this.container = null;
-    this.channels = [];
-    this.authService = authService;
-    this.storageKey = this.getStorageKey();
-    this.editingChannelId = null;
-    // Always use production Railway backend for sync
+    super({
+      containerId,
+      authService,
+      storagePrefix: 'guild_youtube_channels',
+      apiEndpoint: '/api/user/youtube',
+      baseApiUrl: 'https://guild-production.up.railway.app'
+    });
+
+    // YouTube-specific properties
     this.apiUrl = 'https://guild-production.up.railway.app/api/fetch-youtube';
-  }
 
-  /**
-   * Get user-specific storage key based on Battle.net account
-   */
-  getStorageKey() {
-    const user = this.authService?.getUser();
-    const battletag = user?.battletag;
-
-    if (battletag) {
-      return `guild_youtube_channels_${battletag.replace('#', '_')}`;
-    }
-
-    // Fallback to generic key if not logged in
-    return 'guild_youtube_channels';
+    // Initialize FormModal
+    this.formModal = new FormModal({
+      id: 'channel-form-modal',
+      title: 'Add YouTube Channel',
+      editTitle: 'Edit YouTube Channel',
+      fields: [
+        {
+          name: 'url',
+          type: 'url',
+          label: 'YouTube Channel URL *',
+          placeholder: 'e.g. https://www.youtube.com/@Hazelnutty',
+          required: true
+        },
+        {
+          name: 'tags',
+          type: 'text',
+          label: 'Search Tags (optional)',
+          placeholder: 'e.g. warcraft, guides, tips (comma-separated)',
+          helperText: 'Leave empty to fetch all latest videos, or add tags to filter specific content'
+        }
+      ],
+      onSubmit: (data, isEdit, editData) => this.handleFormSubmit(data, isEdit, editData)
+    });
   }
 
   /**
    * Initialize the YouTube manager
    */
   async init() {
-    this.container = document.getElementById(this.containerId);
-    if (!this.container) {
-      console.error(`YouTubeManager: Container #${this.containerId} not found`);
-      return;
-    }
+    // Call parent init to load items
+    await super.init();
 
-    // Update storage key in case user logged in after construction
-    this.storageKey = this.getStorageKey();
-
-    // Load channels from backend (with localStorage fallback)
-    await this.loadChannels();
+    // Initialize video modal
+    videoModal.init();
 
     // Clean up old videos (older than 30 days)
     this.cleanupOldVideos();
@@ -52,135 +62,13 @@ class YouTubeManager {
   }
 
   /**
-   * Load channels from backend (with localStorage fallback)
-   */
-  async loadChannels() {
-    try {
-      // Try backend first if user is authenticated
-      if (this.authService?.isAuthenticated()) {
-        const backendData = await this.loadFromBackend();
-
-        // Only use backend data if it's not null AND (has data OR localStorage is empty)
-        if (backendData !== null) {
-          const stored = localStorage.getItem(this.storageKey);
-          const localData = stored ? JSON.parse(stored) : [];
-
-          // If backend has data, use it
-          if (backendData.length > 0) {
-            this.channels = backendData;
-            localStorage.setItem(this.storageKey, JSON.stringify(this.channels));
-
-            return;
-          }
-
-          // If backend is empty but localStorage has data, keep localStorage and sync to backend
-          if (backendData.length === 0 && localData.length > 0) {
-            this.channels = localData;
-
-            // Sync localStorage to backend
-            this.saveToBackend();
-            return;
-          }
-
-          // Both empty, use backend empty array
-          this.channels = backendData;
-
-          return;
-        }
-      }
-
-      // Fallback to localStorage
-      const stored = localStorage.getItem(this.storageKey);
-      if (stored) {
-        this.channels = JSON.parse(stored);
-
-      }
-    } catch (error) {
-      console.error('❌ Error loading channels:', error);
-      this.channels = [];
-    }
-  }
-
-  /**
-   * Load channels from backend
-   */
-  async loadFromBackend() {
-    try {
-      const token = this.authService?.getAccessToken();
-      if (!token) return null;
-
-      const response = await fetch(`${this.apiUrl.replace('/api/fetch-youtube', '/api/user/youtube')}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (!response.ok) {
-
-        return null;
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Error loading from backend:', error);
-      return null;
-    }
-  }
-
-  /**
-   * Save channels to both localStorage and backend
-   */
-  async saveChannels() {
-    try {
-      // Save to localStorage (instant)
-      localStorage.setItem(this.storageKey, JSON.stringify(this.channels));
-
-      // Save to backend (async) if authenticated
-      if (this.authService?.isAuthenticated()) {
-        this.saveToBackend().catch(err => {
-          console.error('Failed to sync YouTube channels to backend:', err);
-        });
-      }
-    } catch (error) {
-      console.error('Error saving channels:', error);
-    }
-  }
-
-  /**
-   * Save channels to backend
-   */
-  async saveToBackend() {
-    try {
-      const token = this.authService?.getAccessToken();
-      if (!token) return;
-
-      const response = await fetch(`${this.apiUrl.replace('/api/fetch-youtube', '/api/user/youtube')}`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(this.channels)
-      });
-
-      if (response.ok) {
-
-      } else {
-
-      }
-    } catch (error) {
-      console.error('Error saving to backend:', error);
-    }
-  }
-
-  /**
    * Clean up videos older than 30 days
    */
   cleanupOldVideos() {
     const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
     let cleaned = false;
 
-    this.channels.forEach(channel => {
+    this.items.forEach(channel => {
       if (channel.videos) {
         const originalLength = channel.videos.length;
         channel.videos = channel.videos.filter(video => {
@@ -193,26 +81,20 @@ class YouTubeManager {
     });
 
     if (cleaned) {
-      this.saveChannels();
-
+      this.saveItems();
     }
   }
 
   /**
-   * Add a new channel
+   * Add a new channel (override parent to include channel-specific fields)
    */
   async addChannel(channelData) {
-    const channel = {
-      id: Date.now(),
+    const channel = await this.addItem({
       name: channelData.name,
       url: channelData.url,
       tags: channelData.tags,
-      videos: [],
-      createdAt: new Date().toISOString()
-    };
-
-    this.channels.unshift(channel);
-    this.saveChannels();
+      videos: []
+    });
 
     // Fetch videos for this channel
     await this.fetchChannelVideos(channel.id);
@@ -224,7 +106,7 @@ class YouTubeManager {
    * Fetch videos for a channel
    */
   async fetchChannelVideos(channelId) {
-    const channel = this.channels.find(c => c.id === channelId);
+    const channel = this.getItemById(channelId);
     if (!channel) return;
 
     try {
@@ -251,7 +133,7 @@ class YouTubeManager {
         addedAt: new Date().toISOString()
       }));
 
-      this.saveChannels();
+      await this.saveItems();
       this.renderChannels();
     } catch (error) {
       console.error('Error fetching videos:', error);
@@ -259,29 +141,26 @@ class YouTubeManager {
   }
 
   /**
-   * Update an existing channel
+   * Update an existing channel (override parent to include channel-specific fields)
    */
   async updateChannel(id, channelData) {
-    const index = this.channels.findIndex(channel => channel.id === id);
-    if (index !== -1) {
-      const oldTags = this.channels[index].tags;
+    const oldChannel = this.getItemById(id);
+    if (!oldChannel) return;
 
-      this.channels[index] = {
-        ...this.channels[index],
-        name: channelData.name,
-        url: channelData.url,
-        tags: channelData.tags
-      };
+    const oldTags = oldChannel.tags;
 
-      this.saveChannels();
+    await this.updateItem(id, {
+      name: channelData.name,
+      url: channelData.url,
+      tags: channelData.tags
+    });
 
-      // Render immediately to show updated channel info
-      this.renderChannels();
+    // Render immediately to show updated channel info
+    this.renderChannels();
 
-      // Re-fetch videos in background if tags changed
-      if (oldTags !== channelData.tags) {
-        await this.fetchChannelVideos(id);
-      }
+    // Re-fetch videos in background if tags changed
+    if (oldTags !== channelData.tags) {
+      await this.fetchChannelVideos(id);
     }
   }
 
@@ -289,19 +168,18 @@ class YouTubeManager {
    * Edit a channel
    */
   editChannel(id) {
-    const channel = this.channels.find(channel => channel.id === id);
+    const channel = this.getItemById(id);
     if (channel) {
-      this.editingChannelId = id;
+      this.editingItemId = id;
       this.openModal(channel);
     }
   }
 
   /**
-   * Delete a channel
+   * Delete a channel (override parent to trigger re-render)
    */
-  deleteChannel(id) {
-    this.channels = this.channels.filter(channel => channel.id !== id);
-    this.saveChannels();
+  async deleteChannel(id) {
+    await this.deleteItem(id);
     this.renderChannels();
   }
 
@@ -310,48 +188,27 @@ class YouTubeManager {
    */
   render() {
     this.container.innerHTML = `
-      <div class="youtube-header">
-        <div class="youtube-header-info">
-          <h1>My YouTube</h1>
-          <span class="info-description">Curate and organize your favorite Warcraft YouTube videos, guides, and content creators all in one place.</span>
-          <button class="btn-add-channel" id="btn-add-channel">
-            <i class="las la-plus"></i>
-            <span>Add Channel</span>
-          </button>
-        </div>
-      </div>
+      ${PageHeader.render({
+        className: 'youtube',
+        title: 'My YouTube',
+        description: 'Curate and organize your favorite Warcraft YouTube videos, guides, and content creators all in one place.',
+        actionButton: {
+          id: 'btn-add-channel',
+          icon: 'la-plus',
+          text: 'Add Channel'
+        }
+      })}
 
       <div class="youtube-channels" id="youtube-channels"></div>
 
-      <!-- Channel Form Modal -->
-      <div class="channel-form-modal" id="channel-form-modal">
-        <div class="channel-form-content">
-          <h2>Add YouTube Channel</h2>
-          <form id="channel-form">
-            <div class="form-group">
-              <label for="channel-url">YouTube Channel URL *</label>
-              <input type="url" id="channel-url" placeholder="e.g. https://www.youtube.com/@Hazelnutty" required>
-            </div>
-
-            <div class="form-group">
-              <label for="channel-tags">Search Tags (optional)</label>
-              <input type="text" id="channel-tags" placeholder="e.g. warcraft, guides, tips (comma-separated)">
-              <small>Leave empty to fetch all latest videos, or add tags to filter specific content</small>
-            </div>
-
-            <div class="form-actions">
-              <button type="button" class="btn-cancel" id="btn-cancel">Cancel</button>
-              <button type="submit" class="btn-save">Save</button>
-            </div>
-          </form>
-        </div>
-      </div>
+      ${this.formModal.render()}
     `;
+
+    // Attach FormModal listeners
+    this.formModal.attachListeners();
 
     // Attach event listeners
     document.getElementById('btn-add-channel').addEventListener('click', () => this.openModal());
-    document.getElementById('btn-cancel').addEventListener('click', () => this.closeModal());
-    document.getElementById('channel-form').addEventListener('submit', (e) => this.handleSubmit(e));
 
     // Render the channels
     this.renderChannels();
@@ -364,7 +221,7 @@ class YouTubeManager {
     const channelsContainer = document.getElementById('youtube-channels');
     if (!channelsContainer) return;
 
-    if (this.channels.length === 0) {
+    if (this.items.length === 0) {
       channelsContainer.innerHTML = `
         <div class="empty-state">
           <i class="lab la-youtube"></i>
@@ -374,7 +231,7 @@ class YouTubeManager {
       return;
     }
 
-    channelsContainer.innerHTML = this.channels.map(channel => `
+    channelsContainer.innerHTML = this.items.map(channel => `
       <div class="channel-row" data-id="${channel.id}">
         <div class="channel-content">
           <div class="channel-info-col">
@@ -396,7 +253,7 @@ class YouTubeManager {
           </div>
           <div class="channel-videos">
             ${channel.videos && channel.videos.length > 0 ? channel.videos.map(video => `
-              <a href="${video.url}" target="_blank" rel="noopener" class="video-card">
+              <div class="video-card" data-video-url="${video.url}" data-video-title="${this.escapeHtml(video.title)}">
                 <div class="video-thumbnail">
                   <img src="${video.thumbnail}" alt="${this.escapeHtml(video.title)}">
                 </div>
@@ -404,7 +261,7 @@ class YouTubeManager {
                   <div class="video-title">${this.escapeHtml(video.title)}</div>
                   <div class="video-date">${this.formatDate(video.publishedAt)}</div>
                 </div>
-              </a>
+              </div>
             `).join('') : '<div class="no-videos">No videos found for this channel</div>'}
           </div>
         </div>
@@ -443,37 +300,38 @@ class YouTubeManager {
         }
       });
     });
+
+    // Attach video card click handlers
+    channelsContainer.querySelectorAll('.video-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const videoUrl = card.dataset.videoUrl;
+        const videoTitle = card.dataset.videoTitle;
+        videoModal.open(videoUrl, videoTitle);
+      });
+    });
   }
 
   /**
    * Open modal
    */
   openModal(channel = null) {
-    const modal = document.getElementById('channel-form-modal');
-    const modalTitle = modal.querySelector('h2');
-
     if (channel) {
-      // Editing mode
-      modalTitle.textContent = 'Edit YouTube Channel';
-      document.getElementById('channel-url').value = channel.url || '';
-      document.getElementById('channel-tags').value = channel.tags || '';
+      // Store editing ID and open with data
+      this.editingItemId = channel.id;
+      this.formModal.open(channel);
     } else {
       // Add mode
-      modalTitle.textContent = 'Add YouTube Channel';
+      this.editingItemId = null;
+      this.formModal.open();
     }
-
-    modal.classList.add('active');
-    document.getElementById('channel-url').focus();
   }
 
   /**
-   * Close modal
+   * Close modal (handled by FormModal, but keep for backwards compatibility)
    */
   closeModal() {
-    const modal = document.getElementById('channel-form-modal');
-    modal.classList.remove('active');
-    document.getElementById('channel-form').reset();
-    this.editingChannelId = null;
+    this.formModal.close();
+    this.editingItemId = null;
   }
 
   /**
@@ -502,21 +360,11 @@ class YouTubeManager {
   }
 
   /**
-   * Handle form submit
+   * Handle form submit from FormModal
    */
-  async handleSubmit(e) {
-    e.preventDefault();
-
-    const urlInput = document.getElementById('channel-url');
-    const tagsInput = document.getElementById('channel-tags');
-
-    const url = urlInput.value.trim();
-    const tags = tagsInput.value.trim();
-
-    if (!url) {
-      alert('Please enter a channel URL');
-      return;
-    }
+  async handleFormSubmit(formData, isEdit, editData) {
+    const url = formData.url;
+    const tags = formData.tags;
 
     // Extract channel name from URL
     const name = this.extractChannelName(url);
@@ -527,33 +375,14 @@ class YouTubeManager {
       tags: tags || '' // Allow empty tags
     };
 
-    if (this.editingChannelId) {
+    if (this.editingItemId) {
       // Update existing channel
-      await this.updateChannel(this.editingChannelId, channelData);
+      await this.updateChannel(this.editingItemId, channelData);
+      this.editingItemId = null;
     } else {
       // Add new channel
       await this.addChannel(channelData);
     }
-
-    this.closeModal();
-  }
-
-  /**
-   * Format date
-   */
-  formatDate(dateString) {
-    const date = new Date(dateString);
-    const options = { month: 'short', day: 'numeric', year: 'numeric' };
-    return date.toLocaleDateString('en-US', options);
-  }
-
-  /**
-   * Clean text - remove HTML tags but preserve HTML entities like &#39;
-   */
-  escapeHtml(text) {
-    if (!text) return '';
-    // Just strip HTML tags, let browser decode entities naturally
-    return String(text).replace(/<[^>]*>/g, '');
   }
 }
 

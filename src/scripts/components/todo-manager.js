@@ -1,184 +1,72 @@
+import FormModal from './form-modal.js';
+import ItemManager from './item-manager.js';
+import PageHeader from './page-header.js';
+
 /**
  * Todo Manager - Manages todo cards with localStorage persistence
  */
-class TodoManager {
+class TodoManager extends ItemManager {
   constructor(containerId, authService) {
-    this.containerId = containerId;
-    this.container = null;
-    this.todos = [];
-    this.authService = authService;
-    this.storageKey = this.getStorageKey();
-    // Always use production Railway backend for sync
+    super({
+      containerId,
+      authService,
+      storagePrefix: 'guild_todos',
+      apiEndpoint: '/api/user/todos',
+      baseApiUrl: 'https://guild-production.up.railway.app'
+    });
+
+    // Todo-specific properties
     this.apiUrl = 'https://guild-production.up.railway.app/api/fetch-metadata';
     this.masonry = null;
-    this.editingTodoId = null;
-  }
 
-  /**
-   * Get user-specific storage key based on Battle.net account
-   */
-  getStorageKey() {
-    const user = this.authService?.getUser();
-    const battletag = user?.battletag;
-
-    if (battletag) {
-      return `guild_todos_${battletag.replace('#', '_')}`;
-    }
-
-    // Fallback to generic key if not logged in
-    return 'guild_todos';
+    // Initialize FormModal
+    this.formModal = new FormModal({
+      id: 'todo-form-modal',
+      title: 'Add a Warcraft todo',
+      editTitle: 'Edit Warcraft todo',
+      fields: [
+        {
+          name: 'title',
+          type: 'text',
+          label: 'Title *',
+          placeholder: 'e.g. Farm Midnight Mount',
+          required: true
+        },
+        {
+          name: 'description',
+          type: 'textarea',
+          label: 'Description *',
+          placeholder: 'e.g. Complete Karazhan on all characters',
+          required: true
+        },
+        {
+          name: 'url',
+          type: 'url',
+          label: 'URL (optional)',
+          placeholder: 'Paste URL to fetch metadata from page',
+          statusElement: true,
+          onChange: (value) => this.handleUrlInput(value)
+        },
+        {
+          name: 'auto-fill-metadata',
+          type: 'checkbox',
+          label: 'Autofill from video metadata',
+          checked: true
+        }
+      ],
+      onSubmit: (data, isEdit, editData) => this.handleFormSubmit(data, isEdit, editData)
+    });
   }
 
   /**
    * Initialize the todo manager
    */
   async init() {
-    this.container = document.getElementById(this.containerId);
-    if (!this.container) {
-      console.error(`TodoManager: Container #${this.containerId} not found`);
-      return;
-    }
-
-    // Update storage key in case user logged in after construction
-    this.storageKey = this.getStorageKey();
-
-    // Load todos from backend (with localStorage fallback)
-    await this.loadTodos();
+    // Call parent init to load items
+    await super.init();
 
     // Render the UI
     this.render();
-  }
-
-  /**
-   * Load todos from backend (with localStorage fallback)
-   */
-  async loadTodos() {
-    try {
-      // Try backend first if user is authenticated
-      if (this.authService?.isAuthenticated()) {
-
-        const backendData = await this.loadFromBackend();
-
-        // Only use backend data if it's not null AND (has data OR localStorage is empty)
-        if (backendData !== null) {
-          const stored = localStorage.getItem(this.storageKey);
-          const localData = stored ? JSON.parse(stored) : [];
-
-          // If backend has data, use it
-          if (backendData.length > 0) {
-            this.todos = backendData;
-            localStorage.setItem(this.storageKey, JSON.stringify(this.todos));
-
-            return;
-          }
-
-          // If backend is empty but localStorage has data, keep localStorage and sync to backend
-          if (backendData.length === 0 && localData.length > 0) {
-            this.todos = localData;
-
-            // Sync localStorage to backend
-            this.saveToBackend();
-            return;
-          }
-
-          // Both empty, use backend empty array
-          this.todos = backendData;
-
-          return;
-        } else {
-
-        }
-      } else {
-
-      }
-
-      // Fallback to localStorage
-      const stored = localStorage.getItem(this.storageKey);
-      if (stored) {
-        this.todos = JSON.parse(stored);
-
-      } else {
-
-      }
-    } catch (error) {
-      console.error('❌ Error loading todos:', error);
-      this.todos = [];
-    }
-  }
-
-  /**
-   * Load todos from backend
-   */
-  async loadFromBackend() {
-    try {
-      const token = this.authService?.getAccessToken();
-      if (!token) return null;
-
-      const response = await fetch(`${this.apiUrl.replace('/api/fetch-metadata', '/api/user/todos')}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (!response.ok) {
-
-        return null;
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Error loading from backend:', error);
-      return null;
-    }
-  }
-
-  /**
-   * Save todos to both localStorage and backend
-   */
-  async saveTodos() {
-    try {
-      // Save to localStorage (instant)
-      localStorage.setItem(this.storageKey, JSON.stringify(this.todos));
-
-      // Save to backend (async) if authenticated
-      if (this.authService?.isAuthenticated()) {
-
-        this.saveToBackend().catch(err => {
-          console.error('❌ Failed to sync todos to backend:', err);
-        });
-      } else {
-
-      }
-    } catch (error) {
-      console.error('❌ Error saving todos:', error);
-    }
-  }
-
-  /**
-   * Save todos to backend
-   */
-  async saveToBackend() {
-    try {
-      const token = this.authService?.getAccessToken();
-      if (!token) return;
-
-      const response = await fetch(`${this.apiUrl.replace('/api/fetch-metadata', '/api/user/todos')}`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(this.todos)
-      });
-
-      if (response.ok) {
-
-      } else {
-
-      }
-    } catch (error) {
-      console.error('Error saving to backend:', error);
-    }
   }
 
   /**
@@ -207,58 +95,47 @@ class TodoManager {
   }
 
   /**
-   * Add a new todo
+   * Add a new todo (override parent to include todo-specific fields)
    */
   async addTodo(todoData) {
-    const todo = {
-      id: Date.now(),
+    await this.addItem({
       title: todoData.title,
       description: todoData.description,
       url: todoData.url,
-      image: todoData.image || null,
-      createdAt: new Date().toISOString()
-    };
-
-    this.todos.unshift(todo); // Add to beginning
-    this.saveTodos();
+      image: todoData.image || null
+    });
     this.renderGrid();
   }
 
   /**
-   * Update an existing todo
+   * Update an existing todo (override parent to include todo-specific fields)
    */
   async updateTodo(id, todoData) {
-    const index = this.todos.findIndex(todo => todo.id === id);
-    if (index !== -1) {
-      this.todos[index] = {
-        ...this.todos[index],
-        title: todoData.title,
-        description: todoData.description,
-        url: todoData.url,
-        image: todoData.image || this.todos[index].image
-      };
-      this.saveTodos();
-      this.renderGrid();
-    }
+    await this.updateItem(id, {
+      title: todoData.title,
+      description: todoData.description,
+      url: todoData.url,
+      image: todoData.image || this.getItemById(id)?.image
+    });
+    this.renderGrid();
   }
 
   /**
    * Edit a todo
    */
   editTodo(id) {
-    const todo = this.todos.find(todo => todo.id === id);
+    const todo = this.getItemById(id);
     if (todo) {
-      this.editingTodoId = id;
+      this.editingItemId = id;
       this.openModal(todo);
     }
   }
 
   /**
-   * Delete a todo
+   * Delete a todo (override parent to trigger re-render)
    */
-  deleteTodo(id) {
-    this.todos = this.todos.filter(todo => todo.id !== id);
-    this.saveTodos();
+  async deleteTodo(id) {
+    await this.deleteItem(id);
     this.renderGrid();
   }
 
@@ -267,70 +144,27 @@ class TodoManager {
    */
   render() {
     this.container.innerHTML = `
-      <div class="todos-header">
-        <div class="todos-header-info">
-          <h1>My Warcraft todos</h1>
-          <span class="info-description">Organise your Warcraft activities with ease, farm mounts on Mondays leave a reminder, or find an interesting link to check back on, add it here.</span>
-          <button class="btn-add-todo" id="btn-add-todo">
-          <i class="las la-plus"></i>
-          <span>Add Todo</span>
-        </button>
-        </div>
-        
-      </div>
+      ${PageHeader.render({
+        className: 'todos',
+        title: 'My Warcraft todos',
+        description: 'Organise your Warcraft activities with ease, farm mounts on Mondays leave a reminder, or find an interesting link to check back on, add it here.',
+        actionButton: {
+          id: 'btn-add-todo',
+          icon: 'la-plus',
+          text: 'Add Todo'
+        }
+      })}
 
       <div class="todos-grid" id="todos-grid"></div>
 
-      <!-- Todo Form Modal -->
-      <div class="todo-form-modal" id="todo-form-modal">
-        <div class="todo-form-content">
-          <h2>Add a Warcraft todo</h2>
-          <form id="todo-form">
-            <div class="form-group">
-              <label for="todo-title">Title *</label>
-              <input type="text" id="todo-title" placeholder="e.g. Farm Midnight Mount" required>
-            </div>
-
-            <div class="form-group">
-              <label for="todo-description">Description *</label>
-              <textarea id="todo-description" placeholder="e.g. Complete Karazhan on all characters" required></textarea>
-            </div>
-
-            <div class="form-group">
-              <label for="todo-url">URL (optional)</label>
-              <input type="url" id="todo-url" placeholder="Paste URL to fetch metadata from page">
-              <div class="form-checkbox">
-                <input type="checkbox" id="auto-fill-metadata" checked>
-                <label for="auto-fill-metadata">Autofill from video metadata</label>
-              </div>
-              <div class="url-status" id="url-status"></div>
-            </div>
-
-            <div class="form-actions">
-              <button type="button" class="btn-cancel" id="btn-cancel">Cancel</button>
-              <button type="submit" class="btn-save">Save</button>
-            </div>
-          </form>
-        </div>
-      </div>
+      ${this.formModal.render()}
     `;
+
+    // Attach FormModal listeners
+    this.formModal.attachListeners();
 
     // Attach event listeners
     document.getElementById('btn-add-todo').addEventListener('click', () => this.openModal());
-    document.getElementById('btn-cancel').addEventListener('click', () => this.closeModal());
-    document.getElementById('todo-form').addEventListener('submit', (e) => this.handleSubmit(e));
-
-    // Auto-fetch metadata when URL is entered
-    const urlInput = document.getElementById('todo-url');
-    let urlTimeout;
-    urlInput.addEventListener('input', (e) => {
-      clearTimeout(urlTimeout);
-      const url = e.target.value.trim();
-
-      if (url && this.isValidUrl(url)) {
-        urlTimeout = setTimeout(() => this.handleUrlInput(url), 800);
-      }
-    });
 
     // Render the grid
     this.renderGrid();
@@ -354,7 +188,7 @@ class TodoManager {
     const grid = document.getElementById('todos-grid');
     if (!grid) return;
 
-    if (this.todos.length === 0) {
+    if (this.items.length === 0) {
       grid.innerHTML = `
         <div class="empty-state">
           <i class="las la-clipboard-list"></i>
@@ -364,7 +198,7 @@ class TodoManager {
       return;
     }
 
-    grid.innerHTML = this.todos.map(todo => `
+    grid.innerHTML = this.items.map(todo => `
       <div class="todo-card" data-id="${todo.id}">
         ${todo.image ? `<img src="${todo.image}" alt="${todo.title}" class="todo-image">` : `<div class="todo-image"><i class="las la-clipboard-list"></i></div>`}
         <div class="todo-content">
@@ -461,112 +295,95 @@ class TodoManager {
    * Open modal
    */
   openModal(todo = null) {
-    const modal = document.getElementById('todo-form-modal');
-    const modalTitle = modal.querySelector('h2');
-
     if (todo) {
-      // Editing mode
-      modalTitle.textContent = 'Edit Warcraft todo';
-      document.getElementById('todo-title').value = todo.title;
-      document.getElementById('todo-description').value = todo.description;
-      document.getElementById('todo-url').value = todo.url || '';
+      // Store editing ID and open with data
+      this.editingItemId = todo.id;
+      this.formModal.open(todo);
 
       // Store image metadata if it exists
       if (todo.image) {
-        const titleInput = document.getElementById('todo-title');
-        titleInput.dataset.metadata = JSON.stringify({ image: todo.image });
+        const titleInput = this.formModal.getField('title');
+        if (titleInput) {
+          titleInput.dataset.metadata = JSON.stringify({ image: todo.image });
+        }
       }
     } else {
       // Add mode
-      modalTitle.textContent = 'Add a Warcraft todo';
+      this.editingItemId = null;
+      this.formModal.open();
     }
-
-    modal.classList.add('active');
-    document.getElementById('todo-title').focus();
   }
 
   /**
-   * Close modal
+   * Close modal (handled by FormModal, but keep for backwards compatibility)
    */
   closeModal() {
-    const modal = document.getElementById('todo-form-modal');
-    modal.classList.remove('active');
-    document.getElementById('todo-form').reset();
-    document.getElementById('url-status').textContent = '';
-    document.getElementById('url-status').className = 'url-status';
-    this.editingTodoId = null;
-
-    // Clear metadata
-    const titleInput = document.getElementById('todo-title');
-    delete titleInput.dataset.metadata;
+    this.formModal.close();
+    this.editingItemId = null;
   }
 
   /**
    * Handle URL input
    */
   async handleUrlInput(url) {
-    const status = document.getElementById('url-status');
-    const titleInput = document.getElementById('todo-title');
-    const descriptionInput = document.getElementById('todo-description');
-    const autoFillCheckbox = document.getElementById('auto-fill-metadata');
+    // Debounce URL input
+    clearTimeout(this.urlTimeout);
 
-    status.textContent = 'Fetching metadata...';
-    status.className = 'url-status loading';
-
-    const metadata = await this.fetchMetadata(url);
-
-    if (metadata) {
-      // Auto-fill title and description if checkbox is checked
-      if (autoFillCheckbox.checked) {
-        if (metadata.title && !titleInput.value) {
-          titleInput.value = metadata.title;
-        }
-        if (metadata.description && !descriptionInput.value) {
-          descriptionInput.value = metadata.description;
-        }
-        status.textContent = '✓ Metadata loaded';
-      } else {
-        status.textContent = metadata.image ? '✓ Image loaded' : '✓ No image found';
-      }
-      status.className = 'url-status success';
-
-      // Store metadata for later
-      titleInput.dataset.metadata = JSON.stringify(metadata);
-    } else {
-      status.textContent = 'Could not fetch metadata';
-      status.className = 'url-status error';
+    if (!url || !this.isValidUrl(url)) {
+      return;
     }
+
+    this.urlTimeout = setTimeout(async () => {
+      const titleInput = this.formModal.getField('title');
+      const descriptionInput = this.formModal.getField('description');
+      const autoFillCheckbox = this.formModal.getField('auto-fill-metadata');
+
+      this.formModal.setFieldStatus('url', 'Fetching metadata...', 'loading');
+
+      const metadata = await this.fetchMetadata(url);
+
+      if (metadata) {
+        // Auto-fill title and description if checkbox is checked
+        if (autoFillCheckbox && autoFillCheckbox.checked) {
+          if (metadata.title && titleInput && !titleInput.value) {
+            titleInput.value = metadata.title;
+          }
+          if (metadata.description && descriptionInput && !descriptionInput.value) {
+            descriptionInput.value = metadata.description;
+          }
+          this.formModal.setFieldStatus('url', '✓ Metadata loaded', 'success');
+        } else {
+          this.formModal.setFieldStatus('url', metadata.image ? '✓ Image loaded' : '✓ No image found', 'success');
+        }
+
+        // Store metadata for later
+        if (titleInput) {
+          titleInput.dataset.metadata = JSON.stringify(metadata);
+        }
+      } else {
+        this.formModal.setFieldStatus('url', 'Could not fetch metadata', 'error');
+      }
+    }, 800);
   }
 
   /**
-   * Handle form submit
+   * Handle form submit from FormModal
    */
-  async handleSubmit(e) {
-    e.preventDefault();
-
-    const titleInput = document.getElementById('todo-title');
-    const urlInput = document.getElementById('todo-url');
-    const descInput = document.getElementById('todo-description');
-
-    const title = titleInput.value.trim();
-    const url = urlInput.value.trim();
-    const description = descInput.value.trim();
-
-    if (!title) {
-      alert('Please enter a title');
-      return;
-    }
-
-    if (!description) {
-      alert('Please enter a description');
-      return;
-    }
+  async handleFormSubmit(formData, isEdit, editData) {
+    const title = formData.title;
+    const url = formData.url;
+    const description = formData.description;
 
     // Get metadata if available (only for image)
     let metadata = null;
     try {
-      metadata = titleInput.dataset.metadata ? JSON.parse(titleInput.dataset.metadata) : null;
-    } catch (e) {}
+      const titleInput = this.formModal.getField('title');
+      if (titleInput && titleInput.dataset.metadata) {
+        metadata = JSON.parse(titleInput.dataset.metadata);
+      }
+    } catch (e) {
+      console.error('Error parsing metadata:', e);
+    }
 
     const todoData = {
       title,
@@ -575,59 +392,16 @@ class TodoManager {
       image: metadata?.image || null
     };
 
-    if (this.editingTodoId) {
+    if (this.editingItemId) {
       // Update existing todo
-      await this.updateTodo(this.editingTodoId, todoData);
+      await this.updateTodo(this.editingItemId, todoData);
+      this.editingItemId = null;
     } else {
       // Add new todo
       await this.addTodo(todoData);
     }
-
-    this.closeModal();
   }
 
-  /**
-   * Validate URL
-   */
-  isValidUrl(string) {
-    try {
-      new URL(string);
-      return true;
-    } catch (_) {
-      return false;
-    }
-  }
-
-  /**
-   * Format date
-   */
-  formatDate(dateString) {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now - date;
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-    if (diffDays === 0) {
-      return 'Today';
-    } else if (diffDays === 1) {
-      return 'Yesterday';
-    } else if (diffDays < 7) {
-      return `${diffDays} days ago`;
-    } else {
-      // Format as "Jan 15, 2025"
-      const options = { month: 'short', day: 'numeric', year: 'numeric' };
-      return date.toLocaleDateString('en-US', options);
-    }
-  }
-
-  /**
-   * Clean text - remove HTML tags but preserve HTML entities like &#39;
-   */
-  escapeHtml(text) {
-    if (!text) return '';
-    // Just strip HTML tags, let browser decode entities naturally
-    return String(text).replace(/<[^>]*>/g, '');
-  }
 }
 
 export default TodoManager;

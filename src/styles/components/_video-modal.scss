@@ -1,0 +1,110 @@
+// Video Modal Styles
+
+.video-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+
+  &.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .video-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(15px);
+    cursor: pointer;
+  }
+
+  .video-modal-content {
+    position: relative;
+    max-width: 1200px;
+    width: 90%;
+    z-index: 1;
+    animation: modal-slide-in 0.3s ease;
+  }
+
+  .video-modal-close {
+    position: absolute;
+    top: -50px;
+    right: 0;
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.1);
+    }
+  }
+
+  .video-modal-body {
+    background: rgba(black, 0.4);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .video-container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; // 16:9 aspect ratio
+
+    iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  }
+}
+
+// Animation
+@keyframes modal-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .video-modal {
+    .video-modal-content {
+      width: 95%;
+      max-width: 95%;
+    }
+
+    .video-modal-close {
+      top: -45px;
+      width: 32px;
+      height: 32px;
+      font-size: 20px;
+    }
+  }
+}
