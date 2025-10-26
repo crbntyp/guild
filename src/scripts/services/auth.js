@@ -1,9 +1,9 @@
 import config from '../config.js';
 
-// OAuth Proxy Server URL
-// For production: Change this to your Railway URL (e.g., 'https://your-project.railway.app')
-// For local dev: Use 'http://localhost:3001'
-const API_PROXY_URL = 'http://localhost:3001';
+// OAuth Proxy Server URL - automatically detects environment
+const API_PROXY_URL = window.location.hostname === 'localhost'
+  ? 'http://localhost:3001'
+  : 'https://guild-production.up.railway.app';
 
 /**
  * Battle.net OAuth Authentication Service
