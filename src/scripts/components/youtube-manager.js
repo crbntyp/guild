@@ -377,22 +377,22 @@ class YouTubeManager {
 
     channelsContainer.innerHTML = this.channels.map(channel => `
       <div class="channel-row" data-id="${channel.id}">
-        <div class="channel-actions">
-          <button class="channel-edit" data-id="${channel.id}" title="Edit channel">
-            <i class="las la-pen"></i>
-          </button>
-          <button class="channel-refresh" data-id="${channel.id}" title="Refresh videos">
-            <i class="las la-sync"></i>
-          </button>
-          <button class="channel-delete" data-id="${channel.id}" title="Delete channel">
-            <i class="las la-trash"></i>
-          </button>
-        </div>
         <div class="channel-content">
           <div class="channel-info-col">
             <h3 class="channel-name">${this.escapeHtml(channel.name)}</h3>
             <div class="channel-tags">
               ${channel.tags ? channel.tags.split(',').map(tag => `<span class="tag">${this.escapeHtml(tag.trim())}</span>`).join('') : '<span class="tag">All Videos</span>'}
+            </div>
+            <div class="channel-actions">
+              <button class="channel-edit" data-id="${channel.id}" title="Edit channel">
+                <i class="las la-pen"></i>
+              </button>
+              <button class="channel-refresh" data-id="${channel.id}" title="Refresh videos">
+                <i class="las la-sync"></i>
+              </button>
+              <button class="channel-delete" data-id="${channel.id}" title="Delete channel">
+                <i class="las la-trash"></i>
+              </button>
             </div>
           </div>
           <div class="channel-videos">
