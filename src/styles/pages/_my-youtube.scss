@@ -223,7 +223,7 @@
         .channel-edit {
           background: none;
           border: none;
-          color: #148eff;
+          color: #fff;
           font-size: 18px;
           cursor: pointer;
           padding: 8px;
@@ -238,7 +238,7 @@
         .channel-refresh {
           background: none;
           border: none;
-          color: #4CAF50;
+          color: #fff;
           font-size: 18px;
           cursor: pointer;
           padding: 8px;
@@ -257,7 +257,7 @@
         .channel-delete {
           background: none;
           border: none;
-          color: #ff4444;
+          color: #fff;
           font-size: 20px;
           cursor: pointer;
           padding: 8px;
@@ -405,30 +405,62 @@
 // Responsive
 @media (max-width: 768px) {
   #my-youtube-container {
-    padding: 20px 16px;
+    padding: 10px 8px;
 
     .youtube-header {
       flex-direction: column;
-      gap: 16px;
+      gap: 8px;
       align-items: flex-start;
+      margin-bottom: 12px;
+      padding: 12px 0px;
+
+      .youtube-header-info {
+        .info-description {
+          margin-bottom: 12px;
+        }
+      }
 
       h1 {
-        font-size: 24px;
+        font-size: 22px;
+        letter-spacing: 1.5px;
       }
     }
 
     .youtube-channels {
       .channel-row {
+        margin-bottom: 20px;
+
+        .channel-actions {
+          gap: 6px;
+          margin-bottom: 6px;
+
+          button {
+            padding: 6px;
+            font-size: 16px;
+          }
+        }
+
         .channel-content {
           flex-direction: column;
-          gap: 16px;
+          gap: 10px;
 
           .channel-info-col {
             flex: 1;
+            padding-top: 8px;
+
+            .channel-name {
+              font-size: 18px;
+            }
+
+            .channel-tags {
+              gap: 6px;
+            }
           }
 
           .channel-videos {
             width: 100%;
+            padding: 8px 0px;
+            gap: 12px;
           }
         }
       }
