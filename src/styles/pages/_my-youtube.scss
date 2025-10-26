@@ -216,7 +216,7 @@
       .channel-content {
         display: flex;
         gap: 24px;
-        align-items: flex-start;
+        align-items: stretch;
 
         .channel-info-col {
           flex: 0 0 200px;
