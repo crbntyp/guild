@@ -59,7 +59,7 @@ class YouTubeManager {
       // Try backend first if user is authenticated
       if (this.authService?.isAuthenticated()) {
         const backendData = await this.loadFromBackend();
-        if (backendData) {
+        if (backendData !== null) {  // Check for null explicitly, not just truthiness
           this.channels = backendData;
           // Also save to localStorage for offline access
           localStorage.setItem(this.storageKey, JSON.stringify(this.channels));

@@ -58,7 +58,7 @@ class TodoManager {
       if (this.authService?.isAuthenticated()) {
         console.log('🔄 Attempting to load todos from backend...');
         const backendData = await this.loadFromBackend();
-        if (backendData) {
+        if (backendData !== null) {  // Check for null explicitly, not just truthiness
           this.todos = backendData;
           // Also save to localStorage for offline access
           localStorage.setItem(this.storageKey, JSON.stringify(this.todos));
