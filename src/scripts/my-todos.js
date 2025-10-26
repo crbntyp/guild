@@ -29,8 +29,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // Initialize todo manager
-  const todoManager = new TodoManager('todos-container');
+  // Initialize todo manager with authService for user-specific storage
+  const todoManager = new TodoManager('todos-container', authService);
   todoManager.init();
 
   console.log('✅ My Todos loaded');

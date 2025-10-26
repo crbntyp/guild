@@ -29,8 +29,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // Initialize YouTube Manager
-  const youtubeManager = new YouTubeManager('my-youtube-container');
+  // Initialize YouTube Manager with authService for user-specific storage
+  const youtubeManager = new YouTubeManager('my-youtube-container', authService);
   youtubeManager.init();
 
   console.log('✅ My YouTube loaded');

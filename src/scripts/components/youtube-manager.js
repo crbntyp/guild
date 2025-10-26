@@ -2,16 +2,32 @@
  * YouTube Manager - Manages YouTube channels with localStorage persistence
  */
 class YouTubeManager {
-  constructor(containerId) {
+  constructor(containerId, authService) {
     this.containerId = containerId;
     this.container = null;
     this.channels = [];
-    this.storageKey = 'guild_youtube_channels';
+    this.authService = authService;
+    this.storageKey = this.getStorageKey();
     this.editingChannelId = null;
     // Use environment-based API URL for YouTube data fetching
     this.apiUrl = window.location.hostname === 'localhost'
       ? 'http://localhost:3001/api/fetch-youtube'
       : 'https://guild-production.up.railway.app/api/fetch-youtube';
+  }
+
+  /**
+   * Get user-specific storage key based on Battle.net account
+   */
+  getStorageKey() {
+    const user = this.authService?.getUser();
+    const battletag = user?.battletag;
+
+    if (battletag) {
+      return `guild_youtube_channels_${battletag.replace('#', '_')}`;
+    }
+
+    // Fallback to generic key if not logged in
+    return 'guild_youtube_channels';
   }
 
   /**
@@ -23,6 +39,9 @@ class YouTubeManager {
       console.error(`YouTubeManager: Container #${this.containerId} not found`);
       return;
     }
+
+    // Update storage key in case user logged in after construction
+    this.storageKey = this.getStorageKey();
 
     // Load channels from localStorage
     this.loadChannels();

@@ -2,17 +2,33 @@
  * Todo Manager - Manages todo cards with localStorage persistence
  */
 class TodoManager {
-  constructor(containerId) {
+  constructor(containerId, authService) {
     this.containerId = containerId;
     this.container = null;
     this.todos = [];
-    this.storageKey = 'guild_todos';
+    this.authService = authService;
+    this.storageKey = this.getStorageKey();
     // Use environment-based API URL
     this.apiUrl = window.location.hostname === 'localhost'
       ? 'http://localhost:3001/api/fetch-metadata'
       : 'https://guild-production.up.railway.app/api/fetch-metadata';
     this.masonry = null;
     this.editingTodoId = null;
+  }
+
+  /**
+   * Get user-specific storage key based on Battle.net account
+   */
+  getStorageKey() {
+    const user = this.authService?.getUser();
+    const battletag = user?.battletag;
+
+    if (battletag) {
+      return `guild_todos_${battletag.replace('#', '_')}`;
+    }
+
+    // Fallback to generic key if not logged in
+    return 'guild_todos';
   }
 
   /**
@@ -24,6 +40,9 @@ class TodoManager {
       console.error(`TodoManager: Container #${this.containerId} not found`);
       return;
     }
+
+    // Update storage key in case user logged in after construction
+    this.storageKey = this.getStorageKey();
 
     // Load todos from localStorage
     this.loadTodos();
