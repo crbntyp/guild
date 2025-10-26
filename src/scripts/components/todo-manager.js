@@ -34,7 +34,7 @@ class TodoManager {
   /**
    * Initialize the todo manager
    */
-  init() {
+  async init() {
     this.container = document.getElementById(this.containerId);
     if (!this.container) {
       console.error(`TodoManager: Container #${this.containerId} not found`);
@@ -44,18 +44,31 @@ class TodoManager {
     // Update storage key in case user logged in after construction
     this.storageKey = this.getStorageKey();
 
-    // Load todos from localStorage
-    this.loadTodos();
+    // Load todos from backend (with localStorage fallback)
+    await this.loadTodos();
 
     // Render the UI
     this.render();
   }
 
   /**
-   * Load todos from localStorage
+   * Load todos from backend (with localStorage fallback)
    */
-  loadTodos() {
+  async loadTodos() {
     try {
+      // Try backend first if user is authenticated
+      if (this.authService?.isAuthenticated()) {
+        const backendData = await this.loadFromBackend();
+        if (backendData) {
+          this.todos = backendData;
+          // Also save to localStorage for offline access
+          localStorage.setItem(this.storageKey, JSON.stringify(this.todos));
+          console.log('✅ Loaded', this.todos.length, 'todos from backend');
+          return;
+        }
+      }
+
+      // Fallback to localStorage
       const stored = localStorage.getItem(this.storageKey);
       if (stored) {
         this.todos = JSON.parse(stored);
@@ -68,14 +81,75 @@ class TodoManager {
   }
 
   /**
-   * Save todos to localStorage
+   * Load todos from backend
    */
-  saveTodos() {
+  async loadFromBackend() {
     try {
+      const token = this.authService?.getAccessToken();
+      if (!token) return null;
+
+      const response = await fetch(`${this.apiUrl.replace('/api/fetch-metadata', '/api/user/todos')}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        console.warn('Failed to load todos from backend:', response.status);
+        return null;
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error loading from backend:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Save todos to both localStorage and backend
+   */
+  async saveTodos() {
+    try {
+      // Save to localStorage (instant)
       localStorage.setItem(this.storageKey, JSON.stringify(this.todos));
       console.log('💾 Saved', this.todos.length, 'todos to localStorage');
+
+      // Save to backend (async) if authenticated
+      if (this.authService?.isAuthenticated()) {
+        this.saveToBackend().catch(err => {
+          console.error('Failed to sync todos to backend:', err);
+        });
+      }
     } catch (error) {
       console.error('Error saving todos:', error);
+    }
+  }
+
+  /**
+   * Save todos to backend
+   */
+  async saveToBackend() {
+    try {
+      const token = this.authService?.getAccessToken();
+      if (!token) return;
+
+      const response = await fetch(`${this.apiUrl.replace('/api/fetch-metadata', '/api/user/todos')}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(this.todos)
+      });
+
+      if (response.ok) {
+        console.log('☁️ Synced todos to backend');
+      } else {
+        console.warn('Failed to sync todos to backend:', response.status);
+      }
+    } catch (error) {
+      console.error('Error saving to backend:', error);
     }
   }
 

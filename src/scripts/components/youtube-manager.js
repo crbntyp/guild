@@ -33,7 +33,7 @@ class YouTubeManager {
   /**
    * Initialize the YouTube manager
    */
-  init() {
+  async init() {
     this.container = document.getElementById(this.containerId);
     if (!this.container) {
       console.error(`YouTubeManager: Container #${this.containerId} not found`);
@@ -43,8 +43,8 @@ class YouTubeManager {
     // Update storage key in case user logged in after construction
     this.storageKey = this.getStorageKey();
 
-    // Load channels from localStorage
-    this.loadChannels();
+    // Load channels from backend (with localStorage fallback)
+    await this.loadChannels();
 
     // Clean up old videos (older than 30 days)
     this.cleanupOldVideos();
@@ -54,10 +54,23 @@ class YouTubeManager {
   }
 
   /**
-   * Load channels from localStorage
+   * Load channels from backend (with localStorage fallback)
    */
-  loadChannels() {
+  async loadChannels() {
     try {
+      // Try backend first if user is authenticated
+      if (this.authService?.isAuthenticated()) {
+        const backendData = await this.loadFromBackend();
+        if (backendData) {
+          this.channels = backendData;
+          // Also save to localStorage for offline access
+          localStorage.setItem(this.storageKey, JSON.stringify(this.channels));
+          console.log('✅ Loaded', this.channels.length, 'channels from backend');
+          return;
+        }
+      }
+
+      // Fallback to localStorage
       const stored = localStorage.getItem(this.storageKey);
       if (stored) {
         this.channels = JSON.parse(stored);
@@ -70,14 +83,75 @@ class YouTubeManager {
   }
 
   /**
-   * Save channels to localStorage
+   * Load channels from backend
    */
-  saveChannels() {
+  async loadFromBackend() {
     try {
+      const token = this.authService?.getAccessToken();
+      if (!token) return null;
+
+      const response = await fetch(`${this.apiUrl.replace('/api/fetch-youtube', '/api/user/youtube')}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        console.warn('Failed to load YouTube channels from backend:', response.status);
+        return null;
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error loading from backend:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Save channels to both localStorage and backend
+   */
+  async saveChannels() {
+    try {
+      // Save to localStorage (instant)
       localStorage.setItem(this.storageKey, JSON.stringify(this.channels));
       console.log('💾 Saved', this.channels.length, 'channels to localStorage');
+
+      // Save to backend (async) if authenticated
+      if (this.authService?.isAuthenticated()) {
+        this.saveToBackend().catch(err => {
+          console.error('Failed to sync YouTube channels to backend:', err);
+        });
+      }
     } catch (error) {
       console.error('Error saving channels:', error);
+    }
+  }
+
+  /**
+   * Save channels to backend
+   */
+  async saveToBackend() {
+    try {
+      const token = this.authService?.getAccessToken();
+      if (!token) return;
+
+      const response = await fetch(`${this.apiUrl.replace('/api/fetch-youtube', '/api/user/youtube')}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(this.channels)
+      });
+
+      if (response.ok) {
+        console.log('☁️ Synced YouTube channels to backend');
+      } else {
+        console.warn('Failed to sync YouTube channels to backend:', response.status);
+      }
+    } catch (error) {
+      console.error('Error saving to backend:', error);
     }
   }
 

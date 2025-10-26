@@ -68,3 +68,6 @@ pids
 # Temporary files
 *.tmp
 *.temp
+
+# User data storage
+user-data/

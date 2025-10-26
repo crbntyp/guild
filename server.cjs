@@ -3,6 +3,8 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
+const fs = require('fs').promises;
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -249,6 +251,131 @@ app.post('/api/fetch-youtube', async (req, res) => {
   } catch (error) {
     console.error('Error fetching YouTube videos:', error);
     res.status(500).json({ error: 'Failed to fetch YouTube videos', details: error.message });
+  }
+});
+
+// ============================================
+// User Data Storage (Simple JSON File System)
+// ============================================
+
+const USER_DATA_DIR = path.join(__dirname, 'user-data');
+
+// Ensure user-data directory exists
+async function ensureUserDataDir() {
+  try {
+    await fs.access(USER_DATA_DIR);
+  } catch {
+    await fs.mkdir(USER_DATA_DIR, { recursive: true });
+    console.log('📁 Created user-data directory');
+  }
+}
+
+// Middleware to verify Battle.net token and get user info
+async function verifyToken(req, res, next) {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Missing or invalid authorization header' });
+  }
+
+  const token = authHeader.substring(7);
+
+  try {
+    // Verify token with Battle.net
+    const response = await fetch(BNET_CONFIG.userinfoUrl, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      return res.status(401).json({ error: 'Invalid token' });
+    }
+
+    const userData = await response.json();
+    req.user = userData;
+    next();
+  } catch (error) {
+    console.error('Token verification error:', error);
+    res.status(500).json({ error: 'Token verification failed' });
+  }
+}
+
+// Get sanitized filename from battletag
+function getUserFilename(battletag, type) {
+  const sanitized = battletag.replace('#', '_').replace(/[^a-zA-Z0-9_]/g, '');
+  return `${sanitized}_${type}.json`;
+}
+
+// GET user todos
+app.get('/api/user/todos', verifyToken, async (req, res) => {
+  try {
+    await ensureUserDataDir();
+    const filename = getUserFilename(req.user.battletag, 'todos');
+    const filepath = path.join(USER_DATA_DIR, filename);
+
+    try {
+      const data = await fs.readFile(filepath, 'utf8');
+      res.json(JSON.parse(data));
+    } catch (error) {
+      // File doesn't exist yet, return empty array
+      res.json([]);
+    }
+  } catch (error) {
+    console.error('Error reading todos:', error);
+    res.status(500).json({ error: 'Failed to read todos' });
+  }
+});
+
+// POST user todos
+app.post('/api/user/todos', verifyToken, async (req, res) => {
+  try {
+    await ensureUserDataDir();
+    const filename = getUserFilename(req.user.battletag, 'todos');
+    const filepath = path.join(USER_DATA_DIR, filename);
+
+    await fs.writeFile(filepath, JSON.stringify(req.body, null, 2));
+    console.log(`💾 Saved todos for ${req.user.battletag}`);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error saving todos:', error);
+    res.status(500).json({ error: 'Failed to save todos' });
+  }
+});
+
+// GET user YouTube channels
+app.get('/api/user/youtube', verifyToken, async (req, res) => {
+  try {
+    await ensureUserDataDir();
+    const filename = getUserFilename(req.user.battletag, 'youtube');
+    const filepath = path.join(USER_DATA_DIR, filename);
+
+    try {
+      const data = await fs.readFile(filepath, 'utf8');
+      res.json(JSON.parse(data));
+    } catch (error) {
+      // File doesn't exist yet, return empty array
+      res.json([]);
+    }
+  } catch (error) {
+    console.error('Error reading YouTube channels:', error);
+    res.status(500).json({ error: 'Failed to read YouTube channels' });
+  }
+});
+
+// POST user YouTube channels
+app.post('/api/user/youtube', verifyToken, async (req, res) => {
+  try {
+    await ensureUserDataDir();
+    const filename = getUserFilename(req.user.battletag, 'youtube');
+    const filepath = path.join(USER_DATA_DIR, filename);
+
+    await fs.writeFile(filepath, JSON.stringify(req.body, null, 2));
+    console.log(`💾 Saved YouTube channels for ${req.user.battletag}`);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error saving YouTube channels:', error);
+    res.status(500).json({ error: 'Failed to save YouTube channels' });
   }
 });
 
