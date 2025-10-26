@@ -512,18 +512,12 @@ class YouTubeManager {
   }
 
   /**
-   * Escape HTML - minimal escaping for security
-   * Note: We don't escape & if it's part of an HTML entity, and we don't escape apostrophes
-   * The browser will automatically decode entities like &#39; when rendering
+   * Clean text - remove HTML tags but preserve HTML entities like &#39;
    */
   escapeHtml(text) {
     if (!text) return '';
-    return String(text)
-      // Only escape & if it's not part of an entity (&#...; or &...;)
-      .replace(/&(?![a-zA-Z]+;|#[0-9]+;)/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+    // Just strip HTML tags, let browser decode entities naturally
+    return String(text).replace(/<[^>]*>/g, '');
   }
 }
 
