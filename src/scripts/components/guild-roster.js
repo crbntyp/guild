@@ -47,7 +47,6 @@ class GuildRoster {
 
     // If we have cached data, load it immediately without showing loading screen
     if (cachedEnrichedData) {
-      console.log('⚡ Fast loading from cache');
 
       try {
         await guildService.fetchGuildRoster();
@@ -89,7 +88,7 @@ class GuildRoster {
       }
     } else {
       // No cache, show loading screen
-      console.log('🔄 First time loading, fetching all data');
+
       this.showLoading();
 
       try {
@@ -145,7 +144,7 @@ class GuildRoster {
         timestamp: Date.now()
       };
       localStorage.setItem(cacheKey, JSON.stringify(data));
-      console.log('💾 Saved enriched roster data to cache');
+
     } catch (error) {
       console.error('Error saving enriched cache:', error);
     }
@@ -398,7 +397,6 @@ class GuildRoster {
 
       // If we have cached item levels and genders, skip the heavy API calls
       if (useCache && this.itemLevels.size > 0 && this.genders.size > 0) {
-        console.log('⚡ Using cached data, loading specs and visuals');
 
         // Update the DOM with cached data immediately
         this.updateItemLevelsInDOM();
@@ -412,7 +410,6 @@ class GuildRoster {
         ]);
       } else {
         // No cache or forced refresh - do full load
-        console.log('🔄 Full data fetch');
 
         // Load item levels first to get gender data
         await this.loadItemLevels();
@@ -678,7 +675,6 @@ class GuildRoster {
 
   async loadSpecIcons() {
     const specPlaceholders = this.container.querySelectorAll('.spec-icon-placeholder');
-    console.log(`🔧 Loading specs for ${specPlaceholders.length} characters`);
 
     // Use individual loading pattern like my-characters page (no batching, all parallel)
     await Promise.all(Array.from(specPlaceholders).map(async (placeholder) => {
@@ -715,7 +711,7 @@ class GuildRoster {
             };
             img.onerror = () => {
               // Silently fail, leave placeholder as is
-              console.log(`Failed to load spec icon for ${characterName}`);
+
             };
             img.src = specIconUrl;
           }
@@ -728,16 +724,14 @@ class GuildRoster {
             }
           }
 
-          console.log(`✅ Loaded spec for ${characterName}: ${specName}`);
         } else {
-          console.log(`❌ No active specialization for ${characterName}`);
+
         }
       } catch (error) {
         console.error(`Error loading spec for ${characterName}:`, error);
       }
     }));
 
-    console.log('✅ All specs loaded');
   }
 
   async loadCharacterAvatars() {
@@ -771,7 +765,7 @@ class GuildRoster {
           if (media.character && media.character.name) {
             const responseName = media.character.name;
             if (responseName.toLowerCase() !== characterName.toLowerCase()) {
-              console.warn(`⚠️ Character name mismatch! Requested: "${characterName}", Got: "${responseName}"`);
+
             }
           }
 

@@ -56,7 +56,7 @@ class TodoManager {
     try {
       // Try backend first if user is authenticated
       if (this.authService?.isAuthenticated()) {
-        console.log('🔄 Attempting to load todos from backend...');
+
         const backendData = await this.loadFromBackend();
 
         // Only use backend data if it's not null AND (has data OR localStorage is empty)
@@ -68,14 +68,14 @@ class TodoManager {
           if (backendData.length > 0) {
             this.todos = backendData;
             localStorage.setItem(this.storageKey, JSON.stringify(this.todos));
-            console.log('✅ Loaded', this.todos.length, 'todos from backend');
+
             return;
           }
 
           // If backend is empty but localStorage has data, keep localStorage and sync to backend
           if (backendData.length === 0 && localData.length > 0) {
             this.todos = localData;
-            console.log('⚠️ Backend empty, using', this.todos.length, 'todos from localStorage');
+
             // Sync localStorage to backend
             this.saveToBackend();
             return;
@@ -83,22 +83,22 @@ class TodoManager {
 
           // Both empty, use backend empty array
           this.todos = backendData;
-          console.log('✅ Loaded', this.todos.length, 'todos from backend (empty)');
+
           return;
         } else {
-          console.log('⚠️ Backend returned no data, falling back to localStorage');
+
         }
       } else {
-        console.log('⚠️ User not authenticated, using localStorage only');
+
       }
 
       // Fallback to localStorage
       const stored = localStorage.getItem(this.storageKey);
       if (stored) {
         this.todos = JSON.parse(stored);
-        console.log('✅ Loaded', this.todos.length, 'todos from localStorage (key:', this.storageKey, ')');
+
       } else {
-        console.log('ℹ️ No todos found in localStorage (key:', this.storageKey, ')');
+
       }
     } catch (error) {
       console.error('❌ Error loading todos:', error);
@@ -121,7 +121,7 @@ class TodoManager {
       });
 
       if (!response.ok) {
-        console.warn('Failed to load todos from backend:', response.status);
+
         return null;
       }
 
@@ -139,16 +139,15 @@ class TodoManager {
     try {
       // Save to localStorage (instant)
       localStorage.setItem(this.storageKey, JSON.stringify(this.todos));
-      console.log('💾 Saved', this.todos.length, 'todos to localStorage (key:', this.storageKey, ')');
 
       // Save to backend (async) if authenticated
       if (this.authService?.isAuthenticated()) {
-        console.log('☁️ Syncing todos to backend...');
+
         this.saveToBackend().catch(err => {
           console.error('❌ Failed to sync todos to backend:', err);
         });
       } else {
-        console.log('⚠️ Not syncing to backend - user not authenticated');
+
       }
     } catch (error) {
       console.error('❌ Error saving todos:', error);
@@ -173,9 +172,9 @@ class TodoManager {
       });
 
       if (response.ok) {
-        console.log('☁️ Synced todos to backend');
+
       } else {
-        console.warn('Failed to sync todos to backend:', response.status);
+
       }
     } catch (error) {
       console.error('Error saving to backend:', error);

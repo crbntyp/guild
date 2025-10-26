@@ -171,9 +171,9 @@ class TopBar {
     // Attach event listener with error handling
     const loginBtn = document.getElementById('bnet-login-btn');
     if (loginBtn) {
-      console.log('✅ Login button found, attaching event listener');
+
       loginBtn.addEventListener('click', (e) => {
-        console.log('🔵 Login button clicked!', e);
+
         e.preventDefault();
         e.stopPropagation();
         authService.login();
@@ -208,9 +208,9 @@ class TopBar {
     // Attach logout event listener
     const logoutBtn = document.getElementById('bnet-logout-btn');
     if (logoutBtn) {
-      console.log('✅ Logout button found, attaching event listener');
+
       logoutBtn.addEventListener('click', (e) => {
-        console.log('🔵 Logout button clicked!', e);
+
         e.preventDefault();
         e.stopPropagation();
         authService.logout();

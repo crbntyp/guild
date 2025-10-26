@@ -22,25 +22,20 @@ class AccountService {
     // Check cache first
     const cached = this.getFromCache();
     if (cached) {
-      console.log('📦 Returning cached account characters');
+
       return cached;
     }
 
     try {
-      console.log('🔍 Fetching WoW account profile...');
-      console.log('📍 Access Token:', accessToken ? 'Present' : 'Missing');
 
       // First, get the account profile to find WoW accounts
       const profileUrl = `${config.getApiUrl()}/profile/user/wow?namespace=${config.api.namespace.profile}&locale=${config.api.locale}`;
-      console.log('🌐 Profile URL:', profileUrl);
 
       const response = await fetch(profileUrl, {
         headers: {
           'Authorization': `Bearer ${accessToken}`
         }
       });
-
-      console.log('📊 Response status:', response.status);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -49,7 +44,6 @@ class AccountService {
       }
 
       const profileData = await response.json();
-      console.log('✅ WoW profile data:', profileData);
 
       // Get all characters from all WoW accounts
       const allCharacters = [];
@@ -61,8 +55,6 @@ class AccountService {
           }
         }
       }
-
-      console.log(`✅ Found ${allCharacters.length} characters`);
 
       // Cache the results
       this.saveToCache(allCharacters);

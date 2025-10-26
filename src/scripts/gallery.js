@@ -74,7 +74,6 @@ class GalleryBackgroundRotator extends BackgroundRotator {
     link.click();
     document.body.removeChild(link);
 
-    console.log('📥 Downloading:', imagePath);
   }
 }
 
@@ -92,5 +91,4 @@ document.addEventListener('DOMContentLoaded', async () => {
   const bgRotator = new GalleryBackgroundRotator(backgrounds, 8000, 2000);
   bgRotator.init();
 
-  console.log('✅ Gallery loaded with', backgrounds.length, 'backgrounds');
 });

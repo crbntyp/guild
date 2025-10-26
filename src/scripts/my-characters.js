@@ -381,7 +381,7 @@ async function initializeCharacterCards(characters) {
       itemLevelsLoaded++;
       // Re-sort when all item levels are loaded and we're sorting by ilvl
       if (itemLevelsLoaded === totalCharacters && sortBy === 'ilvl') {
-        console.log('✅ All item levels loaded, re-sorting by ilvl');
+
         reSortCards();
       }
     });
@@ -485,17 +485,12 @@ async function loadSpec(card, character) {
     const wowAPI = (await import('./api/wow-api.js')).default;
     const specs = await wowAPI.getCharacterSpecializations(character.realm.slug, character.name);
 
-    console.log(`🔧 Spec data for ${character.name}:`, specs);
-
     if (specs?.active_specialization) {
       const { getSpecIconUrl } = await import('./utils/wow-icons.js');
       const specIconUrl = getSpecIconUrl(specs.active_specialization.id);
 
-      console.log(`✅ Spec icon URL for ${character.name}:`, specIconUrl);
-
       // Load spec icon into placeholder
       const specIconElement = card.querySelector('.spec-icon-placeholder');
-      console.log(`📍 Spec icon element found:`, !!specIconElement);
 
       if (specIconElement && specIconUrl) {
         specIconElement.innerHTML = `<img src="${specIconUrl}" class="icon-img" alt="Spec" />`;
@@ -511,7 +506,7 @@ async function loadSpec(card, character) {
         }
       }
     } else {
-      console.log(`❌ No active specialization for ${character.name}`);
+
     }
   } catch (error) {
     console.error(`Error loading spec for ${character.name}:`, error);
@@ -583,7 +578,6 @@ function reSortCards() {
   // Re-append cards in sorted order (this moves them in the DOM)
   cards.forEach(card => rosterGrid.appendChild(card));
 
-  console.log('🔄 Re-sorted cards by item level');
 }
 
 // Helper functions (imported from wow-constants)

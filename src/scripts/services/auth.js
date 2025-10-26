@@ -30,9 +30,8 @@ class AuthService {
     const code = urlParams.get('code');
 
     if (code) {
-      console.log('🔐 Authorization code received, exchanging for token...');
+
       const isPopup = window.opener && !window.opener.closed;
-      console.log('🪟 Is popup window?', isPopup);
 
       // If we're in a popup, show loading screen immediately
       if (isPopup) {
@@ -48,24 +47,23 @@ class AuthService {
       }
 
       await this.exchangeCodeForToken(code);
-      console.log('✅ Token exchange completed');
 
       // Clean up URL
       window.history.replaceState({}, document.title, window.location.pathname);
 
       // If we're in a popup, notify parent and close
       if (isPopup) {
-        console.log('📤 Sending auth success message to parent window');
+
         window.opener.postMessage({ type: 'bnet-auth-success' }, window.location.origin);
 
         // Reduced delay
         setTimeout(() => {
-          console.log('🚪 Closing popup window');
+
           window.close();
         }, 100);
       } else {
         // If not in popup (direct redirect), dispatch event for current window
-        console.log('🔄 Direct redirect flow, dispatching auth-state-changed');
+
         window.dispatchEvent(new CustomEvent('auth-state-changed'));
       }
     }
@@ -94,7 +92,6 @@ class AuthService {
       }
 
       const tokenData = await response.json();
-      console.log('✅ Token received successfully');
 
       // Store token data
       this.storeAuthData({
@@ -131,13 +128,9 @@ class AuthService {
       scope: 'wow.profile'
     });
 
-    console.log('🔐 Starting OAuth login...');
-    console.log('📍 Redirect URI:', config.battlenet.redirectUri);
-    console.log('🌐 Full OAuth URL:', `${authUrl}?${params.toString()}`);
-
     // On mobile, use full page redirect instead of popup
     if (this.isMobileDevice()) {
-      console.log('📱 Mobile device detected, using redirect flow');
+
       window.location.href = `${authUrl}?${params.toString()}`;
       return;
     }
@@ -149,7 +142,6 @@ class AuthService {
     const top = window.screen.height / 2 - height / 2;
 
     const fullAuthUrl = `${authUrl}?${params.toString()}`;
-    console.log('🪟 Opening popup with URL:', fullAuthUrl);
 
     // Open blank popup first to avoid issues
     const popup = window.open(
@@ -163,8 +155,6 @@ class AuthService {
       return;
     }
 
-    console.log('✅ Popup opened, navigating to Battle.net...');
-
     // Navigate popup to auth URL
     popup.location.href = fullAuthUrl;
 
@@ -172,7 +162,7 @@ class AuthService {
     const messageHandler = (event) => {
       if (event.origin !== window.location.origin) return;
       if (event.data?.type === 'bnet-auth-success') {
-        console.log('✅ Auth success message received from popup');
+
         window.removeEventListener('message', messageHandler);
         // Dispatch custom event instead of reloading page
         window.dispatchEvent(new CustomEvent('auth-state-changed'));
@@ -218,7 +208,6 @@ class AuthService {
       }
 
       const userData = await response.json();
-      console.log('👤 Battle.net user data:', userData);
 
       // Store user data
       authData.user = userData;

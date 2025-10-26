@@ -13,7 +13,6 @@ class BackgroundRotator {
   }
 
   init() {
-    console.log('BackgroundRotator: Initializing with', this.images.length, 'images');
 
     // Create two overlay layers for cross-fading
     this.createLayers();
@@ -29,7 +28,6 @@ class BackgroundRotator {
     // Start rotation
     this.start();
 
-    console.log('BackgroundRotator: Started with interval', this.interval, 'ms');
   }
 
   createLayers() {
@@ -62,11 +60,10 @@ class BackgroundRotator {
     // Support both string paths and objects with {path, location}
     const imagePath = typeof imageData === 'string' ? imageData : imageData.path;
     layer.style.backgroundImage = `url('${imagePath}')`;
-    console.log(`BackgroundRotator: Set layer ${targetLayer} to ${imagePath}`);
+
   }
 
   rotate() {
-    console.log('BackgroundRotator: Rotating...');
 
     // Determine which layer is currently visible
     const layer1Opacity = parseFloat(getComputedStyle(this.layers.layer1).opacity);
@@ -75,8 +72,6 @@ class BackgroundRotator {
 
     // Move to next image
     this.currentIndex = (this.currentIndex + 1) % this.images.length;
-
-    console.log(`BackgroundRotator: Transitioning from layer ${currentLayer} to layer ${nextLayer}, image index ${this.currentIndex}`);
 
     // Set next image on hidden layer
     this.setBackground(this.currentIndex, nextLayer);

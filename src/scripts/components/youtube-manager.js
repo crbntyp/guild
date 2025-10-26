@@ -69,14 +69,14 @@ class YouTubeManager {
           if (backendData.length > 0) {
             this.channels = backendData;
             localStorage.setItem(this.storageKey, JSON.stringify(this.channels));
-            console.log('✅ Loaded', this.channels.length, 'channels from backend');
+
             return;
           }
 
           // If backend is empty but localStorage has data, keep localStorage and sync to backend
           if (backendData.length === 0 && localData.length > 0) {
             this.channels = localData;
-            console.log('⚠️ Backend empty, using', this.channels.length, 'channels from localStorage');
+
             // Sync localStorage to backend
             this.saveToBackend();
             return;
@@ -84,7 +84,7 @@ class YouTubeManager {
 
           // Both empty, use backend empty array
           this.channels = backendData;
-          console.log('✅ Loaded', this.channels.length, 'channels from backend (empty)');
+
           return;
         }
       }
@@ -93,7 +93,7 @@ class YouTubeManager {
       const stored = localStorage.getItem(this.storageKey);
       if (stored) {
         this.channels = JSON.parse(stored);
-        console.log('✅ Loaded', this.channels.length, 'channels from localStorage');
+
       }
     } catch (error) {
       console.error('❌ Error loading channels:', error);
@@ -116,7 +116,7 @@ class YouTubeManager {
       });
 
       if (!response.ok) {
-        console.warn('Failed to load YouTube channels from backend:', response.status);
+
         return null;
       }
 
@@ -134,7 +134,6 @@ class YouTubeManager {
     try {
       // Save to localStorage (instant)
       localStorage.setItem(this.storageKey, JSON.stringify(this.channels));
-      console.log('💾 Saved', this.channels.length, 'channels to localStorage');
 
       // Save to backend (async) if authenticated
       if (this.authService?.isAuthenticated()) {
@@ -165,9 +164,9 @@ class YouTubeManager {
       });
 
       if (response.ok) {
-        console.log('☁️ Synced YouTube channels to backend');
+
       } else {
-        console.warn('Failed to sync YouTube channels to backend:', response.status);
+
       }
     } catch (error) {
       console.error('Error saving to backend:', error);
@@ -195,7 +194,7 @@ class YouTubeManager {
 
     if (cleaned) {
       this.saveChannels();
-      console.log('🧹 Cleaned up old videos');
+
     }
   }
 

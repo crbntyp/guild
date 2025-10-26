@@ -48,7 +48,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Set up search callback
   guildSearch.setOnSearchCallback(async ({ guildName, realm, region }) => {
-    console.log(`🔍 Searching for guild: ${guildName} on ${realm} (${region})`);
 
     // Store search parameters in sessionStorage for persistence
     sessionStorage.setItem('lastGuildSearch', JSON.stringify({
@@ -89,7 +88,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
     config.api.locale = localeMap[regionLower] || 'en_US';
 
-    console.log('✅ Updated config:', {
       guild: config.guild,
       region: config.battlenet.region,
       namespace: config.api.namespace,
@@ -154,11 +152,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   } else {
     // Check for last search in sessionStorage (for back navigation)
     const lastSearch = sessionStorage.getItem('lastGuildSearch');
-    console.log('🔍 Checking for last search:', lastSearch);
+
     if (lastSearch) {
       try {
         const searchParams = JSON.parse(lastSearch);
-        console.log('📦 Restoring last guild search:', searchParams);
 
         // Trigger the search callback with stored parameters
         guildSearch.setOnSearchCallback(guildSearch.onSearch);
@@ -204,7 +201,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     } else {
       // No previous search, show info panel
-      console.log('📋 No previous search found, showing info panel');
+
       showInfoPanel();
     }
   }

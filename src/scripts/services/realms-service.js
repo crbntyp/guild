@@ -22,7 +22,6 @@ class RealmsService {
     }
 
     try {
-      console.log('🌍 Fetching realm lists...');
 
       // Fetch EU realms
       const euRealms = await this.fetchRealmsByRegion('eu');
@@ -33,7 +32,6 @@ class RealmsService {
       this.realms.us = usRealms;
 
       this.loaded = true;
-      console.log(`✅ Loaded ${euRealms.length} EU realms and ${usRealms.length} US realms`);
 
       return this.realms;
     } catch (error) {

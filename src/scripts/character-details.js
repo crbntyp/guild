@@ -58,13 +58,11 @@ function setRaceBackground(raceName) {
   }
 
   const backgroundImage = raceBackgrounds[raceName] || raceBackgrounds['default'];
-  console.log(`Setting background for race: ${raceName} -> ${backgroundImage}`);
 
   // Set data attribute for CSS to use
   detailsPage.setAttribute('data-race', raceName);
   detailsPage.style.setProperty('--race-background', `url('${backgroundImage}')`);
 
-  console.log('Background set, CSS variable:', getComputedStyle(detailsPage).getPropertyValue('--race-background'));
 }
 
 // Initialize everything when DOM is ready
@@ -114,9 +112,6 @@ function renderCharacterDetails(container, data, realmSlug) {
     return;
   }
 
-  console.log('🔍 Full character profile data:', profile);
-  console.log('🔍 Profile ID field:', profile.id);
-
   const classColor = getClassColor(profile.character_class.id);
   const className = getClassName(profile.character_class.id);
   const itemLevel = profile?.equipped_item_level || profile?.average_item_level || 'N/A';
@@ -126,16 +121,12 @@ function renderCharacterDetails(container, data, realmSlug) {
   const heroTalentName = specs?.active_hero_talent_tree?.name || null;
 
   // Get different media assets
-  console.log('📸 Character Media Assets:', media?.assets);
-  console.log('📸 Available asset keys:', media?.assets?.map(a => a.key));
 
   const avatar = media?.assets?.find(asset => asset.key === 'avatar')?.value || '';
   const inset = media?.assets?.find(asset => asset.key === 'inset')?.value || '';
   const mainRaw = media?.assets?.find(asset => asset.key === 'main-raw')?.value || '';
   const main = media?.assets?.find(asset => asset.key === 'main')?.value || '';
   const render = mainRaw || main || inset || avatar;
-
-  console.log('📸 Using render:', render);
 
   const gender = profile.gender?.name || profile.gender?.type || 'Unknown';
   const equipmentHTML = renderEquipment(equipment);

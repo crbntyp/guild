@@ -23,7 +23,7 @@ class CacheService {
         expiry: Date.now() + ttl
       }));
     } catch (e) {
-      console.warn('Failed to cache to localStorage:', e);
+
     }
   }
 
@@ -56,7 +56,7 @@ class CacheService {
         }
       }
     } catch (e) {
-      console.warn('Failed to retrieve from localStorage cache:', e);
+
     }
 
     return null;

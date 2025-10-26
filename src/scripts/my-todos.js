@@ -33,5 +33,4 @@ document.addEventListener('DOMContentLoaded', async () => {
   const todoManager = new TodoManager('todos-container', authService);
   todoManager.init();
 
-  console.log('✅ My Todos loaded');
 });

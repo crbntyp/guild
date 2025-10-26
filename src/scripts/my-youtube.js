@@ -33,5 +33,4 @@ document.addEventListener('DOMContentLoaded', async () => {
   const youtubeManager = new YouTubeManager('my-youtube-container', authService);
   youtubeManager.init();
 
-  console.log('✅ My YouTube loaded');
 });
