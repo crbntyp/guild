@@ -21,7 +21,8 @@
     "serve": "live-server dist --port=8080 --open",
     "auth-server": "node server.cjs",
     "dev": "npm run build && concurrently \"npm run watch:scss\" \"npm run watch:html\" \"npm run watch:js\" \"npm run watch:img\" \"npm run watch:assets\" \"npm run serve\" \"npm run auth-server\"",
-    "clean": "rm -rf dist/* && mkdir -p dist"
+    "clean": "rm -rf dist/* && mkdir -p dist",
+    "clean:console": "node clean-console.cjs"
   },
   "keywords": [],
   "author": "Jonny Pyper",
