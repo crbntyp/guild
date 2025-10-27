@@ -54,19 +54,19 @@ class CharacterCard {
 
     // Build icon placeholder attributes
     const classIconAttrs = includeDetailedAttributes
-      ? `title="${className}" data-class-id="${classId}" data-class-name="${className}" data-class-color="${classColor}"`
+      ? `data-class-id="${classId}" data-class-name="${className}" data-class-color="${classColor}"`
       : '';
 
     const raceIconAttrs = includeDetailedAttributes
-      ? `title="${genderName}" data-race-id="${raceId}" data-gender="${genderAttr}"`
+      ? `data-race-id="${raceId}" data-gender="${genderAttr}"`
       : '';
 
     const specIconAttrs = includeDetailedAttributes
-      ? `title="Specialization" data-character="${character.name}" data-realm="${realmSlug}"`
+      ? `data-character="${character.name}" data-realm="${realmSlug}"`
       : '';
 
     const factionIconAttrs = includeDetailedAttributes
-      ? `title="Faction" data-race-id="${raceId}"`
+      ? `data-race-id="${raceId}"`
       : '';
 
     return `
@@ -96,21 +96,25 @@ class CharacterCard {
           <div class="member-detail-row">
             <div class="member-icon class-icon-small class-icon-placeholder" ${classIconAttrs}>
               <i class="las la-spinner la-spin loading-spinner"></i>
+              <span class="member-icon-tooltip">${className}</span>
             </div>
           </div>
           <div class="member-detail-row">
             <div class="member-icon race-icon-small race-icon-placeholder" ${raceIconAttrs}>
               <i class="las la-spinner la-spin loading-spinner"></i>
+              <span class="member-icon-tooltip">${genderName}</span>
             </div>
           </div>
           <div class="member-detail-row">
             <div class="member-icon spec-icon-small spec-icon-placeholder" ${specIconAttrs}>
               <i class="las la-spinner la-spin"></i>
+              <span class="member-icon-tooltip">Specialization</span>
             </div>
           </div>
           <div class="member-detail-row">
             <div class="member-icon faction-icon-small faction-icon-placeholder" ${factionIconAttrs}>
               <i class="las la-spinner la-spin"></i>
+              <span class="member-icon-tooltip">Faction</span>
             </div>
           </div>
         </div>

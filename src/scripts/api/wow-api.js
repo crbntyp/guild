@@ -169,6 +169,23 @@ class WoWAPI {
     }
   }
 
+  // Get item data
+  async getItem(itemId) {
+    const endpoint = `/data/wow/item/${itemId}`;
+
+    try {
+      const data = await battlenetClient.request(endpoint, {
+        params: {
+          namespace: config.api.namespace.static
+        }
+      });
+      return data;
+    } catch (error) {
+      console.error(`Error fetching item data for item ${itemId}:`, error);
+      throw error;
+    }
+  }
+
   // Get item media (icon)
   async getItemMedia(itemId) {
     const endpoint = `/data/wow/media/item/${itemId}`;
@@ -182,6 +199,40 @@ class WoWAPI {
       return data;
     } catch (error) {
       console.error(`Error fetching item media for item ${itemId}:`, error);
+      throw error;
+    }
+  }
+
+  // Get spell data
+  async getSpell(spellId) {
+    const endpoint = `/data/wow/spell/${spellId}`;
+
+    try {
+      const data = await battlenetClient.request(endpoint, {
+        params: {
+          namespace: config.api.namespace.static
+        }
+      });
+      return data;
+    } catch (error) {
+      console.error(`Error fetching spell data for spell ${spellId}:`, error);
+      throw error;
+    }
+  }
+
+  // Get spell media
+  async getSpellMedia(spellId) {
+    const endpoint = `/data/wow/media/spell/${spellId}`;
+
+    try {
+      const data = await battlenetClient.request(endpoint, {
+        params: {
+          namespace: config.api.namespace.static
+        }
+      });
+      return data;
+    } catch (error) {
+      console.error(`Error fetching spell media for spell ${spellId}:`, error);
       throw error;
     }
   }
@@ -233,6 +284,65 @@ class WoWAPI {
       return data;
     } catch (error) {
       console.error(`Error fetching spec data for spec ${specId}:`, error);
+      throw error;
+    }
+  }
+
+  // Get character encounters (raid progression)
+  async getCharacterEncounters(realmSlug, characterName) {
+    const encodedName = encodeURIComponent(characterName.toLowerCase());
+    const endpoint = `/profile/wow/character/${realmSlug}/${encodedName}/encounters`;
+
+    try {
+      const data = await battlenetClient.request(endpoint, {
+        params: {
+          namespace: config.api.namespace.profile
+        }
+      });
+      return data;
+    } catch (error) {
+      // Don't log 404s - they're expected for characters without raid data
+      if (error.status !== 404) {
+        console.error(`Error fetching character encounters for ${characterName}:`, error);
+      }
+      throw error;
+    }
+  }
+
+  // Get character mythic keystone profile
+  async getCharacterMythicKeystoneProfile(realmSlug, characterName) {
+    const encodedName = encodeURIComponent(characterName.toLowerCase());
+    const endpoint = `/profile/wow/character/${realmSlug}/${encodedName}/mythic-keystone-profile`;
+
+    try {
+      const data = await battlenetClient.request(endpoint, {
+        params: {
+          namespace: config.api.namespace.profile
+        }
+      });
+      return data;
+    } catch (error) {
+      // Don't log 404s - they're expected for characters without M+ data
+      if (error.status !== 404) {
+        console.error(`Error fetching mythic keystone profile for ${characterName}:`, error);
+      }
+      throw error;
+    }
+  }
+
+  // Get journal instance (raid) media
+  async getJournalInstanceMedia(instanceId) {
+    const endpoint = `/data/wow/media/journal-instance/${instanceId}`;
+
+    try {
+      const data = await battlenetClient.request(endpoint, {
+        params: {
+          namespace: config.api.namespace.static
+        }
+      });
+      return data;
+    } catch (error) {
+      console.error(`Error fetching journal instance media for instance ${instanceId}:`, error);
       throw error;
     }
   }

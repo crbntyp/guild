@@ -289,6 +289,28 @@ WoW class colors are centralized in `src/scripts/utils/wow-constants.js` using o
 - Batch API requests
 - ~18-20% CSS size reduction
 
+## 📋 Changelog
+
+### 2025-10-27
+- **Guild Search Improvements**
+  - Updated realm field with clearer placeholder text ("Realm (e.g tarren-mill)")
+  - Fixed callback registration bug preventing guild searches from executing
+  - Removed unused guild search API code (Battle.net API limitation)
+
+- **Wowhead Tooltip Integration**
+  - Added bonus list parameters for accurate item level display
+  - Added explicit ilvl parameter to Wowhead tooltips
+  - Fixed incorrect item level display issues on upgraded gear
+
+- **Page Header Enhancements**
+  - Repositioned action buttons to appear beside page headings
+  - Updated page header layout across Todos and YouTube pages
+  - Improved button sizing (reduced height from 40px to 30px, padding optimized)
+
+- **Bug Fixes**
+  - Fixed sessionStorage override issue that cleared search callbacks
+  - Resolved character modal Wowhead tooltip accuracy issues
+
 ## 🔮 Future Enhancements
 
 - Guild achievements and progression tracking

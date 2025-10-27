@@ -45,6 +45,7 @@ class IconLoader {
                  onload="if(this.previousElementSibling) this.previousElementSibling.style.display='none';"
                  onerror="this.onerror=null; if(this.previousElementSibling) this.previousElementSibling.style.display='none'; this.src='${localClassIconUrl}'; this.onerror=function() { this.style.display='none'; this.nextElementSibling.style.display='flex'; };" />
             <i class="${classFallback}" style="display: none; color: ${classColor}"></i>
+            <span class="member-icon-tooltip">${className}</span>
           `;
         }, 50);
       }
@@ -109,7 +110,6 @@ class IconLoader {
 
         // Update race placeholders with actual icons
         items.forEach(item => {
-          item.placeholder.title = raceName;
           if (raceIconUrl) {
             item.placeholder.innerHTML = `
               <i class="las la-spinner la-spin loading-spinner"></i>
@@ -117,6 +117,7 @@ class IconLoader {
                    onload="if(this.previousElementSibling) this.previousElementSibling.style.display='none';"
                    onerror="this.onerror=null; if(this.previousElementSibling) this.previousElementSibling.style.display='none'; this.src='${localRaceIconUrl}'; this.onerror=function() { this.style.display='none'; this.nextElementSibling.style.display='flex'; };" />
               <i class="${getFallbackIcon('race')}" style="display: none;"></i>
+              <span class="member-icon-tooltip">${raceName}</span>
             `;
           }
 
@@ -138,13 +139,13 @@ class IconLoader {
           const factionName = isAlliance ? 'Alliance' : 'Horde';
 
           factionItems.forEach(item => {
-            item.placeholder.title = factionName;
             item.placeholder.innerHTML = `
               <i class="las la-spinner la-spin loading-spinner"></i>
               <img src="${factionIconUrl}" alt="${factionName}" class="icon-img"
                    onload="if(this.previousElementSibling) this.previousElementSibling.style.display='none';"
                    onerror="this.onerror=null; if(this.previousElementSibling) this.previousElementSibling.style.display='none'; this.src='${localFactionIconUrl}'; this.onerror=function() { this.style.display='none'; this.nextElementSibling.style.display='flex'; };" />
               <i class="${getFallbackIcon('race')}" style="display: none;"></i>
+              <span class="member-icon-tooltip">${factionName}</span>
             `;
 
             // Update faction text in the card
@@ -215,12 +216,14 @@ class IconLoader {
           }
 
           // Update icon
-          placeholder.title = specName;
           if (specIconUrl) {
             // Create image element with proper error handling
             const img = new Image();
             img.onload = () => {
-              placeholder.innerHTML = `<img src="${specIconUrl}" alt="${specName}" class="icon-img" />`;
+              placeholder.innerHTML = `
+                <img src="${specIconUrl}" alt="${specName}" class="icon-img" />
+                <span class="member-icon-tooltip">${specName}</span>
+              `;
               placeholder.classList.remove('spec-icon-placeholder');
             };
             img.onerror = () => {
@@ -276,7 +279,10 @@ class IconLoader {
           // Preserve overlays
           const slotOverlay = iconContainer.querySelector(slotOverlaySelector);
           const ilvlOverlay = iconContainer.querySelector(ilvlOverlaySelector);
-          const overlaysHTML = (slotOverlay ? slotOverlay.outerHTML : '') + (ilvlOverlay ? ilvlOverlay.outerHTML : '');
+
+          const overlaysHTML = (slotOverlay ? slotOverlay.outerHTML : '') +
+                               (ilvlOverlay ? ilvlOverlay.outerHTML : '');
+
           iconContainer.innerHTML = `<i class="${fallbackIcon}"></i>${overlaysHTML}`;
         }
         continue;
@@ -294,7 +300,10 @@ class IconLoader {
               // Preserve overlays
               const slotOverlay = iconContainer.querySelector(slotOverlaySelector);
               const ilvlOverlay = iconContainer.querySelector(ilvlOverlaySelector);
-              const overlaysHTML = (slotOverlay ? slotOverlay.outerHTML : '') + (ilvlOverlay ? ilvlOverlay.outerHTML : '');
+
+              const overlaysHTML = (slotOverlay ? slotOverlay.outerHTML : '') +
+                                   (ilvlOverlay ? ilvlOverlay.outerHTML : '');
+
               iconContainer.innerHTML = `<img src="${iconAsset.value}" alt="${item.name}" />${overlaysHTML}`;
             }
           }
@@ -306,7 +315,10 @@ class IconLoader {
           // Preserve overlays
           const slotOverlay = iconContainer.querySelector(slotOverlaySelector);
           const ilvlOverlay = iconContainer.querySelector(ilvlOverlaySelector);
-          const overlaysHTML = (slotOverlay ? slotOverlay.outerHTML : '') + (ilvlOverlay ? ilvlOverlay.outerHTML : '');
+
+          const overlaysHTML = (slotOverlay ? slotOverlay.outerHTML : '') +
+                               (ilvlOverlay ? ilvlOverlay.outerHTML : '');
+
           iconContainer.innerHTML = `<i class="${fallbackIcon}"></i>${overlaysHTML}`;
         }
       }

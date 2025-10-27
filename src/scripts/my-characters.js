@@ -378,7 +378,11 @@ async function loadIcons(card, character) {
   const classIconUrl = getClassIconUrl(character.playable_class.id);
   const classIconElement = card.querySelector('.class-icon-placeholder');
   if (classIconElement && classIconUrl) {
-    classIconElement.innerHTML = `<img src="${classIconUrl}" class="icon-img" alt="Class" />`;
+    const className = getClassName(character.playable_class.id);
+    classIconElement.innerHTML = `
+      <img src="${classIconUrl}" class="icon-img" alt="Class" />
+      <span class="member-icon-tooltip">${className}</span>
+    `;
     classIconElement.classList.remove('class-icon-placeholder');
   }
 
@@ -388,15 +392,20 @@ async function loadIcons(card, character) {
     const raceIconUrl = getRaceIconUrl(character.playable_race.id, 'male');
     const raceIconElement = card.querySelector('.race-icon-placeholder');
     if (raceIconElement && raceIconUrl) {
-      raceIconElement.innerHTML = `<img src="${raceIconUrl}" class="icon-img" alt="Race" />`;
+      raceIconElement.innerHTML = `
+        <img src="${raceIconUrl}" class="icon-img" alt="Race" />
+        <span class="member-icon-tooltip">Race</span>
+      `;
       raceIconElement.classList.remove('race-icon-placeholder');
     }
     return;
   }
 
-  // Fetch gender from character profile - use same approach as guild roster
+  // Fetch gender and race name from character profile and API
   try {
     const characterService = (await import('./services/character-service.js')).default;
+    const wowAPI = (await import('./api/wow-api.js')).default;
+
     const profile = await characterService.fetchCharacterProfile(character.realm.slug, character.name);
 
     let gender = 'male'; // default
@@ -404,11 +413,23 @@ async function loadIcons(card, character) {
       gender = profile.gender.type.toLowerCase(); // Convert "MALE" to "male", "FEMALE" to "female"
     }
 
+    // Get race name from API
+    let raceName = 'Race';
+    try {
+      const raceData = await wowAPI.getPlayableRace(character.playable_race.id);
+      raceName = raceData.name || 'Race';
+    } catch (raceError) {
+      console.error(`Error loading race data for ${character.name}:`, raceError);
+    }
+
     // Load race icon with correct gender
     const raceIconUrl = getRaceIconUrl(character.playable_race.id, gender);
     const raceIconElement = card.querySelector('.race-icon-placeholder');
     if (raceIconElement && raceIconUrl) {
-      raceIconElement.innerHTML = `<img src="${raceIconUrl}" class="icon-img" alt="Race" />`;
+      raceIconElement.innerHTML = `
+        <img src="${raceIconUrl}" class="icon-img" alt="Race" />
+        <span class="member-icon-tooltip">${raceName}</span>
+      `;
       raceIconElement.classList.remove('race-icon-placeholder');
     }
   } catch (error) {
@@ -422,7 +443,10 @@ async function loadIcons(card, character) {
     const raceIconUrl = getRaceIconUrl(character.playable_race.id, 'male');
     const raceIconElement = card.querySelector('.race-icon-placeholder');
     if (raceIconElement && raceIconUrl) {
-      raceIconElement.innerHTML = `<img src="${raceIconUrl}" class="icon-img" alt="Race" />`;
+      raceIconElement.innerHTML = `
+        <img src="${raceIconUrl}" class="icon-img" alt="Race" />
+        <span class="member-icon-tooltip">Race</span>
+      `;
       raceIconElement.classList.remove('race-icon-placeholder');
     }
   }
@@ -430,9 +454,13 @@ async function loadIcons(card, character) {
   // Load faction icon - getFactionIconUrl expects boolean (isAlliance)
   const isAlliance = character.faction.type.toUpperCase() === 'ALLIANCE';
   const factionIconUrl = getFactionIconUrl(isAlliance);
+  const factionName = isAlliance ? 'Alliance' : 'Horde';
   const factionIconElement = card.querySelector('.faction-icon-placeholder');
   if (factionIconElement && factionIconUrl) {
-    factionIconElement.innerHTML = `<img src="${factionIconUrl}" class="icon-img" alt="Faction" />`;
+    factionIconElement.innerHTML = `
+      <img src="${factionIconUrl}" class="icon-img" alt="Faction" />
+      <span class="member-icon-tooltip">${factionName}</span>
+    `;
     factionIconElement.classList.remove('faction-icon-placeholder');
   }
 }
@@ -450,12 +478,16 @@ async function loadSpec(card, character) {
     if (specs?.active_specialization) {
       const { getSpecIconUrl } = await import('./utils/wow-icons.js');
       const specIconUrl = getSpecIconUrl(specs.active_specialization.id);
+      const specName = specs.active_specialization.name;
 
       // Load spec icon into placeholder
       const specIconElement = card.querySelector('.spec-icon-placeholder');
 
       if (specIconElement && specIconUrl) {
-        specIconElement.innerHTML = `<img src="${specIconUrl}" class="icon-img" alt="Spec" />`;
+        specIconElement.innerHTML = `
+          <img src="${specIconUrl}" class="icon-img" alt="Spec" />
+          <span class="member-icon-tooltip">${specName}</span>
+        `;
         specIconElement.classList.remove('spec-icon-placeholder');
       }
 
@@ -467,8 +499,6 @@ async function loadSpec(card, character) {
           heroTalentElement.textContent = heroTalentName;
         }
       }
-    } else {
-
     }
   } catch (error) {
     // Mark character as invalid on 404

@@ -4,7 +4,7 @@
 class GuildSearch {
   constructor(containerId) {
     this.container = document.getElementById(containerId);
-    this.onSearch = null;
+    this.onSelectGuild = null;
   }
 
   async render() {
@@ -18,24 +18,35 @@ class GuildSearch {
         <input
           type="text"
           id="guild-name-input"
-          placeholder="Guild name"
+          placeholder="Guild name..."
           class="search-input"
           required
         />
         <input
           type="text"
-          id="realm-input"
-          placeholder="Realm (e.g., tarren-mill)"
+          id="realm-slug-input"
+          placeholder="Realm (e.g tarren-mill)..."
           class="search-input"
           required
         />
         <div class="region-radio-group">
           <label class="region-radio-label">
-            <input type="radio" name="region" value="eu" checked />
+            <input
+              type="radio"
+              name="region"
+              value="eu"
+              id="region-eu"
+              checked
+            />
             <span class="region-radio-text">EU</span>
           </label>
           <label class="region-radio-label">
-            <input type="radio" name="region" value="us" />
+            <input
+              type="radio"
+              name="region"
+              value="us"
+              id="region-us"
+            />
             <span class="region-radio-text">US</span>
           </label>
         </div>
@@ -53,29 +64,30 @@ class GuildSearch {
     const form = document.getElementById('guild-search-form');
 
     if (form) {
-      form.addEventListener('submit', (e) => {
+      form.addEventListener('submit', async (e) => {
         e.preventDefault();
-
         const guildName = document.getElementById('guild-name-input').value.trim();
-        const realmInput = document.getElementById('realm-input');
-        const realm = realmInput ? realmInput.value.trim() : '';
-        const regionChecked = document.querySelector('input[name="region"]:checked');
-        const region = regionChecked ? regionChecked.value : 'eu';
+        const realm = document.getElementById('realm-slug-input').value.trim();
+        const region = document.querySelector('input[name="region"]:checked').value;
 
-        if (!realm) {
-          alert('Please enter a realm');
+        if (!guildName || !realm) {
           return;
         }
 
-        if (this.onSearch) {
-          this.onSearch({ guildName, realm, region });
+        if (this.onSelectGuild) {
+          this.onSelectGuild({ guildName, realm, region });
         }
       });
     }
   }
 
+  setOnSelectCallback(callback) {
+    this.onSelectGuild = callback;
+  }
+
+  // Keep the old method name for backwards compatibility
   setOnSearchCallback(callback) {
-    this.onSearch = callback;
+    this.onSelectGuild = callback;
   }
 }
 

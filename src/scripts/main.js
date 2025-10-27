@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           <h2>Find Your Guild</h2>
         </div>
         
-        <p>Search for any World of Warcraft guild in EU or US to view their roster, member details, and more.</p>
+        <p>Search for any World of Warcraft guild in EU or US to view their roster, member details, and more. Unfortunately due to API restrictions you need to have both Guild Name and Realm name.</p>
       </div>
     `;
   }
@@ -98,9 +98,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (lastSearch) {
       try {
         const searchParams = JSON.parse(lastSearch);
-
-        // Trigger the search callback with stored parameters
-        guildSearch.setOnSearchCallback(guildSearch.onSearch);
 
         // Load the guild directly
         updateGuildConfig(searchParams.guildName, searchParams.realm);

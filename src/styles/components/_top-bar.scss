@@ -30,6 +30,19 @@
     }
   }
 
+  .top-bar-logo {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    text-decoration: none;
+
+    img {
+      height: 35px;
+      width: auto;
+      display: block;
+    }
+  }
+
   // Hamburger Menu Button (hidden on desktop)
   .hamburger-menu {
     display: none;
@@ -270,6 +283,12 @@
 
   // Responsive styles for mobile (1024px and below)
   @media (max-width: 1024px) {
+    .top-bar-logo {
+      img {
+        height: 30px;
+      }
+    }
+
     .hamburger-menu {
       display: flex;
     }

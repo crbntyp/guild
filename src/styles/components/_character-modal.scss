@@ -25,11 +25,16 @@
     backdrop-filter: blur(15px);
   }
 
-  .character-modal-content {
+  .character-modal-wrapper {
     position: relative;
     max-width: 500px;
     max-height: 90vh;
     z-index: 1;
+  }
+
+  .character-modal-content {
+    position: relative;
+    z-index: 10;
     animation: modal-slide-in 0.3s ease;
   }
 
@@ -88,7 +93,7 @@
     //background: rgba(0, 0, 0, 0.5);
     border-radius: 20px;
     backdrop-filter: blur(2px);
-    min-width: 254;
+    width: 254px;
 
     .guildmaster-crown {
       position: absolute;
@@ -180,9 +185,10 @@
           align-items: center;
           justify-content: center;
           position: relative;
-          overflow: hidden;
+          overflow: visible;
           flex-shrink: 0;
           border-radius: 50%;
+          cursor: pointer;
 
           .icon-img {
             width: 100%;
@@ -201,6 +207,44 @@
             align-items: center;
             justify-content: center;
             position: absolute;
+          }
+
+          .modal-icon-tooltip {
+            position: absolute;
+            bottom: calc(100% + 12px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.95);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+            letter-spacing: 0.5px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            z-index: 1000;
+
+            // Triangle at the bottom (pointing down toward the icon)
+            &::after {
+              content: '';
+              position: absolute;
+              bottom: -6px;
+              left: 50%;
+              transform: translateX(-50%);
+              width: 0;
+              height: 0;
+              border-style: solid;
+              border-width: 6px 6px 0 6px;
+              border-color: rgba(0, 0, 0, 0.95) transparent transparent transparent;
+            }
+          }
+
+          &:hover .modal-icon-tooltip {
+            opacity: 1;
+            transform: translateX(-50%) translateY(5px);
           }
         }
       }
@@ -224,10 +268,16 @@
       z-index: 10;
     }
 
-    .modal-equipment {
-      padding: 15px 5px 5px;
+    .modal-content-panes {
+      position: relative;
+      height: 300px;
+    }
+
+    .modal-content-pane {
+      display: none;
+      padding: 15px 5px 10px;
       border-top: 1px solid rgba(255, 255, 255, 0.1);
-      max-height: 400px;
+      height: 100%;
       overflow-y: auto;
 
       &::-webkit-scrollbar {
@@ -248,27 +298,125 @@
         }
       }
 
+      &.active {
+        display: block;
+      }
+
       h3 {
         font-size: 14px;
-        font-weight: 300;
+        font-weight: 600;
         color: white;
         margin-bottom: 10px;
         text-align: center;
       }
+    }
+  }
 
-      .modal-equipment-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 4px;
+  .modal-tab-buttons-external {
+    position: absolute;
+    right: -60px;
+    top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    z-index: 15;
+  }
+
+  .modal-tab-btn {
+    height: 50px;
+    width: 50px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    border: 0px solid rgba(white, 0.6);
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 35px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    position: relative;
+
+    i{
+      display: block;
+    }
+
+    .modal-tab-tooltip {
+      position: absolute;
+      bottom: calc(100% + 12px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.95);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+      letter-spacing: 0.5px;
+      text-transform: none;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 1000;
+
+      // Triangle at the bottom (pointing down toward the button)
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 6px 6px 0 6px;
+        border-color: rgba(0, 0, 0, 0.95) transparent transparent transparent;
       }
+    }
 
-      .modal-equipment-item {
+    &:hover {
+      background: rgba(0, 0, 0, 0.8);
+      border-color: rgba(255, 255, 255, 0.4);
+      color: rgba(255, 255, 255, 0.9);
+      box-shadow: -4px 0 12px rgba(0, 0, 0, 0.5);
+
+      .modal-tab-tooltip {
+        opacity: 1;
+        transform: translateX(-50%) translateY(5px);
+      }
+    }
+
+    &.active {
+      background: rgba(black, 0.4);
+      border-color: rgba(black, 0.8);
+      color: rgba(0, 174, 255, 0.8);
+      box-shadow: -4px 0 12px rgba(black, 0.3);
+    }
+  }
+
+  // Hide tooltips on mobile (below 450px)
+  @media (max-width: 767px) {
+    .modal-tab-btn .modal-tab-tooltip {
+      display: none;
+    }
+  }
+
+  .modal-character-card {
+    .modal-equipment-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+    }
+
+    .modal-equipment-item {
         display: flex;
         align-items: center;
         justify-content: center;
         transition: all 0.2s ease;
-        text-decoration: none;
-        color: inherit;
         aspect-ratio: 1;
 
         &:hover {
@@ -287,6 +435,8 @@
           align-items: center;
           justify-content: center;
           position: relative;
+          text-decoration: none;
+          color: inherit;
 
           img {
             width: 100%;
@@ -314,7 +464,7 @@
             font-size: 8px;
             font-weight: 600;
             text-align: center;
-            padding: 2px 2px;
+            padding: 2px 1px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             border-radius: 4px 4px 0 0;
@@ -336,6 +486,46 @@
             z-index: 10;
             display: none;
           }
+
+          .item-socket-indicator {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 11;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            cursor: help;
+            top: 2px;
+            right: 2px;
+
+            i {
+              font-size: 12px;
+              color: rgba(255, 255, 255, 0.9);
+            }
+
+            &.empty {
+              background: rgba(220, 20, 60, 0.9);
+              border-color: rgba(255, 50, 50, 0.8);
+              animation: pulse-warning 2s infinite;
+
+              i {
+                color: white;
+              }
+            }
+          }
+        }
+      }
+
+      @keyframes pulse-warning {
+        0%, 100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.7;
         }
       }
 
@@ -348,7 +538,246 @@
           font-size: 14px;
         }
       }
-    }
+
+      .enchants-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .enchant-row {
+          display: flex;
+          justify-content: space-between;
+          flex-direction: column;
+          align-items: flex-start;
+          padding: 6px 10px;
+          background: rgba(0, 0, 0, 0.3);
+          border-radius: 6px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+
+          .enchant-slot-name {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            min-width: 80px;
+            padding-top: 2px;
+            flex-shrink: 0;
+          }
+
+          .enchant-socket-container {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+          }
+
+          .enchant-status,
+          .socket-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.9);
+
+            i {
+              font-size: 12px;
+              flex-shrink: 0;
+            }
+
+            &.enchanted,
+            &.socketed {
+              i {
+                color: #00ff00;
+              }
+            }
+
+            .enchant-name,
+            .socket-name {
+              white-space: normal;
+              line-height: 1.3;
+              color: #00b4ff;
+            }
+
+            .socket-label {
+              color: rgba(255, 255, 255, 0.9);
+            }
+
+            &.missing {
+              color: rgba(255, 100, 100, 0.9);
+              animation: pulse-warning 2s infinite;
+            }
+
+            &.empty-socket {
+              color: rgba(255, 100, 100, 0.9);
+              animation: pulse-warning 2s infinite;
+            }
+          }
+      }
+
+      .no-enchants {
+        text-align: center;
+        padding: 20px;
+        color: rgba(255, 255, 255, 0.5);
+
+        p {
+          font-size: 12px;
+        }
+      }
+
+      .modal-raid-progress {
+        .raid-progress-loading {
+          text-align: center;
+          padding: 20px;
+          color: rgba(255, 255, 255, 0.5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+
+          i {
+            font-size: 18px;
+          }
+
+          span {
+            font-size: 12px;
+          }
+        }
+
+        .raids-flat-list {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .raid-expansion-section {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+
+          .expansion-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 6px 10px;;
+            border-radius: 6px;
+            margin: 0;
+            text-align: center;
+          }
+
+          .raid-expansion-raids {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+          }
+        }
+
+        .raid-instance {
+          position: relative;
+          background: rgba(0, 0, 0, 0.3);
+          border-radius: 6px;
+          padding: 10px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          overflow: hidden;
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+
+          &.has-background {
+            background-color: rgba(0, 0, 0, 0.5);
+          }
+
+          .raid-background-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1;
+          }
+
+          .raid-content {
+            position: relative;
+            z-index: 2;
+
+            .raid-name {
+              font-size: 12px;
+              font-weight: 600;
+              color: rgba(255, 255, 255, 0.95);
+              margin-bottom: 8px;
+              text-align: center;
+              text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+            }
+          }
+
+          .raid-difficulty {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+            position: relative;
+            z-index: 2;
+
+            &:last-child {
+              margin-bottom: 0;
+            }
+
+            .difficulty-label {
+              font-size: 10px;
+              font-weight: 500;
+              color: rgba(255, 255, 255, 0.95);
+              min-width: 50px;
+              text-align: right;
+              text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+            }
+
+            .progress-bar-container {
+              flex: 1;
+              height: 3px;
+              background: rgba(0, 0, 0, 0.5);
+              border-radius: 4px;
+              overflow: hidden;
+              //border: 1px solid rgba(255, 255, 255, 0.1);
+
+              .progress-bar {
+                height: 100%;
+                transition: width 0.3s ease;
+                border-radius: 4px;
+
+                // Apply gradient fade only when not complete
+                &:not(.complete) {
+                  mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 60%, rgba(0, 0, 0, 0) 100%);
+                  -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 60%, rgba(0, 0, 0, 0) 100%);
+                }
+              }
+            }
+
+            .difficulty-count {
+              font-size: 10px;
+              font-weight: 600;
+              color: rgba(255, 255, 255, 0.95);
+              min-width: 35px;
+              text-align: center;
+              text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+            }
+          }
+        }
+
+        .no-raid-data {
+          text-align: center;
+          padding: 20px;
+          color: rgba(255, 255, 255, 0.5);
+
+          p {
+            font-size: 12px;
+          }
+        }
+      }
   }
 }
 

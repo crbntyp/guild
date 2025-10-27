@@ -36,9 +36,11 @@ class PageHeader {
     return `
       <div class="${className}-header">
         <div class="${className}-header-info">
-          <h1>${title}</h1>
+          <div class="${className}-header-top">
+            <h1>${title}</h1>
+            ${actionButtonHTML}
+          </div>
           <span class="info-description">${description}</span>
-          ${actionButtonHTML}
         </div>
       </div>
     `;
