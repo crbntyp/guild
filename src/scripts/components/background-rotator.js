@@ -10,6 +10,9 @@ class BackgroundRotator {
     this.currentIndex = 0;
     this.layers = null;
     this.intervalId = null;
+    this.progressBarElement = null;
+    this.startTime = null;
+    this.progressAnimationId = null;
   }
 
   init() {
@@ -84,20 +87,104 @@ class BackgroundRotator {
       this.layers.layer1.style.opacity = '1';
       this.layers.layer2.style.opacity = '0';
     }
+
+    // Reset progress bar
+    if (this.progressBarElement) {
+      this.progressBarElement.style.width = '0%';
+      this.startTime = Date.now();
+      if (this.progressAnimationId) {
+        cancelAnimationFrame(this.progressAnimationId);
+      }
+      this.updateProgress();
+    }
+  }
+
+  goToNext() {
+    this.rotate();
+    this.resetTimer();
+  }
+
+  goToPrevious() {
+    // Determine which layer is currently visible
+    const layer1Opacity = parseFloat(getComputedStyle(this.layers.layer1).opacity);
+    const currentLayer = layer1Opacity === 1 ? 1 : 2;
+    const nextLayer = currentLayer === 1 ? 2 : 1;
+
+    // Move to previous image
+    this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
+
+    // Set previous image on hidden layer
+    this.setBackground(this.currentIndex, nextLayer);
+
+    // Fade out current layer, fade in next layer
+    if (currentLayer === 1) {
+      this.layers.layer1.style.opacity = '0';
+      this.layers.layer2.style.opacity = '1';
+    } else {
+      this.layers.layer1.style.opacity = '1';
+      this.layers.layer2.style.opacity = '0';
+    }
+
+    // Reset progress bar
+    if (this.progressBarElement) {
+      this.progressBarElement.style.width = '0%';
+      this.startTime = Date.now();
+      if (this.progressAnimationId) {
+        cancelAnimationFrame(this.progressAnimationId);
+      }
+      this.updateProgress();
+    }
+
+    this.resetTimer();
+  }
+
+  resetTimer() {
+    // Stop current interval and start a new one
+    this.stop();
+    this.start();
+  }
+
+  setProgressBar(element) {
+    this.progressBarElement = element;
+  }
+
+  updateProgress() {
+    if (!this.progressBarElement || !this.startTime) return;
+
+    const elapsed = Date.now() - this.startTime;
+    const progress = Math.min((elapsed / this.interval) * 100, 100);
+
+    this.progressBarElement.style.width = `${progress}%`;
+
+    if (progress < 100) {
+      this.progressAnimationId = requestAnimationFrame(() => this.updateProgress());
+    }
   }
 
   start() {
     if (this.intervalId) return;
 
+    this.startTime = Date.now();
+
     this.intervalId = setInterval(() => {
       this.rotate();
     }, this.interval);
+
+    // Start progress animation
+    if (this.progressBarElement) {
+      this.updateProgress();
+    }
   }
 
   stop() {
     if (this.intervalId) {
       clearInterval(this.intervalId);
       this.intervalId = null;
+    }
+
+    if (this.progressAnimationId) {
+      cancelAnimationFrame(this.progressAnimationId);
+      this.progressAnimationId = null;
     }
   }
 

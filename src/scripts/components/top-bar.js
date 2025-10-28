@@ -133,11 +133,11 @@ class TopBar {
           <i class="las la-search"></i>
           <span>Guild Finder</span>
         </a>
+        ${isAuthenticated ? `<a href="my-characters.html" class="nav-link${getActiveClass('my-characters.html')}"><i class="las la-user"></i><span>My Characters</span></a>` : ''}
         <a href="mythic-plus.html" class="nav-link${getActiveClass('mythic-plus.html')}">
           <i class="las la-trophy"></i>
           <span>Mythic+</span>
         </a>
-        ${isAuthenticated ? `<a href="my-characters.html" class="nav-link${getActiveClass('my-characters.html')}"><i class="las la-user"></i><span>My Characters</span></a>` : ''}
         ${isAuthenticated ? `<a href="my-todos.html" class="nav-link${getActiveClass('my-todos.html')}"><i class="las la-tasks"></i><span>My Todos</span></a>` : ''}
         ${isAuthenticated ? `<a href="my-youtube.html" class="nav-link${getActiveClass('my-youtube.html')}"><i class="lab la-youtube"></i><span>My YouTube</span></a>` : ''}
         <a href="gallery.html" class="nav-link${getActiveClass('gallery.html')}">
@@ -150,11 +150,11 @@ class TopBar {
           <i class="las la-search"></i>
           <span>Guild Finder</span>
         </a>
+        ${isAuthenticated ? `<a href="my-characters.html" class="mobile-nav-link${getActiveClass('my-characters.html')}"><i class="las la-user"></i><span>My Characters</span></a>` : ''}
         <a href="mythic-plus.html" class="mobile-nav-link${getActiveClass('mythic-plus.html')}">
           <i class="las la-trophy"></i>
           <span>Mythic+</span>
         </a>
-        ${isAuthenticated ? `<a href="my-characters.html" class="mobile-nav-link${getActiveClass('my-characters.html')}"><i class="las la-user"></i><span>My Characters</span></a>` : ''}
         ${isAuthenticated ? `<a href="my-todos.html" class="mobile-nav-link${getActiveClass('my-todos.html')}"><i class="las la-tasks"></i><span>My Todos</span></a>` : ''}
         ${isAuthenticated ? `<a href="my-youtube.html" class="mobile-nav-link${getActiveClass('my-youtube.html')}"><i class="lab la-youtube"></i><span>My YouTube</span></a>` : ''}
         <a href="gallery.html" class="mobile-nav-link${getActiveClass('gallery.html')}">

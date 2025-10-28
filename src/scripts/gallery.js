@@ -26,6 +26,12 @@ class GalleryBackgroundRotator extends BackgroundRotator {
 
     // Set initial location
     this.updateLocationDisplay();
+
+    // Connect progress bar
+    const progressBar = document.getElementById('gallery-progress-bar');
+    if (progressBar) {
+      this.setProgressBar(progressBar);
+    }
   }
 
   updateLocationDisplay() {
@@ -45,17 +51,48 @@ class GalleryBackgroundRotator extends BackgroundRotator {
 
       locationDisplay.innerHTML = `
         <div class="location-name">
-          ${location}, ${raceName ? raceName : ''}
-          <button class="download-btn" id="download-bg-btn" title="Download this background">
-            <i class="las la-download"></i>
+          <button class="gallery-nav-btn gallery-nav-prev" id="gallery-prev-btn" title="Previous image">
+            <i class="las la-angle-left"></i>
+          </button>
+          <span class="location-text">
+            ${location}, ${raceName ? raceName : ''}
+          </span>
+          <button class="gallery-nav-btn gallery-nav-next" id="gallery-next-btn" title="Next image">
+            <i class="las la-angle-right"></i>
           </button>
         </div>
+        <div class="gallery-progress-container">
+          <div class="progress-bar-wrapper">
+            <div class="progress-bar" id="gallery-progress-bar"></div>
+          </div>
+        </div>
+        <button class="download-btn" id="download-bg-btn" title="Download this background">
+          <i class="las la-download"></i>
+        </button>
       `;
+
+      // Attach navigation handlers
+      const prevBtn = document.getElementById('gallery-prev-btn');
+      const nextBtn = document.getElementById('gallery-next-btn');
+
+      if (prevBtn) {
+        prevBtn.addEventListener('click', () => this.goToPrevious());
+      }
+
+      if (nextBtn) {
+        nextBtn.addEventListener('click', () => this.goToNext());
+      }
 
       // Attach download handler
       const downloadBtn = document.getElementById('download-bg-btn');
       if (downloadBtn) {
         downloadBtn.addEventListener('click', () => this.downloadCurrentBackground());
+      }
+
+      // Reconnect progress bar
+      const progressBar = document.getElementById('gallery-progress-bar');
+      if (progressBar) {
+        this.setProgressBar(progressBar);
       }
     }
   }

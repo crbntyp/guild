@@ -43,7 +43,7 @@ const config = {
     realmSlug: 'tarren-mill',
     nameSlug: 'geez-yer-shoes-n-jaykit',
     // Connected realm ID for Tarren Mill (EU)
-    connectedRealmId: 1081
+    connectedRealmId: 1084
   },
 
   // Cache settings

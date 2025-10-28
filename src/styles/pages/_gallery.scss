@@ -21,7 +21,8 @@
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
       animation: fadeIn 0.5s ease-in;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
+      align-items: center;
 
       .location-name {
         color: #fff;
@@ -38,38 +39,92 @@
         border-radius: 50px;
         border: 1px solid rgba(white, 0.03);
 
-        .download-btn {
-          background: rgba(white, 0.2);
-          border: 2px solid white;
+        .gallery-nav-btn {
+          background: none;
+          border: none;
           color: white;
-          padding: 4px;
-          border-radius: 8px;
           cursor: pointer;
           transition: all 0.3s ease;
-          display: inline-flex;
+          display: flex;
           align-items: center;
           justify-content: center;
-          width: 30px;
-          height: 30px;
+          flex-shrink: 0;
+          padding: 0;
 
           i {
-            font-size: 16px;
+            font-size: 22px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
           }
 
           &:hover {
-            background: rgba(white, 0.4);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(white, 0.3);
+            transform: scale(1.15);
+            color: rgba(white, 0.9);
+            text-shadow: 2px 2px 8px rgba(255, 255, 255, 0.3);
           }
 
           &:active {
-            transform: translateY(0);
+            transform: scale(0.95);
+          }
+        }
+
+        .location-text {
+          flex: 0 1 auto;
+        }
+      }
+
+      .gallery-progress-container {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        max-width: 240px;
+        margin-top: 12px;
+
+        .progress-bar-wrapper {
+          flex: 1;
+          height: 1px;
+          background: rgba(white, 0.2);
+          border-radius: 1px;
+          overflow: hidden;
+          backdrop-filter: blur(10px);
+
+          .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, rgba(white, 0.6), rgba(white, 0.9));
+            width: 0%;
+            transition: width 0.1s linear;
+            border-radius: 1px;
           }
         }
       }
 
-      .race-name {
-        letter-spacing: 2px;
+      .download-btn {
+        background: rgba(white, 0.2);
+        border: 2px solid white;
+        color: white;
+        padding: 4px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        margin-top: 12px;
+
+        i {
+          font-size: 16px;
+        }
+
+        &:hover {
+          background: rgba(white, 0.4);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(white, 0.3);
+        }
+
+        &:active {
+          transform: translateY(0);
+        }
       }
     }
   }
@@ -98,6 +153,41 @@
 
       h1 {
         font-size: 24px;
+      }
+    }
+
+    .gallery-info {
+      .location-display {
+        .location-name {
+          padding: 8px 16px;
+          gap: 12px;
+          font-size: 11px;
+
+          .gallery-nav-btn {
+            i {
+              font-size: 18px;
+            }
+          }
+        }
+
+        .gallery-progress-container {
+          max-width: 90%;
+          margin-top: 10px;
+
+          .progress-bar-wrapper {
+            height: 1px;
+          }
+        }
+
+        .download-btn {
+          width: 28px;
+          height: 28px;
+          margin-top: 10px;
+
+          i {
+            font-size: 14px;
+          }
+        }
       }
     }
   }

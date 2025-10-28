@@ -288,6 +288,23 @@ class WoWAPI {
     }
   }
 
+  // Get playable specialization media
+  async getPlayableSpecializationMedia(specId) {
+    const endpoint = `/data/wow/media/playable-specialization/${specId}`;
+
+    try {
+      const data = await battlenetClient.request(endpoint, {
+        params: {
+          namespace: config.api.namespace.static
+        }
+      });
+      return data;
+    } catch (error) {
+      console.error(`Error fetching spec media for spec ${specId}:`, error);
+      throw error;
+    }
+  }
+
   // Get character encounters (raid progression)
   async getCharacterEncounters(realmSlug, characterName) {
     const encodedName = encodeURIComponent(characterName.toLowerCase());
@@ -445,6 +462,57 @@ class WoWAPI {
       return data;
     } catch (error) {
       console.error('Error fetching mythic keystone dungeons:', error);
+      throw error;
+    }
+  }
+
+  // Get Mythic Keystone Dungeon details
+  async getMythicKeystoneDungeon(dungeonId) {
+    const endpoint = `/data/wow/mythic-keystone/dungeon/${dungeonId}`;
+
+    try {
+      const data = await battlenetClient.request(endpoint, {
+        params: {
+          namespace: config.api.namespace.dynamic
+        }
+      });
+      return data;
+    } catch (error) {
+      console.error(`Error fetching mythic keystone dungeon ${dungeonId}:`, error);
+      throw error;
+    }
+  }
+
+  // Get Journal Instances Index
+  async getJournalInstances() {
+    const endpoint = '/data/wow/journal-instance/index';
+
+    try {
+      const data = await battlenetClient.request(endpoint, {
+        params: {
+          namespace: config.api.namespace.static
+        }
+      });
+      return data;
+    } catch (error) {
+      console.error('Error fetching journal instances:', error);
+      throw error;
+    }
+  }
+
+  // Get Journal Instance details
+  async getJournalInstance(instanceId) {
+    const endpoint = `/data/wow/journal-instance/${instanceId}`;
+
+    try {
+      const data = await battlenetClient.request(endpoint, {
+        params: {
+          namespace: config.api.namespace.static
+        }
+      });
+      return data;
+    } catch (error) {
+      console.error(`Error fetching journal instance ${instanceId}:`, error);
       throw error;
     }
   }
