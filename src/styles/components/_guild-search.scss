@@ -148,6 +148,24 @@
     }
   }
 
+  .clear-results-link {
+    color: var(--color-text-light);
+    font-family: 'Muli', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+    opacity: 0.7;
+
+    &:hover {
+      color: var(--color-primary);
+      opacity: 1;
+      text-decoration: underline;
+    }
+  }
+
   // Mobile breakpoint for very small screens (386px and below)
   @media (max-width: 386px) {
     height: auto;
@@ -177,6 +195,10 @@
     .btn-search {
       flex: 0 0 auto;
       padding: 0 12px;
+      font-size: 11px;
+    }
+
+    .clear-results-link {
       font-size: 11px;
     }
   }
@@ -235,36 +257,50 @@
 
 // Guild Search Info Panel
 .guild-search-info {
-  max-width: 400px;
+  max-width: 500px;
   margin: 80px auto;
   padding: 20px;
   text-align: center;
   color: var(--color-text);
   border-radius: calc(var(--border-radius) * 2);
   backdrop-filter: blur(10px);
+  letter-spacing: 1.5px;
 
-  .info-icon {
+  .info-logo {
+    margin-bottom: 20px;
+
+    img {
+      width: 150px;
+      height: auto;
+      opacity: 0.9;
+    }
+  }
+
+  .info-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
     margin-bottom: 10px;
-    position: relative;
 
     i {
-      font-size: 60px;
+      font-size: 32px;
       color: var(--color-primary);
       opacity: 0.9;
       filter: drop-shadow(0 0 20px rgba(255, 209, 0, 0.3));
     }
-  }
 
-  h2 {
-    font-size: 32px;
-    font-weight: 500;
-    color: var(--color-primary);
-;
-    letter-spacing: 1px;
+    h2 {
+      font-size: 24px;
+      font-weight: 500;
+      color: var(--color-primary);
+      letter-spacing: 1px;
+      margin: 0;
+    }
   }
 
   p {
-    font-size: 12px;
+    font-size: 14px;
     margin-bottom: var(--spacing-xl);
     line-height: 1.6;
   }
@@ -320,12 +356,24 @@
     margin: 40px auto;
     padding: var(--spacing-md);
 
-    h2 {
-      font-size: 24px;
+    .info-logo {
+      margin-bottom: 16px;
+
+      img {
+        width: 60px;
+      }
     }
 
-    .info-icon i {
-      font-size: 48px;
+    .info-header {
+      gap: 8px;
+
+      i {
+        font-size: 24px;
+      }
+
+      h2 {
+        font-size: 24px;
+      }
     }
 
     p {

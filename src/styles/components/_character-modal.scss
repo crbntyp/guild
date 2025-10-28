@@ -314,12 +314,15 @@
 
   .modal-tab-buttons-external {
     position: absolute;
-    right: -60px;
+    right: -55px;
     top: 10px;
     display: flex;
     flex-direction: column;
     gap: 5px;
     z-index: 15;
+    @media screen and (max-width: 440px) {
+      right: -45px;
+    }
   }
 
   .modal-tab-btn {
@@ -339,6 +342,11 @@
     justify-content: center;
     transition: all 0.2s ease;
     position: relative;
+    @media screen and (max-width: 440px) {
+      width: 40px;
+      height: 40px;
+      font-size: 28px;
+    }
 
     i{
       display: block;

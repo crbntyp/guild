@@ -5,6 +5,7 @@ class GuildSearch {
   constructor(containerId) {
     this.container = document.getElementById(containerId);
     this.onSelectGuild = null;
+    this.onClearResults = null;
   }
 
   async render() {
@@ -54,6 +55,7 @@ class GuildSearch {
           <i class="las la-search"></i>
           Search
         </button>
+        <a href="#" class="clear-results-link" id="clear-results-link">Reset</a>
       </form>
     `;
 
@@ -79,6 +81,17 @@ class GuildSearch {
         }
       });
     }
+
+    // Handle clear results link
+    const clearLink = document.getElementById('clear-results-link');
+    if (clearLink) {
+      clearLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (this.onClearResults) {
+          this.onClearResults();
+        }
+      });
+    }
   }
 
   setOnSelectCallback(callback) {
@@ -88,6 +101,10 @@ class GuildSearch {
   // Keep the old method name for backwards compatibility
   setOnSearchCallback(callback) {
     this.onSelectGuild = callback;
+  }
+
+  setOnClearCallback(callback) {
+    this.onClearResults = callback;
   }
 }
 

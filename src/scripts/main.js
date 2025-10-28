@@ -28,12 +28,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     const rosterContainer = document.getElementById('guild-roster-container');
     rosterContainer.innerHTML = `
       <div class="guild-search-info">
-        <div class="info-icon">
-          <i class="las la-search"></i>
-          <h2>Find Your Guild</h2>
+        <div class="info-logo">
+          <img src="img/app-logo.png" alt="App Logo" />
         </div>
-        
-        <p>Search for any World of Warcraft guild in EU or US to view their roster, member details, and more. Unfortunately due to API restrictions you need to have both Guild Name and Realm name.</p>
+        <div class="info-header">
+          <h2>Your Personal Warcraft</h2>
+        </div>
+
+        <p>An app to serve your day to day, build todos for your adventures, add your favourite youtube channels for talents, expansions and whatever else! <br /><br />Get started and login with your BNet account <i class="las la-heart"></i></p>
       </div>
     `;
   }
@@ -69,6 +71,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (error) {
       console.error('Failed to load guild roster:', error);
     }
+  });
+
+  // Set up clear results callback
+  guildSearch.setOnClearCallback(() => {
+    // Clear session storage
+    sessionStorage.removeItem('lastGuildSearch');
+
+    // Clear roster state
+    clearRosterState(guildRoster);
+
+    // Show info panel
+    showInfoPanel();
   });
 
   // Check if there's a guild query in URL (for direct links)

@@ -121,7 +121,7 @@ class TopBar {
 
     this.leftContainer.innerHTML = `
       <a href="index.html" class="top-bar-logo">
-        <img src="img/app-logo.png" alt="App Logo" />
+        <i class="las la-shield-alt"></i>
       </a>
       <button class="hamburger-menu" aria-label="Toggle menu">
         <span></span>

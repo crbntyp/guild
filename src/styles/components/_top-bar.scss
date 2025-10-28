@@ -20,7 +20,7 @@
   .top-bar-left {
     display: flex;
     align-items: center;
-    gap: var(--spacing-md);
+    gap: 10px;
 
     .guild-name {
       font-size: 16px;
@@ -35,11 +35,17 @@
     align-items: center;
     flex-shrink: 0;
     text-decoration: none;
+    transition: var(--transition);
 
-    img {
-      height: 35px;
-      width: auto;
-      display: block;
+    i {
+      font-size: 32px;
+      color: var(--color-primary);
+      transition: var(--transition);
+    }
+
+    &:hover i {
+      color: #fff;
+      transform: scale(1.1);
     }
   }
 
@@ -284,8 +290,8 @@
   // Responsive styles for mobile (1024px and below)
   @media (max-width: 1024px) {
     .top-bar-logo {
-      img {
-        height: 30px;
+      i {
+        font-size: 28px;
       }
     }
 
