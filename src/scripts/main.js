@@ -6,6 +6,7 @@ import characterModal from './components/character-modal.js';
 import config from './config.js';
 import { slugToFriendly } from './utils/helpers.js';
 import { updateRegionConfig, updateGuildConfig, clearRosterState } from './utils/config-utils.js';
+import wowApi from './api/wow-api.js';
 
 console.log('⚡ Guild Site initialized');
 
@@ -15,6 +16,40 @@ document.addEventListener('DOMContentLoaded', async () => {
     onInit: async () => {
       // Initialize character modal
       characterModal.init();
+
+      // Fetch and log WoW Token price
+      let tokenPrice = null;
+      try {
+        const tokenData = await wowApi.getWoWTokenPrice();
+
+        // Convert copper to gold (10,000 copper = 1 gold)
+        const goldPrice = (tokenData.price / 10000).toLocaleString('en-US', {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0
+        });
+
+        // Convert timestamp to readable date
+        const lastUpdated = new Date(tokenData.last_updated_timestamp);
+        const formattedDate = lastUpdated.toLocaleString('en-US', {
+          dateStyle: 'medium',
+          timeStyle: 'short'
+        });
+
+        // Format for display: "day month"
+        const displayDate = lastUpdated.toLocaleDateString('en-US', {
+          day: 'numeric',
+          month: 'short'
+        });
+
+        tokenPrice = { gold: goldPrice, date: displayDate };
+
+        console.log('💰 WoW Token Price:');
+        console.log(`   Gold Value: ${goldPrice}g`);
+        console.log(`   Last Updated: ${formattedDate}`);
+        console.log('   Raw Data:', tokenData);
+      } catch (error) {
+        console.error('Failed to fetch WoW Token price:', error);
+      }
 
       // Initialize guild search
       const guildSearch = new GuildSearch('guild-search-container');
@@ -26,6 +61,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Show info panel initially (before any search)
   function showInfoPanel() {
     const rosterContainer = document.getElementById('guild-roster-container');
+
+    const tokenPriceHTML = tokenPrice
+      ? `<p class="token-price">Token cost as of ${tokenPrice.date} = ${tokenPrice.gold}g</p>`
+      : '';
+
     rosterContainer.innerHTML = `
       <div class="guild-search-info">
         <div class="info-logo">
@@ -36,6 +76,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>
 
         <p>An app to serve your day to day, build todos for your adventures, add your favourite youtube channels for talents, expansions and whatever else! <br /><br />Get started and login with your BNet account <i class="las la-heart"></i></p>
+        ${tokenPriceHTML}
       </div>
     `;
   }

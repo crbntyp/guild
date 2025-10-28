@@ -301,8 +301,19 @@
 
   p {
     font-size: 14px;
-    margin-bottom: var(--spacing-xl);
     line-height: 1.6;
+  }
+
+  .token-price {
+    margin-top: 20px;
+    margin-bottom: 0;
+    padding: 12px 20px;
+    background: rgba(255, 209, 0, 0.1);
+    border-radius: var(--border-radius);
+    color: var(--color-primary);
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-block;
   }
 
   .info-steps {

@@ -346,6 +346,108 @@ class WoWAPI {
       throw error;
     }
   }
+
+  // Get WoW Token price
+  async getWoWTokenPrice() {
+    const endpoint = '/data/wow/token/index';
+
+    try {
+      const data = await battlenetClient.request(endpoint, {
+        params: {
+          namespace: config.api.namespace.dynamic
+        }
+      });
+      return data;
+    } catch (error) {
+      console.error('Error fetching WoW Token price:', error);
+      throw error;
+    }
+  }
+
+  // Get Mythic Keystone Leaderboards for a specific dungeon
+  async getMythicKeystoneLeaderboard(dungeonId, period) {
+    const endpoint = `/data/wow/connected-realm/${config.guild.connectedRealmId}/mythic-leaderboard/${dungeonId}/period/${period}`;
+
+    try {
+      const data = await battlenetClient.request(endpoint, {
+        params: {
+          namespace: config.api.namespace.dynamic
+        }
+      });
+      return data;
+    } catch (error) {
+      console.error(`Error fetching mythic keystone leaderboard for dungeon ${dungeonId}:`, error);
+      throw error;
+    }
+  }
+
+  // Get Mythic Keystone Season details
+  async getMythicKeystoneSeasonDetails(seasonId) {
+    const endpoint = `/data/wow/mythic-keystone/season/${seasonId}`;
+
+    try {
+      const data = await battlenetClient.request(endpoint, {
+        params: {
+          namespace: config.api.namespace.dynamic
+        }
+      });
+      return data;
+    } catch (error) {
+      console.error(`Error fetching mythic keystone season ${seasonId}:`, error);
+      throw error;
+    }
+  }
+
+  // Get Mythic Keystone Seasons Index
+  async getMythicKeystoneSeasons() {
+    const endpoint = '/data/wow/mythic-keystone/season/index';
+
+    try {
+      const data = await battlenetClient.request(endpoint, {
+        params: {
+          namespace: config.api.namespace.dynamic
+        }
+      });
+      return data;
+    } catch (error) {
+      console.error('Error fetching mythic keystone seasons:', error);
+      throw error;
+    }
+  }
+
+  // Get Mythic Keystone Period details
+  async getMythicKeystonePeriod(periodId) {
+    const endpoint = `/data/wow/mythic-keystone/period/${periodId}`;
+
+    try {
+      const data = await battlenetClient.request(endpoint, {
+        params: {
+          namespace: config.api.namespace.dynamic
+        }
+      });
+      return data;
+    } catch (error) {
+      console.error(`Error fetching mythic keystone period ${periodId}:`, error);
+      throw error;
+    }
+  }
+
+  // Get Mythic Keystone Dungeons Index
+  async getMythicKeystoneDungeons() {
+    const endpoint = '/data/wow/mythic-keystone/dungeon/index';
+
+    try {
+      const data = await battlenetClient.request(endpoint, {
+        params: {
+          namespace: config.api.namespace.dynamic
+        }
+      });
+      return data;
+    } catch (error) {
+      console.error('Error fetching mythic keystone dungeons:', error);
+      throw error;
+    }
+  }
 }
 
 export default new WoWAPI();

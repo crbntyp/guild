@@ -41,7 +41,9 @@ const config = {
     name: 'geez-yer-shoes-n-jaykit',
     // Normalized for API calls (lowercase, hyphens)
     realmSlug: 'tarren-mill',
-    nameSlug: 'geez-yer-shoes-n-jaykit'
+    nameSlug: 'geez-yer-shoes-n-jaykit',
+    // Connected realm ID for Tarren Mill (EU)
+    connectedRealmId: 1081
   },
 
   // Cache settings
