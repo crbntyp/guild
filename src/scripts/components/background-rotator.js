@@ -146,6 +146,11 @@ class BackgroundRotator {
 
   setProgressBar(element) {
     this.progressBarElement = element;
+
+    // If timer is already running, start the progress animation
+    if (this.intervalId && this.startTime) {
+      this.updateProgress();
+    }
   }
 
   updateProgress() {

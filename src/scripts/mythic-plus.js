@@ -35,7 +35,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       const leaderboardContent = document.getElementById('leaderboard-content');
 
       try {
-        leaderboardContent.innerHTML = '<p>Loading Mythic+ data...</p>';
+        leaderboardContent.innerHTML = `
+          <div class="loading-spinner">
+            <i class="las la-circle-notch la-spin la-6x"></i>
+            <p>Loading Mythic+ data...</p>
+          </div>
+        `;
 
         // Fetch current season
         const seasonsData = await wowApi.getMythicKeystoneSeasons();
