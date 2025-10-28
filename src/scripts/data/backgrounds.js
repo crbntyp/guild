@@ -3,7 +3,7 @@
  * Race IDs: 1=Human, 2=Orc, 3=Dwarf, 4=Night Elf, 5=Undead, 6=Tauren, 7=Gnome, 8=Troll,
  *          9=Goblin, 10=Blood Elf, 11=Draenei, 22=Worgen, 24=Pandaren, 27=Nightborne,
  *          28=Highmountain Tauren, 29=Void Elf, 30=Lightforged Draenei, 31=Zandalari Troll,
- *          32=Kul Tiran, 34=Dark Iron Dwarf, 35=Vulpera, 36=Mag'har Orc, 52=Dracthyr
+ *          32=Kul Tiran, 34=Dark Iron Dwarf, 35=Vulpera, 36=Mag'har Orc, 37=Mechagnome, 52=Dracthyr
  */
 export const backgrounds = [
   { path: 'img/bgs/bg-mulgore.jpg', location: 'Mulgore', raceId: 6 },
@@ -28,7 +28,7 @@ export const backgrounds = [
   { path: 'img/bgs/bg-vindicaar.jpg', location: 'The Vindicaar', raceId: 30 },
   { path: 'img/bgs/bg-brd.jpg', location: 'Blackrock Depths', raceId: 34 },
   { path: 'img/bgs/bg-boralus.jpg', location: 'Boralus', raceId: 32 },
-  { path: 'img/bgs/bg-gregan.jpg', location: 'Feralas', raceId: 4 },
+  { path: 'img/bgs/bg-gregan.jpg', location: 'Gnomeregan', raceId: 37 },
   { path: 'img/bgs/bg-dk.jpg', location: 'Acherus', raceId: 5 },
   { path: 'img/bgs/bg-dh.jpg', location: 'Mardum', raceId: 10 }
 ];
