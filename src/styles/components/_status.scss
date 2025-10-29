@@ -2,6 +2,31 @@
 // Reusable status pill/badge styles
 // Uses the @mixin status-pill from _mixins.scss
 
+// Status pill with main and sub text
+.status-success,
+.status-danger,
+.status-alert,
+.status-info {
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+
+  .status-main {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .status-sub {
+    font-size: 9px;
+    letter-spacing: 1.2px;
+    font-weight: 600;
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+}
+
 // Success Status (Green)
 .status-success {
   @include status-pill(
