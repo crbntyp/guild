@@ -372,6 +372,45 @@ document.addEventListener('DOMContentLoaded', async () => {
               return levelB - levelA; // Descending order (highest first)
             });
 
+            // Calculate class statistics from all leaderboard data
+            const classStats = {};
+            let totalPlayers = 0;
+
+            // Analyze all runs from all dungeons (top 8 runs per dungeon)
+            allLeaderboards.forEach(lb => {
+              const runsToAnalyze = lb.data.leading_groups.slice(0, 8); // Analyze top 8 runs per dungeon
+              runsToAnalyze.forEach(run => {
+                run.members.forEach(member => {
+                  const specData = specLookup[member.specialization?.id];
+                  const className = specData?.className || 'Unknown';
+                  const classId = specData?.classId;
+
+                  if (className !== 'Unknown') {
+                    if (!classStats[className]) {
+                      classStats[className] = {
+                        count: 0,
+                        classId: classId,
+                        color: getClassColor(classId)
+                      };
+                    }
+                    classStats[className].count++;
+                    totalPlayers++;
+                  }
+                });
+              });
+            });
+
+            // Convert to array and sort by count
+            const classStatsArray = Object.entries(classStats)
+              .map(([name, data]) => ({
+                name,
+                count: data.count,
+                classId: data.classId,
+                color: data.color,
+                percentage: ((data.count / totalPlayers) * 100).toFixed(1)
+              }))
+              .sort((a, b) => b.count - a.count);
+
             // Format period timestamp for display
             let lastUpdatedText = '';
 
@@ -400,6 +439,24 @@ document.addEventListener('DOMContentLoaded', async () => {
               }
             }
 
+            // Build class statistics section
+            const classStatsHtml = `
+              <div class="class-stats-section">
+                <h3>Class Distribution (Top ${allLeaderboards.length * 8} Runs)</h3>
+                <div class="class-stats-grid">
+                  ${classStatsArray.map(cls => `
+                    <div class="class-stat-item">
+                      <div class="class-stat-bar" style="width: ${cls.percentage}%; background: linear-gradient(90deg, ${cls.color}88, ${cls.color}44);"></div>
+                      <div class="class-stat-info">
+                        <span class="class-stat-name" style="color: ${cls.color};">${cls.name}</span>
+                        <span class="class-stat-value">${cls.percentage}% <span class="class-stat-count">(${cls.count})</span></span>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            `;
+
             // Build summary section with top run from each dungeon
             html += `
               <div class="leaderboard-summary">
@@ -407,6 +464,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                   ${lastUpdatedText ? `<div class="leaderboard-status">${lastUpdatedText}</div>` : ''}
                   <div id="dungeon-dropdown-container"></div>
                 </div>
+
+                ${classStatsHtml}
 
                 <div id="detailed-leaderboard"></div>
 
