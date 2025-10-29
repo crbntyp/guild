@@ -372,8 +372,13 @@ document.addEventListener('DOMContentLoaded', async () => {
               return levelB - levelA; // Descending order (highest first)
             });
 
-            // Calculate class statistics from all leaderboard data
-            const classStats = {};
+            // Calculate class statistics from all leaderboard data, grouped by role
+            const roleStats = {
+              tank: {},
+              healer: {},
+              dps: {}
+            };
+            const roleTotals = { tank: 0, healer: 0, dps: 0 };
             let totalPlayers = 0;
 
             // Analyze all runs from all dungeons (top 8 runs per dungeon)
@@ -384,30 +389,52 @@ document.addEventListener('DOMContentLoaded', async () => {
                   const specData = specLookup[member.specialization?.id];
                   const className = specData?.className || 'Unknown';
                   const classId = specData?.classId;
+                  const role = specData?.role || 'dps';
 
                   if (className !== 'Unknown') {
-                    if (!classStats[className]) {
-                      classStats[className] = {
+                    if (!roleStats[role][className]) {
+                      roleStats[role][className] = {
                         count: 0,
                         classId: classId,
                         color: getClassColor(classId)
                       };
                     }
-                    classStats[className].count++;
+                    roleStats[role][className].count++;
+                    roleTotals[role]++;
                     totalPlayers++;
                   }
                 });
               });
             });
 
-            // Convert to array and sort by count
-            const classStatsArray = Object.entries(classStats)
+            // Convert role stats to arrays and sort by count
+            const tankStatsArray = Object.entries(roleStats.tank)
               .map(([name, data]) => ({
                 name,
                 count: data.count,
                 classId: data.classId,
                 color: data.color,
-                percentage: ((data.count / totalPlayers) * 100).toFixed(1)
+                percentage: ((data.count / roleTotals.tank) * 100).toFixed(1)
+              }))
+              .sort((a, b) => b.count - a.count);
+
+            const healerStatsArray = Object.entries(roleStats.healer)
+              .map(([name, data]) => ({
+                name,
+                count: data.count,
+                classId: data.classId,
+                color: data.color,
+                percentage: ((data.count / roleTotals.healer) * 100).toFixed(1)
+              }))
+              .sort((a, b) => b.count - a.count);
+
+            const dpsStatsArray = Object.entries(roleStats.dps)
+              .map(([name, data]) => ({
+                name,
+                count: data.count,
+                classId: data.classId,
+                color: data.color,
+                percentage: ((data.count / roleTotals.dps) * 100).toFixed(1)
               }))
               .sort((a, b) => b.count - a.count);
 
@@ -439,20 +466,38 @@ document.addEventListener('DOMContentLoaded', async () => {
               }
             }
 
-            // Build class statistics section
+            // Helper function to generate role section HTML
+            const generateRoleSection = (roleTitle, roleIcon, statsArray, total) => {
+              if (statsArray.length === 0) return '';
+              return `
+                <div class="role-stats-section">
+                  <h4 class="role-stats-title">
+                    <i class="${roleIcon}"></i>
+                    ${roleTitle} <span class="role-total">(${total} players)</span>
+                  </h4>
+                  <div class="class-stats-grid">
+                    ${statsArray.map(cls => `
+                      <div class="class-stat-item">
+                        <div class="class-stat-bar" style="width: ${cls.percentage}%; background: linear-gradient(90deg, ${cls.color}88, ${cls.color}44);"></div>
+                        <div class="class-stat-info">
+                          <span class="class-stat-name" style="color: ${cls.color};">${cls.name}</span>
+                          <span class="class-stat-value">${cls.percentage}% <span class="class-stat-count">(${cls.count})</span></span>
+                        </div>
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+              `;
+            };
+
+            // Build class statistics section with role breakdown
             const classStatsHtml = `
               <div class="class-stats-section">
-                <h3>Class Distribution (Top ${allLeaderboards.length * 8} Runs)</h3>
-                <div class="class-stats-grid">
-                  ${classStatsArray.map(cls => `
-                    <div class="class-stat-item">
-                      <div class="class-stat-bar" style="width: ${cls.percentage}%; background: linear-gradient(90deg, ${cls.color}88, ${cls.color}44);"></div>
-                      <div class="class-stat-info">
-                        <span class="class-stat-name" style="color: ${cls.color};">${cls.name}</span>
-                        <span class="class-stat-value">${cls.percentage}% <span class="class-stat-count">(${cls.count})</span></span>
-                      </div>
-                    </div>
-                  `).join('')}
+                <h3>Class Distribution by Role <span class="meta-subtitle">(Top ${allLeaderboards.length * 8} Runs)</span></h3>
+                <div class="role-stats-container">
+                  ${generateRoleSection('Tanks', 'las la-shield-alt', tankStatsArray, roleTotals.tank)}
+                  ${generateRoleSection('Healers', 'las la-plus-circle', healerStatsArray, roleTotals.healer)}
+                  ${generateRoleSection('DPS', 'las la-crosshairs', dpsStatsArray, roleTotals.dps)}
                 </div>
               </div>
             `;
