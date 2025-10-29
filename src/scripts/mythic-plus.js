@@ -476,15 +476,22 @@ document.addEventListener('DOMContentLoaded', async () => {
                     ${roleTitle} <span class="role-total">(${total} players)</span>
                   </h4>
                   <div class="class-stats-grid">
-                    ${statsArray.map(cls => `
-                      <div class="class-stat-item">
-                        <div class="class-stat-bar" style="width: ${cls.percentage}%; background: linear-gradient(90deg, ${cls.color}88, ${cls.color}44);"></div>
-                        <div class="class-stat-info">
-                          <span class="class-stat-name" style="color: ${cls.color};">${cls.name}</span>
-                          <span class="class-stat-value">${cls.percentage}% <span class="class-stat-count">(${cls.count})</span></span>
+                    ${statsArray.map(cls => {
+                      const classIconUrl = getClassIconUrl(cls.classId);
+                      const classIconHtml = classIconUrl ? `<img src="${classIconUrl}" alt="${cls.name}" class="class-stat-icon" />` : '';
+                      return `
+                        <div class="class-stat-item">
+                          <div class="class-stat-bar" style="width: ${cls.percentage}%; background: linear-gradient(90deg, ${cls.color}88, ${cls.color}44);"></div>
+                          <div class="class-stat-info">
+                            <span class="class-stat-name" style="color: ${cls.color};">
+                              ${classIconHtml}
+                              ${cls.name}
+                            </span>
+                            <span class="class-stat-value">${cls.percentage}% <span class="class-stat-count">(${cls.count})</span></span>
+                          </div>
                         </div>
-                      </div>
-                    `).join('')}
+                      `;
+                    }).join('')}
                   </div>
                 </div>
               `;
