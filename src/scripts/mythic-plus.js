@@ -55,6 +55,8 @@ document.addEventListener('DOMContentLoaded', async () => {
           // Fetch current season details
           const seasonDetails = await wowApi.getMythicKeystoneSeasonDetails(currentSeasonId);
           console.log('Current Season Details:', seasonDetails);
+          console.log('Available season data fields:', Object.keys(seasonDetails));
+          console.log('Season periods:', seasonDetails.periods?.length || 0);
 
           // Update the header info-description with season data
           const infoDescription = document.querySelector('.mythic-plus-header .info-description');
