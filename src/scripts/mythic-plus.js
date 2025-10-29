@@ -3,6 +3,7 @@ import PageInitializer from './utils/page-initializer.js';
 import wowApi from './api/wow-api.js';
 import config from './config.js';
 import { getFactionIconUrl, getSpecIconUrl, getClassIconUrl } from './utils/wow-icons.js';
+import { getClassColor } from './utils/wow-constants.js';
 import CustomDropdown from './components/custom-dropdown.js';
 
 console.log('⚡ Mythic+ Leaderboards Page initialized');
@@ -466,7 +467,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                           const characterName = m.profile?.name?.toLowerCase() || '';
                           const armoryUrl = `https://worldofwarcraft.blizzard.com/en-gb/character/${region}/${realmSlug}/${characterName}`;
 
-                          return `<a href="${armoryUrl}" target="_blank" class="team-member ${factionClass}">${specIconHtml}${classIconHtml}<span class="member-info"><span class="member-name">${m.profile.name}</span><span class="member-realm">${realm}</span></span><i class="las la-angle-right"></i></a>`;
+                          // Get class color
+                          const classColor = getClassColor(classId);
+
+                          return `<a href="${armoryUrl}" target="_blank" class="team-member ${factionClass}">${specIconHtml}${classIconHtml}<span class="member-info"><span class="member-name" style="color: ${classColor}">${m.profile.name}</span><span class="member-realm">${realm}</span></span><i class="las la-angle-right"></i></a>`;
                         }).join('')}
                       </div>
                     </div>
@@ -557,7 +561,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                             const characterName = member.profile?.name?.toLowerCase() || '';
                             const armoryUrl = `https://worldofwarcraft.blizzard.com/en-gb/character/${region}/${realmSlug}/${characterName}`;
 
-                            return `<a href="${armoryUrl}" target="_blank" class="team-member ${factionClass}">${specIconHtml}${classIconHtml}<span class="member-info"><span class="member-name">${member.profile.name}</span><span class="member-realm">${realm}</span></span><i class="las la-angle-right"></i></a>`;
+                            // Get class color
+                            const classColor = getClassColor(classId);
+
+                            return `<a href="${armoryUrl}" target="_blank" class="team-member ${factionClass}">${specIconHtml}${classIconHtml}<span class="member-info"><span class="member-name" style="color: ${classColor}">${member.profile.name}</span><span class="member-realm">${realm}</span></span><i class="las la-angle-right"></i></a>`;
                           }).join('')}
                         </div>
                       </div>
