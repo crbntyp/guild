@@ -15,14 +15,78 @@
   align-items: center;
   gap: 6px;
   color: rgba(255, 255, 255, 0.7);
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 600;
-  letter-spacing: 1px;
   text-transform: uppercase;
+  overflow: hidden;
+  max-width: 300px;
+  position: relative;
 
   i {
     font-size: 14px;
     color: #FF7D0A; // Orange fire color
+    animation: flicker 2s infinite;
+    flex-shrink: 0;
+  }
+
+  .season-text {
+    white-space: nowrap;
+    animation: marquee 20s linear infinite;
+    animation-delay: 3s;
+  }
+}
+
+// Flame flicker animation
+@keyframes flicker {
+  0%, 100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  10% {
+    opacity: 0.8;
+    filter: brightness(0.9);
+  }
+  20% {
+    opacity: 1;
+    filter: brightness(1.1);
+  }
+  30% {
+    opacity: 0.7;
+    filter: brightness(0.85);
+  }
+  40% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.9;
+    filter: brightness(0.95);
+  }
+  60% {
+    opacity: 1;
+    filter: brightness(1.05);
+  }
+  70% {
+    opacity: 0.85;
+    filter: brightness(0.9);
+  }
+  80% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  90% {
+    opacity: 0.9;
+    filter: brightness(0.95);
+  }
+}
+
+// Marquee animation - scrolls right to show full text every 20 seconds
+@keyframes marquee {
+  0%, 15% {
+    transform: translateX(0);
+  }
+  85%, 100% {
+    transform: translateX(calc(-100% + 280px));
   }
 }
 

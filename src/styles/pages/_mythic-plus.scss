@@ -205,25 +205,13 @@
     }
   }
 
-  @media (max-width: 1024px) {
-    .dungeon-grid {
-      grid-template-columns: repeat(4, 1fr);
-    }
-  }
-
-  @media (max-width: 890px) {
+  @media (max-width: 1023px) {
     .dungeon-grid {
       grid-template-columns: repeat(3, 1fr);
     }
   }
 
   @media (max-width: 768px) {
-    .dungeon-grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-
-  @media (max-width: 650px) {
     .dungeon-grid {
       grid-template-columns: repeat(2, 1fr);
     }
