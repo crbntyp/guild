@@ -208,14 +208,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
           } else if (seasonDetails.periods && seasonDetails.periods.length > 0) {
             // Fetch from API (existing logic)
-            // Try all periods starting from most recent to find one with data
-            const periodsToTry = seasonDetails.periods.map(p => p.id).reverse(); // Start with most recent
+            // Try only the most recent 3 periods to minimize 404s
+            const recentPeriods = seasonDetails.periods.slice(-3).map(p => p.id).reverse();
 
             let foundPeriodWithData = false;
 
-            // Try each period until we find one with leaderboard data
-            for (const testPeriodId of periodsToTry) {
-              // Try first Season 3 dungeon (Halls of Atonement, ID 378) to see if this period has data
+            // Try each recent period until we find one with leaderboard data
+            for (const testPeriodId of recentPeriods) {
+              // Try first dungeon (Halls of Atonement, ID 378) to see if this period has data
               try {
                 const testLeaderboard = await wowApi.getMythicKeystoneLeaderboard(378, testPeriodId);
                 if (testLeaderboard && testLeaderboard.leading_groups && testLeaderboard.leading_groups.length > 0) {
@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                   break;
                 }
               } catch (error) {
-                // Period not available, try next
+                // Period not available, try next (404s are expected and suppressed in console)
               }
             }
 
@@ -232,8 +232,8 @@ document.addEventListener('DOMContentLoaded', async () => {
               html += `
                 <div style="margin: 20px; padding: 20px; background: rgba(255,165,0,0.2); border-radius: 8px;">
                   <h3>⚠️ No Leaderboard Data Available</h3>
-                  <p>None of the ${periodsToTry.length} periods in Season 3 have leaderboard data yet.</p>
-                  <p>This likely means the season just started and no keys have been completed.</p>
+                  <p>No recent leaderboard data found for Season ${seasonDetails.id}.</p>
+                  <p>This likely means the season just started and no keys have been completed yet.</p>
                 </div>
               `;
               leaderboardContent.innerHTML = html;
