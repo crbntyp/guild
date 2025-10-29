@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           const infoDescription = document.querySelector('.mythic-plus-header .info-description');
           if (infoDescription) {
             const startDate = new Date(seasonDetails.start_timestamp).toLocaleDateString();
-            const status = seasonDetails.end_timestamp ? 'Ended' : 'Active';
+            const status = seasonDetails.end_timestamp ? 'Ended' : `<span>Active</span>`;
             infoDescription.textContent = `Season ${seasonDetails.id} • Start: ${startDate} • Status: ${status}`;
           }
 

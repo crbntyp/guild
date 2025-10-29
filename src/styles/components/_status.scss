@@ -1,0 +1,43 @@
+// Status Component
+// Reusable status pill/badge styles
+// Uses the @mixin status-pill from _mixins.scss
+
+// Success Status (Green)
+.status-success {
+  @include status-pill(
+    rgba(34, 197, 94, 0.2),   // bg-color-start (emerald)
+    rgba(16, 185, 129, 0.2),  // bg-color-end (teal)
+    rgba(34, 197, 94, 0.3),   // border-color
+    rgb(134, 239, 172)        // text-color (light green)
+  );
+}
+
+// Alert/Warning Status (Orange/Yellow)
+.status-alert {
+  @include status-pill(
+    rgba(251, 191, 36, 0.2),  // bg-color-start (amber)
+    rgba(245, 158, 11, 0.2),  // bg-color-end (orange)
+    rgba(251, 191, 36, 0.3),  // border-color
+    rgb(253, 224, 71)         // text-color (light yellow)
+  );
+}
+
+// Danger Status (Red)
+.status-danger {
+  @include status-pill(
+    rgba(239, 68, 68, 0.2),   // bg-color-start (red)
+    rgba(220, 38, 38, 0.2),   // bg-color-end (dark red)
+    rgba(239, 68, 68, 0.3),   // border-color
+    rgb(252, 165, 165)        // text-color (light red)
+  );
+}
+
+// Info Status (Blue) - bonus one
+.status-info {
+  @include status-pill(
+    rgba(59, 130, 246, 0.2),  // bg-color-start (blue)
+    rgba(37, 99, 235, 0.2),   // bg-color-end (dark blue)
+    rgba(59, 130, 246, 0.3),  // border-color
+    rgb(147, 197, 253)        // text-color (light blue)
+  );
+}

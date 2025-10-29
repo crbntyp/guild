@@ -81,6 +81,35 @@
 }
 
 /**
+ * Status Pill/Badge
+ * Used by: leaderboard-status, status alerts, etc.
+ *
+ * Usage:
+ * .my-status {
+ *   @include status-pill($bg-start, $bg-end, $border, $text);
+ * }
+ */
+@mixin status-pill($bg-color-start, $bg-color-end, $border-color, $text-color) {
+  display: inline-flex;
+  align-items: center;
+  background: linear-gradient(135deg, $bg-color-start, $bg-color-end);
+  border: 1px solid $border-color;
+  color: $text-color;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  padding: 8px 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  border-radius: 50px;
+  box-shadow: 0 2px 8px rgba($border-color, 0.15);
+  transition: all 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba($border-color, 0.25);
+  }
+}
+
+/**
  * Page Action Button (Add Todo, Add Channel, etc.)
  * Used by: my-todos, my-youtube pages
  *
