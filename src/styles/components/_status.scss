@@ -2,28 +2,26 @@
 // Reusable status pill/badge styles
 // Uses the @mixin status-pill from _mixins.scss
 
-// Status pill with main and sub text
-.status-success,
-.status-danger,
-.status-alert,
-.status-info {
+// Season status wrapper (for pill + date)
+.season-status-wrapper {
+  display: flex;
   flex-direction: column;
-  gap: 4px;
   align-items: center;
+  gap: 8px;
+}
 
-  .status-main {
-    font-size: 11px;
-    letter-spacing: 1.5px;
-    font-weight: 700;
-    text-transform: uppercase;
-  }
+.season-date {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
 
-  .status-sub {
-    font-size: 9px;
-    letter-spacing: 1.2px;
-    font-weight: 600;
-    text-transform: uppercase;
-    opacity: 0.8;
+  i {
+    font-size: 14px;
+    color: #FF7D0A; // Orange fire color
   }
 }
 

@@ -69,10 +69,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             const statusText = isActive ? 'Active' : 'Ended';
 
             infoDescription.innerHTML = `
-              <span class="${statusClass}">
-                <span class="status-main">Season ${seasonDetails.id} is ${statusText}</span>
-                <span class="status-sub">since ${startDate}</span>
-              </span>
+              <div class="season-status-wrapper">
+                <span class="${statusClass}">Season ${seasonDetails.id} is ${statusText}</span>
+                <div class="season-date"><i class="las la-fire"></i> ${startDate}</div>
+              </div>
             `;
           }
 
