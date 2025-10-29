@@ -9,10 +9,10 @@
   // Leaderboard Status
   .leaderboard-status {
     @include status-pill(
-      rgba(34, 197, 94, 0.2),   // bg-color-start (emerald)
-      rgba(16, 185, 129, 0.2),  // bg-color-end (teal)
-      rgba(34, 197, 94, 0.3),   // border-color
-      rgb(134, 239, 172)        // text-color (light green)
+      rgba(59, 130, 246, 0.2),  // bg-color-start (blue)
+      rgba(37, 99, 235, 0.2),   // bg-color-end (dark blue)
+      rgba(59, 130, 246, 0.3),  // border-color
+      rgb(147, 197, 253)        // text-color (light blue)
     );
     margin-right: auto; // Push to left (flex-start)
   }
