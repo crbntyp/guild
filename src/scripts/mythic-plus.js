@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <span class="${statusClass}">Season ${seasonDetails.id} is ${statusText}</span>
                 <div class="season-date">
                   <i class="las la-fire"></i>
-                  <span class="season-text">Season ${seasonDetails.id} since ${startDate}</span>
+                  ${startDate}
                 </div>
               </div>
             `;
