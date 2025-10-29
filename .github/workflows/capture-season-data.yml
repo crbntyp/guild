@@ -1,0 +1,64 @@
+name: Capture Season Data
+
+on:
+  # Run daily at 9 AM UTC
+  schedule:
+    - cron: '0 9 * * *'
+
+  # Allow manual triggering
+  workflow_dispatch:
+
+jobs:
+  capture-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run season capture script
+        env:
+          BNET_CLIENT_ID: ${{ secrets.BNET_CLIENT_ID }}
+          BNET_CLIENT_SECRET: ${{ secrets.BNET_CLIENT_SECRET }}
+        run: npm run capture:season
+
+      - name: Check for new data files
+        id: check_changes
+        run: |
+          if [ -n "$(git status --porcelain data/seasons/)" ]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "📦 New season data captured"
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "✅ No new data to commit"
+          fi
+
+      - name: Commit and push captured data
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+          git add data/seasons/
+          git commit -m "📦 Capture Season data [automated]"
+          git push
+
+      - name: Copy data to dist folder
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          mkdir -p dist/data/seasons
+          cp -r data/seasons/* dist/data/seasons/
+
+      - name: Deploy to hosting (if needed)
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          echo "🚀 Data captured successfully!"
+          echo "You may need to trigger your deployment workflow manually"
+          echo "or the data will be deployed on your next regular deployment"
