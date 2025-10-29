@@ -6,6 +6,23 @@
   flex-wrap: wrap;
   justify-content: flex-end;
 
+  // Leaderboard Status
+  .leaderboard-status {
+    display: flex;
+    align-items: center;
+    margin-right: auto; // Push to left (flex-start)
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(16, 185, 129, 0.2));
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    color: rgb(134, 239, 172);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    padding: 8px 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-radius: 50px;
+    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.15);
+  }
+
   // Mini Pagination
   .mini-pagination {
     display: flex;
@@ -60,6 +77,19 @@
     }
 
     .mini-pagination {
+      width: 100%;
+      justify-content: center;
+      order: -1; // Move to top on mobile
+    }
+  }
+
+  // Responsive styles for small mobile (500px and below)
+  @media (max-width: 500px) {
+    #dungeon-dropdown-container {
+      width: 100%;
+    }
+
+    .leaderboard-status {
       width: 100%;
       justify-content: center;
       order: -1; // Move to top on mobile

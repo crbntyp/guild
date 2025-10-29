@@ -5,7 +5,6 @@
   width: 100%;
   margin: 0 auto;
   min-height: calc(100vh - 317px);
-  padding: 0px 20px 20px 20px;
 
   .todos-header {
     @include page-header;
@@ -194,7 +193,6 @@
 // Responsive
 @media (max-width: 768px) {
   #todos-container {
-    padding: 20px 16px;
 
     .todos-header {
       flex-direction: column;

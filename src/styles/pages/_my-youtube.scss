@@ -5,7 +5,6 @@
   width: 100%;
   margin: 0 auto;
   min-height: calc(100vh - 317px);
-  padding: 0px 20px 20px 20px;
 
   .youtube-header {
     @include page-header;
@@ -233,7 +232,6 @@
 // Responsive
 @media (max-width: 768px) {
   #my-youtube-container {
-    padding: 10px 8px;
 
     .youtube-header {
       flex-direction: column;

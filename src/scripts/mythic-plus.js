@@ -117,87 +117,26 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // Fetch period details to see if it has dungeon info
             console.log('📡 Fetching period details...');
+            let periodDetails = null;
             try {
-              const periodDetails = await wowApi.getMythicKeystonePeriod(periodId);
+              periodDetails = await wowApi.getMythicKeystonePeriod(periodId);
               console.log('✅ Period Details:', periodDetails);
             } catch (periodError) {
               console.error('❌ Error fetching period details:', periodError);
             }
 
-            // Try fetching journal instances to find season dungeons
+            // Fetch current season dungeons from the Mythic Keystone Dungeons API
             let dungeonIds = [];
 
-            console.log('🔍 Attempting to fetch journal instances...');
-            try {
-              const journalData = await wowApi.getJournalInstances();
-              console.log('✅ Journal Instances received:', journalData);
-              console.log('📊 Number of instances:', journalData?.instances?.length);
-
-              if (journalData && journalData.instances) {
-                // The last entries are typically the current season
-                const last10 = journalData.instances.slice(-10);
-                console.log('Last 10 journal instances:', last10);
-
-                // Log each instance to see the structure
-                last10.forEach((inst, idx) => {
-                  console.log(`Instance ${idx}:`, inst.name, 'ID:', inst.id, 'Expansion:', inst.expansion);
-                });
-
-                // Extract dungeon IDs from War Within dungeons (expansion ID 514)
-                const twwDungeons = last10.filter(inst => {
-                  const expansionId = inst.expansion?.id;
-                  console.log(`Checking ${inst.name}: expansion ID = ${expansionId}`);
-                  return expansionId === 514;
-                });
-                console.log('The War Within dungeons:', twwDungeons);
-
-                // If no TWW dungeons found, just use all from last 10
-                if (twwDungeons.length > 0) {
-                  dungeonIds = twwDungeons.map(d => d.id);
-                  console.log('Found TWW dungeon IDs from journal:', dungeonIds);
-                } else {
-                  // Fallback: use all IDs from last 10
-                  dungeonIds = last10.map(d => d.id);
-                  console.log('Using all IDs from last 10 instances:', dungeonIds);
-                }
-
-                // Get the last instance details (should be current season)
-                const lastInstance = journalData.instances[journalData.instances.length - 1];
-                console.log('Last journal instance:', lastInstance);
-
-                if (lastInstance && lastInstance.id) {
-                  const instanceDetails = await wowApi.getJournalInstance(lastInstance.id);
-                  console.log('Last Instance Details:', instanceDetails);
-                }
-              } else {
-                console.log('❌ Journal data structure unexpected:', journalData);
-              }
-            } catch (journalError) {
-              console.error('❌ Error fetching journal:', journalError);
-              console.error('Error details:', journalError.message, journalError.status);
-            }
-
-            // Also try the dungeons endpoint and filter for Season 3 dungeons
+            console.log('🔍 Fetching current season dungeons...');
             try {
               const dungeonsData = await wowApi.getMythicKeystoneDungeons();
               console.log('Mythic Keystone Dungeons:', dungeonsData);
 
               if (dungeonsData && dungeonsData.dungeons) {
-                console.log('Fetching dungeon names to match Season 3 rotation...');
+                console.log('Fetching all available dungeons...');
 
-                // TWW Season 3 dungeon names
-                const season3Dungeons = [
-                  'Eco-Dome Al\'dani',
-                  'Ara-Kara, City of Echoes',
-                  'The Dawnbreaker',
-                  'Operation: Floodgate',
-                  'Priory of the Sacred Flame',
-                  'Halls of Atonement',
-                  'Tazavesh: Streets of Wonder',
-                  'Tazavesh: So\'leah\'s Gambit'
-                ];
-
-                // Fetch details for each dungeon to get names
+                // Fetch details for each dungeon to get names and IDs
                 const dungeonDetailsPromises = dungeonsData.dungeons.map(async (d) => {
                   try {
                     const details = await wowApi.getMythicKeystoneDungeon(d.id);
@@ -210,35 +149,47 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const dungeonDetails = await Promise.all(dungeonDetailsPromises);
                 const validDungeons = dungeonDetails.filter(d => d !== null);
 
-                console.log('All dungeon names:', validDungeons);
+                console.log('All available dungeon names:', validDungeons);
 
-                // Filter for Season 3 dungeons
-                dungeonIds = validDungeons
-                  .filter(d => season3Dungeons.includes(d.name))
-                  .map(d => d.id);
+                // Use all valid dungeon IDs - the API should only return current season dungeons
+                dungeonIds = validDungeons.map(d => d.id);
 
-                console.log('Found Season 3 dungeon IDs:', dungeonIds);
+                console.log('Found dungeon IDs:', dungeonIds);
               }
             } catch (dungeonsError) {
               console.error('Error fetching dungeons:', dungeonsError);
             }
 
-            // Fallback if we couldn't find Season 3 dungeons
-            if (dungeonIds.length === 0) {
-              console.log('Could not identify Season 3 dungeons, trying all available IDs...');
-              try {
-                const dungeonsData = await wowApi.getMythicKeystoneDungeons();
-                if (dungeonsData && dungeonsData.dungeons) {
-                  dungeonIds = dungeonsData.dungeons.map(d => d.id);
-                }
-              } catch (error) {
-                console.error('Failed to get fallback dungeon IDs:', error);
-              }
-            }
+            console.log(`📋 Final dungeon list: ${dungeonIds.length} dungeons to fetch`);
 
             // Fetch playable specializations for lookup
             console.log('📥 Fetching specialization data...');
             let specLookup = {};
+
+            // Role mapping for spec IDs
+            const specRoles = {
+              // Tanks
+              250: 'tank', // Blood DK
+              581: 'tank', // Vengeance DH
+              104: 'tank', // Guardian Druid
+              1473: 'tank', // Augmentation Evoker (can tank in some contexts, but treat as DPS)
+              268: 'tank', // Brewmaster Monk
+              66: 'tank', // Protection Paladin
+              73: 'tank', // Protection Warrior
+              // Healers
+              105: 'healer', // Restoration Druid
+              1468: 'healer', // Preservation Evoker
+              270: 'healer', // Mistweaver Monk
+              65: 'healer', // Holy Paladin
+              256: 'healer', // Discipline Priest
+              257: 'healer', // Holy Priest
+              264: 'healer', // Restoration Shaman
+              // DPS (all others default to DPS)
+            };
+
+            // Augmentation Evoker is actually DPS
+            specRoles[1473] = 'dps';
+
             try {
               // Common spec IDs
               const commonSpecIds = [
@@ -264,7 +215,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     id: specId,
                     name: spec.name,
                     className: spec.playable_class?.name,
-                    classId: spec.playable_class?.id
+                    classId: spec.playable_class?.id,
+                    role: specRoles[specId] || 'dps'
                   };
                 } catch (error) {
                   return null;
@@ -276,7 +228,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 specLookup[spec.id] = {
                   name: spec.name,
                   className: spec.className,
-                  classId: spec.classId
+                  classId: spec.classId,
+                  role: spec.role
                 };
               });
 
@@ -285,13 +238,23 @@ document.addEventListener('DOMContentLoaded', async () => {
               console.error('Failed to load spec data:', error);
             }
 
+            // Helper function to sort members by role: tank, healer, dps
+            function sortMembersByRole(members, specLookup) {
+              const roleOrder = { 'tank': 0, 'healer': 1, 'dps': 2 };
+              return members.slice().sort((a, b) => {
+                const roleA = specLookup[a.specialization?.id]?.role || 'dps';
+                const roleB = specLookup[b.specialization?.id]?.role || 'dps';
+                return roleOrder[roleA] - roleOrder[roleB];
+              });
+            }
+
             // Fetch all dungeon leaderboards
             console.log('📥 Fetching all dungeon leaderboards...');
-            const allLeaderboards = [];
 
             // Manual mapping of dungeon IDs to journal instance IDs for backgrounds
-            // All Season 3 dungeons now have correct backgrounds!
+            // Add mappings here as needed for current season dungeons
             const dungeonToJournalMap = {
+              // TWW Season 3 (Jan 2025+)
               378: 1185, // Halls of Atonement
               391: 1194, // Tazavesh: Streets of Wonder (part of Tazavesh, the Veiled Market)
               392: 1194, // Tazavesh: So'leah's Gambit (part of Tazavesh, the Veiled Market)
@@ -303,49 +266,70 @@ document.addEventListener('DOMContentLoaded', async () => {
             };
 
             // Manual name overrides for dungeons with incorrect API names
+            // Add overrides here as needed
             const dungeonNameOverrides = {
               391: "Tazavesh: Streets of Wonder",
               392: "Tazavesh: So'leah's Gambit"
             };
 
-            for (const dungeonId of dungeonIds) {
-              try {
-                const leaderboard = await wowApi.getMythicKeystoneLeaderboard(dungeonId, periodId);
-                if (leaderboard && leaderboard.leading_groups && leaderboard.leading_groups.length > 0) {
-                  // Debug: Log first member structure
-                  if (dungeonId === dungeonIds[0] && leaderboard.leading_groups[0]?.members?.[0]) {
-                    console.log('📊 Member data structure:', leaderboard.leading_groups[0].members[0]);
-                  }
-
-                  // Fetch dungeon background image
-                  let backgroundUrl = null;
-                  const journalInstanceId = dungeonToJournalMap[dungeonId];
-                  if (journalInstanceId) {
-                    try {
-                      const mediaData = await wowApi.getJournalInstanceMedia(journalInstanceId);
-                      const tileAsset = mediaData.assets?.find(asset => asset.key === 'tile');
-                      backgroundUrl = tileAsset?.value || null;
-                      console.log(`  Background for ${leaderboard.map?.name}: ${backgroundUrl ? '✓' : '✗'}`);
-                    } catch (bgError) {
-                      console.warn(`  Could not load background for dungeon ${dungeonId}`);
+            // Helper function to fetch a single dungeon with retry logic
+            async function fetchDungeonLeaderboard(dungeonId, periodId, retries = 3) {
+              for (let attempt = 0; attempt < retries; attempt++) {
+                try {
+                  const leaderboard = await wowApi.getMythicKeystoneLeaderboard(dungeonId, periodId);
+                  if (leaderboard && leaderboard.leading_groups && leaderboard.leading_groups.length > 0) {
+                    // Fetch dungeon background image
+                    let backgroundUrl = null;
+                    const journalInstanceId = dungeonToJournalMap[dungeonId];
+                    if (journalInstanceId) {
+                      try {
+                        const mediaData = await wowApi.getJournalInstanceMedia(journalInstanceId);
+                        const tileAsset = mediaData.assets?.find(asset => asset.key === 'tile');
+                        backgroundUrl = tileAsset?.value || null;
+                      } catch (bgError) {
+                        console.warn(`  Could not load background for dungeon ${dungeonId}`);
+                      }
                     }
+
+                    // Use override name if available, otherwise use API name
+                    const dungeonName = dungeonNameOverrides[dungeonId] || leaderboard.map?.name || leaderboard.name || `Dungeon ${dungeonId}`;
+
+                    console.log(`✓ ${dungeonName}: ${leaderboard.leading_groups.length} runs`);
+                    return {
+                      id: dungeonId,
+                      name: dungeonName,
+                      data: leaderboard,
+                      backgroundUrl: backgroundUrl
+                    };
                   }
-
-                  // Use override name if available, otherwise use API name
-                  const dungeonName = dungeonNameOverrides[dungeonId] || leaderboard.map?.name || leaderboard.name || `Dungeon ${dungeonId}`;
-
-                  allLeaderboards.push({
-                    id: dungeonId,
-                    name: dungeonName,
-                    data: leaderboard,
-                    backgroundUrl: backgroundUrl
-                  });
-                  console.log(`✓ ${leaderboard.map?.name}: ${leaderboard.leading_groups.length} runs`);
+                  return null;
+                } catch (error) {
+                  if (attempt < retries - 1) {
+                    console.log(`  Retry ${attempt + 1}/${retries - 1} for dungeon ${dungeonId}`);
+                    await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+                  } else {
+                    console.log(`✗ Dungeon ${dungeonId} failed after ${retries} attempts:`, error.message);
+                    return null;
+                  }
                 }
-              } catch (error) {
-                console.log(`✗ Dungeon ${dungeonId} not available`);
               }
+              return null;
             }
+
+            // Fetch all dungeons in parallel with Promise.allSettled to ensure all complete
+            console.log(`📥 Fetching ${dungeonIds.length} dungeons in parallel...`);
+            const leaderboardPromises = dungeonIds.map(dungeonId =>
+              fetchDungeonLeaderboard(dungeonId, periodId)
+            );
+
+            const results = await Promise.allSettled(leaderboardPromises);
+
+            // Filter out failed/null results
+            const allLeaderboards = results
+              .filter(result => result.status === 'fulfilled' && result.value !== null)
+              .map(result => result.value);
+
+            console.log(`✓ Successfully loaded ${allLeaderboards.length} dungeons with active leaderboard data (checked ${dungeonIds.length} total)`);
 
             if (allLeaderboards.length === 0) {
               html += `
@@ -358,10 +342,81 @@ document.addEventListener('DOMContentLoaded', async () => {
               return;
             }
 
+            // Only show warning if we got suspiciously few dungeons (less than 6, since a season typically has 8)
+            if (allLeaderboards.length < 6) {
+              console.warn(`⚠️ Only found ${allLeaderboards.length} dungeons with leaderboard data. Expected around 8 for a typical season.`);
+              html += `
+                <div style="margin: 20px; padding: 15px; background: rgba(255,165,0,0.15); border-radius: 8px; border-left: 3px solid #FFA500;">
+                  <p style="margin: 0; font-size: 14px;"><strong>⚠️ Note:</strong> Only ${allLeaderboards.length} dungeon${allLeaderboards.length !== 1 ? 's' : ''} loaded. Some dungeons may be unavailable or the season may have just started.</p>
+                </div>
+              `;
+            }
+
+            // Sort leaderboards by highest keystone level (difficulty)
+            allLeaderboards.sort((a, b) => {
+              const levelA = a.data.leading_groups[0]?.keystone_level || 0;
+              const levelB = b.data.leading_groups[0]?.keystone_level || 0;
+              return levelB - levelA; // Descending order (highest first)
+            });
+
+            // Check for timestamp data in the leaderboard
+            console.log('🔍 Checking for timestamp data in leaderboard:', {
+              periodDetails: periodDetails,
+              sampleLeaderboard: allLeaderboards[0]?.data
+            });
+
+            // Format period timestamp for display
+            let lastUpdatedText = '';
+
+            // Check if leaderboard has a last_modified_timestamp or completed_timestamp
+            const sampleLeaderboard = allLeaderboards[0]?.data;
+            const topRun = sampleLeaderboard?.leading_groups?.[0];
+
+            if (topRun && topRun.completed_timestamp) {
+              const completedDate = new Date(topRun.completed_timestamp);
+              const now = new Date();
+              const hoursDiff = Math.floor((now - completedDate) / (1000 * 60 * 60));
+              const minutesDiff = Math.floor((now - completedDate) / (1000 * 60));
+
+              if (minutesDiff < 60) {
+                lastUpdatedText = `Updated: ${minutesDiff} minute${minutesDiff !== 1 ? 's' : ''} ago`;
+              } else if (hoursDiff < 24) {
+                lastUpdatedText = `Updated: ${hoursDiff} hour${hoursDiff !== 1 ? 's' : ''} ago`;
+              } else {
+                lastUpdatedText = `Updated: ${completedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} at ${completedDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}`;
+              }
+            } else if (periodDetails && periodDetails.start_timestamp) {
+              const startDate = new Date(periodDetails.start_timestamp);
+              const now = new Date();
+              const daysDiff = Math.floor((now - startDate) / (1000 * 60 * 60 * 24));
+
+              // Show when this week's leaderboard period started
+              if (daysDiff === 0) {
+                lastUpdatedText = 'This week\'s leaderboard (reset today)';
+              } else if (daysDiff === 1) {
+                lastUpdatedText = 'This week\'s leaderboard (Day 2)';
+              } else if (daysDiff < 7) {
+                lastUpdatedText = `This week's leaderboard (Day ${daysDiff + 1})`;
+              } else {
+                lastUpdatedText = `Leaderboard period: ${startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+              }
+            } else if (currentPeriod && currentPeriod.start_timestamp) {
+              const startDate = new Date(currentPeriod.start_timestamp);
+              const now = new Date();
+              const daysDiff = Math.floor((now - startDate) / (1000 * 60 * 60 * 24));
+
+              if (daysDiff < 7) {
+                lastUpdatedText = `This week's leaderboard (Day ${daysDiff + 1})`;
+              } else {
+                lastUpdatedText = `Leaderboard period: ${startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+              }
+            }
+
             // Build summary section with top run from each dungeon
             html += `
               <div class="leaderboard-summary">
                 <div class="roster-controls">
+                  ${lastUpdatedText ? `<div class="leaderboard-status">${lastUpdatedText}</div>` : ''}
                   <div id="dungeon-dropdown-container"></div>
                 </div>
 
@@ -385,7 +440,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         </div>
                       </div>
                       <div class="dungeon-team">
-                        ${topRun.members.map(m => {
+                        ${sortMembersByRole(topRun.members, specLookup).map(m => {
                           const specData = specLookup[m.specialization?.id];
                           const spec = specData?.name || 'Unknown';
                           const className = specData?.className || 'Unknown';
@@ -406,7 +461,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                           const specIconHtml = specIconUrl ? `<img src="${specIconUrl}" alt="${spec}" class="member-icon" />` : '';
                           const classIconHtml = classIconUrl ? `<img src="${classIconUrl}" alt="${className}" class="member-icon" />` : '';
 
-                          return `<span class="team-member ${factionClass}">${specIconHtml}${classIconHtml}<span class="member-info"><span class="member-name">${m.profile.name}</span><span class="member-realm">${realm}</span></span></span>`;
+                          // Build armory URL
+                          const region = m.profile?.region || 'eu';
+                          const characterName = m.profile?.name?.toLowerCase() || '';
+                          const armoryUrl = `https://worldofwarcraft.blizzard.com/en-gb/character/${region}/${realmSlug}/${characterName}`;
+
+                          return `<a href="${armoryUrl}" target="_blank" class="team-member ${factionClass}">${specIconHtml}${classIconHtml}<span class="member-info"><span class="member-name">${m.profile.name}</span><span class="member-realm">${realm}</span></span><i class="las la-angle-right"></i></a>`;
                         }).join('')}
                       </div>
                     </div>
@@ -425,7 +485,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Initialize custom dropdown for dungeon selection
             const dungeonDropdownContainer = document.getElementById('dungeon-dropdown-container');
             const dungeonOptions = [
-              { value: '', label: 'Top runs, all dungeons' },
+              { value: '', label: 'Dungeon leaderboard' },
               ...allLeaderboards.map(lb => ({
                 value: lb.id,
                 label: lb.name
@@ -471,7 +531,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                           </div>
                         </div>
                         <div class="dungeon-team">
-                          ${group.members.map(member => {
+                          ${sortMembersByRole(group.members, specLookup).map(member => {
                             const specData = specLookup[member.specialization?.id];
                             const spec = specData?.name || 'Unknown';
                             const className = specData?.className || 'Unknown';
@@ -492,7 +552,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                             const specIconHtml = specIconUrl ? `<img src="${specIconUrl}" alt="${spec}" class="member-icon" />` : '';
                             const classIconHtml = classIconUrl ? `<img src="${classIconUrl}" alt="${className}" class="member-icon" />` : '';
 
-                            return `<span class="team-member ${factionClass}">${specIconHtml}${classIconHtml}<span class="member-info"><span class="member-name">${member.profile.name}</span><span class="member-realm">${realm}</span></span></span>`;
+                            // Build armory URL
+                            const region = member.profile?.region || 'eu';
+                            const characterName = member.profile?.name?.toLowerCase() || '';
+                            const armoryUrl = `https://worldofwarcraft.blizzard.com/en-gb/character/${region}/${realmSlug}/${characterName}`;
+
+                            return `<a href="${armoryUrl}" target="_blank" class="team-member ${factionClass}">${specIconHtml}${classIconHtml}<span class="member-info"><span class="member-name">${member.profile.name}</span><span class="member-realm">${realm}</span></span><i class="las la-angle-right"></i></a>`;
                           }).join('')}
                         </div>
                       </div>

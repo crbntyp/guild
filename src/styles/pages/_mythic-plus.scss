@@ -125,13 +125,44 @@
         background: rgba(black, 0.5);
         border-radius: 30px;
         border: 1px solid transparent;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        cursor: pointer;
 
         &.horde {
           border-color: rgba(#C41E3A, 0.3);
+          box-shadow: 0 0 8px rgba(#C41E3A, 0.3);
+
+          &:hover {
+            box-shadow: 0 0 12px rgba(#C41E3A, 0.6);
+            background: rgba(#C41E3A, 0.2);
+          }
         }
 
         &.alliance {
           border-color: rgba(#0078FF, 0.3);
+          box-shadow: 0 0 8px rgba(#0078FF, 0.3);
+
+          &:hover {
+            box-shadow: 0 0 12px rgba(#0078FF, 0.6);
+            background: rgba(#0078FF, 0.2);
+          }
+        }
+
+        .la-angle-right {
+          margin-left: auto;
+          font-size: 13px;
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+          transition: all 0.3s ease;
+        }
+
+        &:hover .la-angle-right {
+          transform: scale(1.15);
+          text-shadow: 2px 2px 8px rgba(255, 255, 255, 0.3);
+        }
+
+        &:active .la-angle-right {
+          transform: scale(0.95);
         }
 
         .member-icon {
@@ -179,17 +210,6 @@
   }
 
   @media (max-width: 768px) {
-
-    .mythic-plus-header {
-      flex-direction: column;
-      gap: 16px;
-      align-items: flex-start;
-
-      h1 {
-        font-size: 24px;
-      }
-    }
-
     .dungeon-grid {
       grid-template-columns: repeat(3, 1fr);
     }

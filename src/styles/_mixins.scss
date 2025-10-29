@@ -36,6 +36,9 @@
       @media (max-width: 768px) {
         width: 100%;
       }
+      @media (max-width: 500px) {
+        margin-top: 10px;
+      }
     }
   }
 
@@ -52,6 +55,28 @@
     font-size: 25px;
     letter-spacing: 2px;
     margin-bottom: 0;
+  }
+
+  // Stack and center on small mobile
+  @media (max-width: 500px) {
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+
+    &-info {
+      align-items: center;
+      text-align: center;
+    }
+
+    &-top {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    h1 {
+      font-size: 24px;
+      text-align: center;
+    }
   }
 }
 
