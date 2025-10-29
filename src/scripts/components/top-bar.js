@@ -119,6 +119,9 @@ class TopBar {
       return currentPage === page ? ' active' : '';
     };
 
+    // Check if any account page is active for dropdown active state
+    const isAccountPageActive = ['my-characters.html', 'my-todos.html', 'my-youtube.html'].includes(currentPage);
+
     this.leftContainer.innerHTML = `
       <a href="index.html" class="top-bar-logo">
         <i class="las la-shield-alt"></i>
@@ -133,13 +136,33 @@ class TopBar {
           <i class="las la-search"></i>
           <span>Guild Finder</span>
         </a>
-        ${isAuthenticated ? `<a href="my-characters.html" class="nav-link${getActiveClass('my-characters.html')}"><i class="las la-user"></i><span>My Characters</span></a>` : ''}
+        ${isAuthenticated ? `
+          <div class="nav-dropdown">
+            <button class="nav-link nav-dropdown-toggle${isAccountPageActive ? ' active' : ''}" aria-label="Your Account menu">
+              <i class="las la-user-circle"></i>
+              <span>Your Account</span>
+              <i class="las la-angle-down dropdown-arrow"></i>
+            </button>
+            <div class="nav-dropdown-menu">
+              <a href="my-characters.html" class="nav-dropdown-item${getActiveClass('my-characters.html')}">
+                <i class="las la-user"></i>
+                <span>My Characters</span>
+              </a>
+              <a href="my-todos.html" class="nav-dropdown-item${getActiveClass('my-todos.html')}">
+                <i class="las la-tasks"></i>
+                <span>My Todos</span>
+              </a>
+              <a href="my-youtube.html" class="nav-dropdown-item${getActiveClass('my-youtube.html')}">
+                <i class="lab la-youtube"></i>
+                <span>My YouTube</span>
+              </a>
+            </div>
+          </div>
+        ` : ''}
         <a href="mythic-plus.html" class="nav-link${getActiveClass('mythic-plus.html')}">
           <i class="las la-trophy"></i>
           <span>Mythic+</span>
         </a>
-        ${isAuthenticated ? `<a href="my-todos.html" class="nav-link${getActiveClass('my-todos.html')}"><i class="las la-tasks"></i><span>My Todos</span></a>` : ''}
-        ${isAuthenticated ? `<a href="my-youtube.html" class="nav-link${getActiveClass('my-youtube.html')}"><i class="lab la-youtube"></i><span>My YouTube</span></a>` : ''}
         <a href="gallery.html" class="nav-link${getActiveClass('gallery.html')}">
           <i class="las la-images"></i>
           <span>Gallery</span>
@@ -150,19 +173,69 @@ class TopBar {
           <i class="las la-search"></i>
           <span>Guild Finder</span>
         </a>
-        ${isAuthenticated ? `<a href="my-characters.html" class="mobile-nav-link${getActiveClass('my-characters.html')}"><i class="las la-user"></i><span>My Characters</span></a>` : ''}
+        ${isAuthenticated ? `
+          <div class="mobile-nav-group">
+            <div class="mobile-nav-group-header">Your Account</div>
+            <a href="my-characters.html" class="mobile-nav-link mobile-nav-link-indent${getActiveClass('my-characters.html')}">
+              <i class="las la-user"></i>
+              <span>My Characters</span>
+            </a>
+            <a href="my-todos.html" class="mobile-nav-link mobile-nav-link-indent${getActiveClass('my-todos.html')}">
+              <i class="las la-tasks"></i>
+              <span>My Todos</span>
+            </a>
+            <a href="my-youtube.html" class="mobile-nav-link mobile-nav-link-indent${getActiveClass('my-youtube.html')}">
+              <i class="lab la-youtube"></i>
+              <span>My YouTube</span>
+            </a>
+          </div>
+        ` : ''}
         <a href="mythic-plus.html" class="mobile-nav-link${getActiveClass('mythic-plus.html')}">
           <i class="las la-trophy"></i>
           <span>Mythic+</span>
         </a>
-        ${isAuthenticated ? `<a href="my-todos.html" class="mobile-nav-link${getActiveClass('my-todos.html')}"><i class="las la-tasks"></i><span>My Todos</span></a>` : ''}
-        ${isAuthenticated ? `<a href="my-youtube.html" class="mobile-nav-link${getActiveClass('my-youtube.html')}"><i class="lab la-youtube"></i><span>My YouTube</span></a>` : ''}
         <a href="gallery.html" class="mobile-nav-link${getActiveClass('gallery.html')}">
           <i class="las la-images"></i>
           <span>Gallery</span>
         </a>
       </nav>
     `;
+
+    // Setup dropdown functionality for desktop
+    if (isAuthenticated) {
+      this.setupDropdown();
+    }
+  }
+
+  /**
+   * Setup dropdown toggle functionality
+   */
+  setupDropdown() {
+    const dropdown = document.querySelector('.nav-dropdown');
+    const dropdownToggle = document.querySelector('.nav-dropdown-toggle');
+    const dropdownMenu = document.querySelector('.nav-dropdown-menu');
+
+    if (!dropdown || !dropdownToggle || !dropdownMenu) return;
+
+    // Toggle dropdown on click
+    dropdownToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dropdown.classList.toggle('open');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!dropdown.contains(e.target)) {
+        dropdown.classList.remove('open');
+      }
+    });
+
+    // Close dropdown when pressing Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        dropdown.classList.remove('open');
+      }
+    });
   }
 
   /**
