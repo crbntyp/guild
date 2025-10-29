@@ -393,7 +393,10 @@ class WoWAPI {
       });
       return data;
     } catch (error) {
-      console.error(`Error fetching mythic keystone leaderboard for dungeon ${dungeonId}:`, error);
+      // Don't log 404s - they're expected for dungeons not in current season rotation
+      if (error.status !== 404) {
+        console.error(`Error fetching mythic keystone leaderboard for dungeon ${dungeonId}:`, error);
+      }
       throw error;
     }
   }
