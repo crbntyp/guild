@@ -1,6 +1,6 @@
 # My Personal Warcraft
 
-A modern World of Warcraft companion application featuring guild roster management, character tracking, YouTube video curation, personal todos, and a stunning background gallery. Built with vanilla JavaScript and the Battle.net API for **Geez-yer-shoes-n-jaykit** cross-realm guild (EU).
+A modern World of Warcraft companion application featuring guild roster management, character tracking, YouTube video curation, personal todos, M+ leaderboard and comp stat tracking, and a stunning background gallery. Built with vanilla JavaScript and the Battle.net API.
 
 ## 📸 Screenshots
 
