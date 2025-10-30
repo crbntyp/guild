@@ -16,3 +16,10 @@ body {
   flex-direction: column;
   position: relative;
 }
+
+button,
+input,
+textarea,
+select {
+  letter-spacing: inherit;
+}

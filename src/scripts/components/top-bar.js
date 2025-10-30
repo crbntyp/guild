@@ -140,7 +140,7 @@ class TopBar {
           <div class="nav-dropdown">
             <button class="nav-link nav-dropdown-toggle${isAccountPageActive ? ' active' : ''}" aria-label="Your Account menu">
               <i class="las la-user-circle"></i>
-              <span>Your Account</span>
+              <span>My Account</span>
               <i class="las la-angle-down dropdown-arrow"></i>
             </button>
             <div class="nav-dropdown-menu">

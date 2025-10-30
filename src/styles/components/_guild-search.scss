@@ -23,7 +23,6 @@
     color: var(--color-text);
     font-family: 'Muli', sans-serif;
     font-size: 14px;
-    letter-spacing: 1.5px;
     transition: var(--transition);
     background: rgba(255, 255, 255, 0.05);
     flex: 1;
@@ -62,7 +61,6 @@
     color: var(--color-text);
     font-family: 'Muli', sans-serif;
     font-size: 14px;
-    letter-spacing: 1.5px;
     background: rgba(255, 255, 255, 0.05);
     cursor: pointer;
     transition: var(--transition);
@@ -110,7 +108,6 @@
 
     .region-radio-text {
       font-weight: 600;
-      letter-spacing: 0.5px;
     }
   }
 
@@ -128,7 +125,6 @@
     font-family: 'Muli', sans-serif;
     font-size: 12px;
     font-weight: 700;
-    letter-spacing: 1.5px;
     text-transform: uppercase;
     cursor: pointer;
     transition: var(--transition);
@@ -152,7 +148,6 @@
     color: var(--color-text-light);
     font-family: 'Muli', sans-serif;
     font-size: 12px;
-    letter-spacing: 0.5px;
     text-decoration: none;
     cursor: pointer;
     transition: var(--transition);
@@ -264,7 +259,6 @@
   color: var(--color-text);
   border-radius: calc(var(--border-radius) * 2);
   backdrop-filter: blur(10px);
-  letter-spacing: 1.5px;
 
   .info-logo {
     margin-bottom: 20px;
@@ -294,7 +288,6 @@
       font-size: 24px;
       font-weight: 500;
       color: var(--color-primary);
-      letter-spacing: 1px;
       margin: 0;
     }
   }
@@ -359,7 +352,6 @@
       font-size: 15px;
       color: var(--color-text);
       font-weight: 500;
-      letter-spacing: 0.3px;
     }
   }
 

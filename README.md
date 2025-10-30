@@ -39,14 +39,15 @@ A modern World of Warcraft companion application featuring guild roster manageme
 - Horizontal scrolling video rows per channel
 - Edit channels and manage tags
 - Auto-cleanup of videos older than 30 days
+- Backend database persistence with cross-device sync
 
 ### ✅ Personal Todos (Auth Required)
-- Personal task management with localStorage persistence
+- Personal task management with backend database persistence
 - Auto-fill metadata from URLs (title, description, images)
 - Masonry grid layout for dynamic card heights
 - Edit, complete, and organize tasks
 - Image previews from Open Graph metadata
-- 30-day persistence
+- Per-user data synced across devices
 
 ### 🎨 Background Gallery
 - Curated collection of high-quality Warcraft screenshots
@@ -69,10 +70,12 @@ A modern World of Warcraft companion application featuring guild roster manageme
 - **Utility Functions**: WoW constants, icon loading, page initialization
 - **SCSS Mixins**: Shared styling patterns for consistency
 
-### Smart Caching System
-- LocalStorage + Memory dual-layer caching
-- TTL-based expiration (5-15 minutes depending on data type)
-- Automatic cleanup of expired entries
+### Smart Caching & Persistence System
+- **API Cache**: Memory + LocalStorage dual-layer caching for Battle.net API data
+- **User Data**: Backend database with LocalStorage fallback for todos/channels
+- **Per-user storage**: Data keyed by Battle.net Battletag for multi-account support
+- TTL-based expiration (5-15 minutes for API data)
+- Automatic cleanup of expired cache entries
 - Batch API request optimization
 
 ### Performance Optimizations
@@ -96,9 +99,12 @@ A modern World of Warcraft companion application featuring guild roster manageme
 - Open Graph Metadata API
 
 **Backend**
-- Node.js + Express
+- Node.js + Express (Railway-hosted)
 - OAuth proxy for secure authentication
-- Metadata fetching service
+- Metadata fetching service (Open Graph, YouTube)
+- RESTful API for user data persistence
+- Per-user data storage (keyed by Battletag)
+- CORS-enabled for cross-origin requests
 
 **Build Tools**
 - Sass compiler
@@ -127,9 +133,9 @@ src/
 │   │   ├── character-card.js        # Reusable character cards
 │   │   ├── video-modal.js           # YouTube video player modal
 │   │   ├── form-modal.js            # Generic form modal
-│   │   ├── todo-manager.js          # Todo CRUD
-│   │   ├── youtube-manager.js       # YouTube channel management
-│   │   ├── item-manager.js          # Base class for managers
+│   │   ├── todo-manager.js          # Todo CRUD with backend sync
+│   │   ├── youtube-manager.js       # YouTube channel management with backend sync
+│   │   ├── item-manager.js          # Base class with dual-layer persistence
 │   │   ├── custom-dropdown.js       # Dropdown UI component
 │   │   ├── page-header.js           # Reusable page headers
 │   │   ├── background-rotator.js    # Background rotation
@@ -228,6 +234,17 @@ npm run build:fonts    # Copy fonts
 
 ## 🔌 API Integration
 
+### Backend API Endpoints
+**User Data (Authenticated)**
+- `GET /api/user/todos` - Fetch user's todos
+- `POST /api/user/todos` - Save/update user's todos
+- `GET /api/user/youtube` - Fetch user's YouTube channels
+- `POST /api/user/youtube` - Save/update user's YouTube channels
+
+**Metadata Services**
+- `POST /api/fetch-metadata` - Fetch Open Graph metadata from URLs
+- `POST /api/fetch-youtube` - Fetch YouTube channel videos
+
 ### Battle.net API Endpoints
 - `/oauth/token` - Authentication
 - `/data/wow/guild/{realm}/{guild}/roster` - Guild roster
@@ -236,10 +253,12 @@ npm run build:fonts    # Copy fonts
 - `/profile/wow/character/{realm}/{character}/character-media` - Character images
 - `/profile/wow/character/{realm}/{character}/specializations` - Specs
 
-### Caching Strategy
-- **Guild roster**: 10 minutes
-- **Character profiles**: 15 minutes
-- **Equipment**: 15 minutes
+### Data Persistence Strategy
+- **User Data (Todos/Channels)**: Backend database with localStorage fallback
+- **API Cache**: Memory cache + localStorage with TTL expiration
+- **Guild roster**: 10 minutes cache
+- **Character profiles**: 15 minutes cache
+- **Equipment**: 15 minutes cache
 - **OAuth tokens**: Until expiry (~24 hours)
 
 ### Rate Limiting
@@ -284,9 +303,10 @@ WoW class colors are centralized in `src/scripts/utils/wow-constants.js` using o
 - Built reusable form and dropdown components
 
 ### Performance
-- Dual-layer caching (memory + localStorage)
-- Smart 404 filtering
-- Batch API requests
+- Dual-layer caching with backend persistence
+- Smart 404 filtering for deleted characters
+- Batch API requests to reduce rate limiting
+- Cross-device data synchronization
 - ~18-20% CSS size reduction
 
 ## 📋 Changelog

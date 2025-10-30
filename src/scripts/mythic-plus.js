@@ -372,7 +372,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               return levelB - levelA; // Descending order (highest first)
             });
 
-            // Calculate class statistics from all leaderboard data, grouped by role
+            // Calculate spec statistics from all leaderboard data, grouped by role
             const roleStats = {
               tank: {},
               healer: {},
@@ -386,20 +386,28 @@ document.addEventListener('DOMContentLoaded', async () => {
               const runsToAnalyze = lb.data.leading_groups.slice(0, 8); // Analyze top 8 runs per dungeon
               runsToAnalyze.forEach(run => {
                 run.members.forEach(member => {
-                  const specData = specLookup[member.specialization?.id];
+                  const specId = member.specialization?.id;
+                  const specData = specLookup[specId];
+                  const specName = specData?.name || 'Unknown';
                   const className = specData?.className || 'Unknown';
                   const classId = specData?.classId;
                   const role = specData?.role || 'dps';
 
-                  if (className !== 'Unknown') {
-                    if (!roleStats[role][className]) {
-                      roleStats[role][className] = {
+                  if (specName !== 'Unknown') {
+                    // Use spec name + class name as key (e.g., "Unholy Death Knight")
+                    const specKey = `${specName} ${className}`;
+
+                    if (!roleStats[role][specKey]) {
+                      roleStats[role][specKey] = {
                         count: 0,
+                        specName: specName,
+                        className: className,
+                        specId: specId,
                         classId: classId,
                         color: getClassColor(classId)
                       };
                     }
-                    roleStats[role][className].count++;
+                    roleStats[role][specKey].count++;
                     roleTotals[role]++;
                     totalPlayers++;
                   }
@@ -411,30 +419,36 @@ document.addEventListener('DOMContentLoaded', async () => {
             const tankStatsArray = Object.entries(roleStats.tank)
               .map(([name, data]) => ({
                 name,
+                className: data.className,
                 count: data.count,
+                specId: data.specId,
                 classId: data.classId,
                 color: data.color,
-                percentage: ((data.count / roleTotals.tank) * 100).toFixed(1)
+                percentage: Math.ceil((data.count / roleTotals.tank) * 100)
               }))
               .sort((a, b) => b.count - a.count);
 
             const healerStatsArray = Object.entries(roleStats.healer)
               .map(([name, data]) => ({
                 name,
+                className: data.className,
                 count: data.count,
+                specId: data.specId,
                 classId: data.classId,
                 color: data.color,
-                percentage: ((data.count / roleTotals.healer) * 100).toFixed(1)
+                percentage: Math.ceil((data.count / roleTotals.healer) * 100)
               }))
               .sort((a, b) => b.count - a.count);
 
             const dpsStatsArray = Object.entries(roleStats.dps)
               .map(([name, data]) => ({
                 name,
+                className: data.className,
                 count: data.count,
+                specId: data.specId,
                 classId: data.classId,
                 color: data.color,
-                percentage: ((data.count / roleTotals.dps) * 100).toFixed(1)
+                percentage: Math.ceil((data.count / roleTotals.dps) * 100)
               }))
               .sort((a, b) => b.count - a.count);
 
@@ -476,18 +490,21 @@ document.addEventListener('DOMContentLoaded', async () => {
                     ${roleTitle} <span class="role-total">(${total} players)</span>
                   </h4>
                   <div class="class-stats-grid">
-                    ${statsArray.map(cls => {
-                      const classIconUrl = getClassIconUrl(cls.classId);
-                      const classIconHtml = classIconUrl ? `<img src="${classIconUrl}" alt="${cls.name}" class="class-stat-icon" />` : '';
+                    ${statsArray.map(spec => {
+                      const specIconUrl = getSpecIconUrl(spec.specId);
+                      const classIconUrl = getClassIconUrl(spec.classId);
+                      const specIconHtml = specIconUrl ? `<img src="${specIconUrl}" alt="${spec.name}" class="class-stat-icon" />` : '';
+                      const classIconHtml = classIconUrl ? `<img src="${classIconUrl}" alt="${spec.className}" class="class-stat-icon" />` : '';
                       return `
                         <div class="class-stat-item">
-                          <div class="class-stat-bar" style="width: ${cls.percentage}%; background: linear-gradient(90deg, ${cls.color}88, ${cls.color}44);"></div>
+                          <div class="class-stat-bar" style="width: ${spec.percentage}%; background: linear-gradient(90deg, ${spec.color}88, ${spec.color}44);"></div>
                           <div class="class-stat-info">
-                            <span class="class-stat-name" style="color: ${cls.color};">
+                            <span class="class-stat-name" style="color: ${spec.color};">
+                              ${specIconHtml}
                               ${classIconHtml}
-                              ${cls.name}
+                              ${spec.className}
                             </span>
-                            <span class="class-stat-value">${cls.percentage}% <span class="class-stat-count">(${cls.count})</span></span>
+                            <span class="class-stat-value">${spec.percentage}% <span class="class-stat-count">(${spec.count})</span></span>
                           </div>
                         </div>
                       `;
@@ -497,10 +514,47 @@ document.addEventListener('DOMContentLoaded', async () => {
               `;
             };
 
+            // Build meta composition showcase (top tank, healer, 3 DPS)
+            const topTank = tankStatsArray[0];
+            const topHealer = healerStatsArray[0];
+            const topDPS = dpsStatsArray.slice(0, 3);
+
+            const metaShowcaseHtml = `
+              <div class="meta-showcase">
+                <h3 class="meta-showcase-title">Current Meta Composition</h3>
+                <div class="meta-showcase-icons">
+                  ${topTank ? `
+                    <div class="meta-icon-wrapper">
+                      <span class="meta-percentage">${topTank.percentage}%</span>
+                      <img src="${getClassIconUrl(topTank.classId)}" alt="${topTank.className}" class="meta-class-icon" />
+                      <img src="${getSpecIconUrl(topTank.specId)}" alt="${topTank.name}" class="meta-spec-badge" />
+                    </div>
+                  ` : ''}
+                  ${topHealer ? `
+                    <div class="meta-icon-wrapper">
+                      <span class="meta-percentage">${topHealer.percentage}%</span>
+                      <img src="${getClassIconUrl(topHealer.classId)}" alt="${topHealer.className}" class="meta-class-icon" />
+                      <img src="${getSpecIconUrl(topHealer.specId)}" alt="${topHealer.name}" class="meta-spec-badge" />
+                    </div>
+                  ` : ''}
+                  ${topDPS.map(dps => `
+                    <div class="meta-icon-wrapper">
+                      <span class="meta-percentage">${dps.percentage}%</span>
+                      <img src="${getClassIconUrl(dps.classId)}" alt="${dps.className}" class="meta-class-icon" />
+                      <img src="${getSpecIconUrl(dps.specId)}" alt="${dps.name}" class="meta-spec-badge" />
+                    </div>
+                  `).join('')}
+                </div>
+                <a href="#class-stats-section" class="meta-view-all">
+                  All class stats <i class="las la-angle-down"></i>
+                </a>
+              </div>
+            `;
+
             // Build class statistics section with role breakdown
             const classStatsHtml = `
-              <div class="class-stats-section">
-                <h3>Class Distribution by Role <span class="meta-subtitle">(Top ${allLeaderboards.length * 8} Runs)</span></h3>
+              <div id="class-stats-section" class="class-stats-section">
+                <h3>Specialisation Distribution by Role <span class="meta-subtitle">(Top ${allLeaderboards.length * 8} Runs)</span></h3>
                 <div class="role-stats-container">
                   ${generateRoleSection('Tanks', 'las la-shield-alt', tankStatsArray, roleTotals.tank)}
                   ${generateRoleSection('Healers', 'las la-plus-circle', healerStatsArray, roleTotals.healer)}
@@ -511,13 +565,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // Build summary section with top run from each dungeon
             html += `
+              ${metaShowcaseHtml}
               <div class="leaderboard-summary">
                 <div class="roster-controls">
                   ${lastUpdatedText ? `<div class="leaderboard-status">${lastUpdatedText}</div>` : ''}
                   <div id="dungeon-dropdown-container"></div>
                 </div>
-
-                ${classStatsHtml}
 
                 <div id="detailed-leaderboard"></div>
 
@@ -576,6 +629,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }).join('')}
                 </div>
               </div>
+              ${classStatsHtml}
             `;
 
             leaderboardContent.innerHTML = html;
@@ -674,6 +728,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // Attach dropdown to container
             dungeonDropdown.attachToElement(dungeonDropdownContainer);
+
+            // Add smooth scroll handler for "all class stats" link
+            const metaViewAllLink = document.querySelector('.meta-view-all');
+            if (metaViewAllLink) {
+              metaViewAllLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                const statsSection = document.getElementById('class-stats-section');
+                if (statsSection) {
+                  statsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              });
+            }
           }
         } else {
           leaderboardContent.innerHTML = '<p>No season data available</p>';

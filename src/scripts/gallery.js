@@ -20,6 +20,22 @@ class GalleryBackgroundRotator extends BackgroundRotator {
     this.updateLocationDisplay();
   }
 
+  goToPrevious() {
+    // Call parent goToPrevious
+    super.goToPrevious();
+
+    // Update location display
+    this.updateLocationDisplay();
+  }
+
+  goToNext() {
+    // Call parent goToNext
+    super.goToNext();
+
+    // Update location display (already called via rotate, but being explicit)
+    this.updateLocationDisplay();
+  }
+
   init() {
     // Call parent init
     super.init();
