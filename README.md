@@ -61,6 +61,28 @@ A modern World of Warcraft companion application featuring guild roster manageme
 - Same advanced filtering as guild roster
 - Quick access to character details
 
+### 🏆 Mythic+ Leaderboards
+- Real-time Mythic+ leaderboard data from Battle.net API
+- **Meta Composition Showcase** - Visual display of top performing specs:
+  - Top tank, healer, and 3 DPS specializations
+  - Percentage-based popularity indicators
+  - Class and spec icon combination display
+- **Specialization Statistics** - Detailed breakdown by role:
+  - Tank, Healer, and DPS categories
+  - Spec icons alongside class icons
+  - Percentage distribution and player counts
+  - Analyzed from top 8 runs per dungeon
+- **Dungeon Grid** - Quick overview of all dungeons:
+  - Top keystones for each dungeon
+  - Group composition with class colors
+  - Key level and completion times
+- **Detailed Leaderboard** - Filterable by dungeon:
+  - Top 50 runs per dungeon
+  - Full party composition display
+  - Affixes and completion times
+- Smart 404 filtering for out-of-rotation dungeons
+- Automatic data refresh and caching
+
 ## 🏗️ Architecture
 
 ### Modern Component-Based Design
@@ -154,6 +176,7 @@ src/
 │   ├── my-todos.js                  # Todos page
 │   ├── my-youtube.js                # YouTube page
 │   ├── my-characters.js             # My characters page
+│   ├── mythic-plus.js               # Mythic+ leaderboards page
 │   └── config.js                    # App configuration
 ├── styles/
 │   ├── _mixins.scss                 # Shared mixins
@@ -168,7 +191,8 @@ src/
 ├── gallery.html                     # Gallery
 ├── my-todos.html                    # Todos
 ├── my-youtube.html                  # YouTube
-└── my-characters.html               # My characters
+├── my-characters.html               # My characters
+└── mythic-plus.html                 # Mythic+ leaderboards
 
 server.cjs                           # Express backend
 ```
