@@ -2,6 +2,25 @@
 
 A modern World of Warcraft companion application featuring guild roster management, character tracking, YouTube video curation, personal todos, and a stunning background gallery. Built with vanilla JavaScript and the Battle.net API for **Geez-yer-shoes-n-jaykit** cross-realm guild (EU).
 
+## 📸 Screenshots
+
+<div align="center">
+  <img src="src/gitimgs/image-1.png" alt="Guild Roster" width="48%">
+  <img src="src/gitimgs/image-2.png" alt="Character Modal" width="48%">
+  <img src="src/gitimgs/image-3.png" alt="Guild Search" width="48%">
+  <img src="src/gitimgs/image-4.png" alt="Character Details" width="48%">
+  <img src="src/gitimgs/image-5.png" alt="Mythic+ Leaderboards" width="48%">
+  <img src="src/gitimgs/image-6.png" alt="Meta Composition" width="48%">
+  <img src="src/gitimgs/image-7.png" alt="Spec Statistics" width="48%">
+  <img src="src/gitimgs/image-8.png" alt="Dungeon Grid" width="48%">
+  <img src="src/gitimgs/image-9.png" alt="My Characters" width="48%">
+  <img src="src/gitimgs/image-10.png" alt="YouTube Manager" width="48%">
+  <img src="src/gitimgs/image-11.png" alt="Video Player" width="48%">
+  <img src="src/gitimgs/image-12.png" alt="Todos Manager" width="48%">
+  <img src="src/gitimgs/image-13.png" alt="Gallery View" width="48%">
+  <img src="src/gitimgs/image-14.png" alt="Background Rotator" width="48%">
+</div>
+
 ## ✨ Features
 
 ### 🔐 Battle.net Authentication
