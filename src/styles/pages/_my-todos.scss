@@ -120,7 +120,7 @@
           gap: 6px;
           margin-top: 12px;
           font-size: 12px;
-          color: #148eff;
+          color: #e12e2c;
           text-decoration: none;
           transition: color 0.3s ease;
 
@@ -129,7 +129,7 @@
           }
 
           &:hover {
-            color: #0d7de8;
+            color: #c82826;
           }
         }
       }
@@ -137,7 +137,7 @@
       .todo-edit {
         background: none;
         border: none;
-        color: #148eff;
+        color: #e12e2c;
         font-size: 16px;
         cursor: pointer;
         padding: 0;
@@ -147,7 +147,7 @@
         transition: all 0.2s ease;
 
         &:hover {
-          color: #0d7de8;
+          color: #c82826;
           transform: scale(1.1);
         }
       }
