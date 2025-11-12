@@ -116,7 +116,7 @@
       }
 
       &.active {
-        color: #b71c1c;
+        color: #e12e2c;
       }
     }
 
@@ -188,8 +188,8 @@
         }
 
         &.active {
-          color: #b71c1c;
-          background: rgba(183, 28, 28, 0.1);
+          color: #e12e2c;
+          background: rgba(225, 46, 44, 0.1);
         }
       }
     }
@@ -243,9 +243,9 @@
       }
 
       &.active {
-        color: #b71c1c;
-        background: rgba(183, 28, 28, 0.1);
-        border-left-color: #b71c1c;
+        color: #e12e2c;
+        background: rgba(225, 46, 44, 0.1);
+        border-left-color: #e12e2c;
       }
 
       &.mobile-nav-link-indent {
@@ -278,8 +278,8 @@
     align-items: center;
     gap: 4px;
     padding: 5px 12px;
-    background: #b71c1c;
-    border: 1px solid #b71c1c;
+    background: #e12e2c;
+    border: 1px solid #e12e2c;
     border-radius: var(--border-radius);
     color: white;
     font-family: 'Muli', sans-serif;
@@ -291,8 +291,8 @@
     z-index: 10001;
 
     &:hover {
-      background: #a01919;
-      border-color: #a01919;
+      background: #c82826;
+      border-color: #c82826;
     }
 
     i {
@@ -350,8 +350,8 @@
       align-items: center;
       gap: 4px;
       padding: 5px 12px;
-      background: #b71c1c;
-      border: 1px solid #b71c1c;
+      background: #e12e2c;
+      border: 1px solid #e12e2c;
       border-radius: var(--border-radius);
       color: white;
       font-family: 'Muli', sans-serif;
@@ -363,8 +363,8 @@
       z-index: 10001;
 
       &:hover {
-        background: #a01919;
-        border-color: #a01919;
+        background: #c82826;
+        border-color: #c82826;
       }
 
       i {
