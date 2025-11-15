@@ -25,7 +25,8 @@
     "dev": "npm run build && concurrently \"npm run watch:scss\" \"npm run watch:html\" \"npm run watch:js\" \"npm run watch:img\" \"npm run watch:assets\" \"npm run watch:data\" \"npm run serve\" \"npm run auth-server\"",
     "clean": "rm -rf dist/* && mkdir -p dist",
     "clean:console": "node clean-console.cjs",
-    "capture:season": "node scripts/capture-season-data.js"
+    "capture:season": "node scripts/capture-season-data.js",
+    "generate:mounts": "node scripts/generate-mount-data.js"
   },
   "keywords": [],
   "author": "Jonny Pyper",

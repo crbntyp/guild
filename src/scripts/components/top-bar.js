@@ -120,7 +120,7 @@ class TopBar {
     };
 
     // Check if any account page is active for dropdown active state
-    const isAccountPageActive = ['my-characters.html', 'my-todos.html', 'my-youtube.html'].includes(currentPage);
+    const isAccountPageActive = ['my-characters.html', 'my-todos.html', 'my-youtube.html', 'my-mounts.html'].includes(currentPage);
 
     this.leftContainer.innerHTML = `
       <a href="index.html" class="top-bar-logo">
@@ -156,6 +156,10 @@ class TopBar {
                 <i class="lab la-youtube"></i>
                 <span>My YouTube</span>
               </a>
+              <a href="my-mounts.html" class="nav-dropdown-item${getActiveClass('my-mounts.html')}">
+                <i class="las la-horse"></i>
+                <span>My Mounts</span>
+              </a>
             </div>
           </div>
         ` : ''}
@@ -187,6 +191,10 @@ class TopBar {
             <a href="my-youtube.html" class="mobile-nav-link mobile-nav-link-indent${getActiveClass('my-youtube.html')}">
               <i class="lab la-youtube"></i>
               <span>My YouTube</span>
+            </a>
+            <a href="my-mounts.html" class="mobile-nav-link mobile-nav-link-indent${getActiveClass('my-mounts.html')}">
+              <i class="las la-horse"></i>
+              <span>My Mounts</span>
             </a>
           </div>
         ` : ''}

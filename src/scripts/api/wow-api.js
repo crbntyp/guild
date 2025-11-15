@@ -519,6 +519,61 @@ class WoWAPI {
       throw error;
     }
   }
+
+  // Get character collections - mounts
+  async getCharacterMountsCollection(realmSlug, characterName, accessToken) {
+    const encodedName = encodeURIComponent(characterName.toLowerCase());
+    const endpoint = `/profile/wow/character/${realmSlug}/${encodedName}/collections/mounts`;
+
+    try {
+      const url = `${config.getApiUrl()}${endpoint}`;
+      const params = new URLSearchParams({
+        namespace: config.api.namespace.profile,
+        locale: config.api.locale
+      });
+
+      const response = await fetch(`${url}?${params.toString()}`, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        }
+      });
+
+      if (!response.ok) {
+        if (response.status === 404 || response.status === 403) {
+          console.warn(`Character mounts not found or private for ${characterName}`);
+        } else {
+          console.error(`Error fetching character mounts for ${characterName}:`, response.status);
+        }
+        const error = new Error(`API request failed: ${response.status} ${response.statusText}`);
+        error.status = response.status;
+        throw error;
+      }
+
+      return await response.json();
+    } catch (error) {
+      if (error.status !== 404 && error.status !== 403) {
+        console.error(`Error fetching character mounts for ${characterName}:`, error);
+      }
+      throw error;
+    }
+  }
+
+  // Get mount data by ID
+  async getMountData(mountId) {
+    const endpoint = `/data/wow/mount/${mountId}`;
+
+    try {
+      const data = await battlenetClient.request(endpoint, {
+        params: {
+          namespace: config.api.namespace.static
+        }
+      });
+      return data;
+    } catch (error) {
+      console.error(`Error fetching mount ${mountId}:`, error);
+      return null;
+    }
+  }
 }
 
 export default new WoWAPI();

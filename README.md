@@ -1,6 +1,6 @@
 # My Personal Warcraft
 
-A modern World of Warcraft companion application featuring guild roster management, character tracking, YouTube video curation, personal todos, M+ leaderboard and comp stat tracking, and a stunning background gallery. Built with vanilla JavaScript and the Battle.net API.
+A modern World of Warcraft companion application featuring guild roster management, character tracking, mount collection browsing, YouTube video curation, personal todos, M+ leaderboard and comp stat tracking, and a stunning background gallery. Built with vanilla JavaScript and the Battle.net API.
 
 ## 📸 Screenshots
 
@@ -79,6 +79,19 @@ A modern World of Warcraft companion application featuring guild roster manageme
 - Guild rank display for guild members
 - Same advanced filtering as guild roster
 - Quick access to character details
+
+### 🐎 My Mounts (Auth Required) **NEW!**
+- Browse your personal mount collection
+- **Tab-Based UI** - Navigate by expansion with smooth scrolling arrows
+- **Lazy Loading** - Images load as you scroll with shimmer effect
+- **Per-Tab Progress** - Track image loading progress for each expansion
+- **Faction Icons** - See Alliance, Horde, or both faction availability
+- **Source Badges** - Shows how each mount was obtained (Vendor, Drop, Quest, etc.)
+- 3D render images from Battle.net CDN
+- Organized by expansion (Classic through The War Within)
+- Frosted glass mount name overlays
+- Only displays mounts you own (matched against database of 1,481 cataloged mounts)
+- Static database generation (no repeated API calls)
 
 ### 🏆 Mythic+ Leaderboards
 - Real-time Mythic+ leaderboard data from Battle.net API
@@ -189,12 +202,15 @@ src/
 │   │   ├── config-utils.js          # Config helpers
 │   │   └── page-initializer.js      # Page setup utility
 │   ├── data/
-│   │   └── backgrounds.js           # Background image metadata
+│   │   ├── backgrounds.js           # Background image metadata
+│   │   ├── generated-mount-data.js  # Mount database loader
+│   │   └── mount-data.js            # Mount data utilities
 │   ├── main.js                      # Guild roster page
 │   ├── gallery.js                   # Gallery page
 │   ├── my-todos.js                  # Todos page
 │   ├── my-youtube.js                # YouTube page
 │   ├── my-characters.js             # My characters page
+│   ├── my-mounts.js                 # My mounts page
 │   ├── mythic-plus.js               # Mythic+ leaderboards page
 │   └── config.js                    # App configuration
 ├── styles/
@@ -211,7 +227,14 @@ src/
 ├── my-todos.html                    # Todos
 ├── my-youtube.html                  # YouTube
 ├── my-characters.html               # My characters
+├── my-mounts.html                   # My mounts
 └── mythic-plus.html                 # Mythic+ leaderboards
+
+data/
+└── mounts-generated.json            # Generated mount database (1,481 mounts)
+
+scripts/
+└── generate-mount-data.js           # Mount database generator script
 
 server.cjs                           # Express backend
 ```
@@ -266,13 +289,14 @@ The dev server runs at `http://localhost:8080` with auto-reload.
 ## 🎯 Build Commands
 
 ```bash
-npm run build          # Build everything
-npm run build:scss     # Compile SCSS
-npm run build:html     # Copy HTML files
-npm run build:js       # Copy JavaScript
-npm run build:img      # Copy images
-npm run build:assets   # Copy assets
-npm run build:fonts    # Copy fonts
+npm run build           # Build everything
+npm run build:scss      # Compile SCSS
+npm run build:html      # Copy HTML files
+npm run build:js        # Copy JavaScript
+npm run build:img       # Copy images
+npm run build:assets    # Copy assets
+npm run build:fonts     # Copy fonts
+npm run generate:mounts # Generate mount database from Battle.net API
 ```
 
 ## 🔌 API Integration
@@ -295,6 +319,9 @@ npm run build:fonts    # Copy fonts
 - `/profile/wow/character/{realm}/{character}/equipment` - Equipment
 - `/profile/wow/character/{realm}/{character}/character-media` - Character images
 - `/profile/wow/character/{realm}/{character}/specializations` - Specs
+- `/profile/wow/character/{realm}/{character}/collections/mounts` - Mount collection
+- `/data/wow/mount/{mountId}` - Mount data (used in generation script)
+- `/data/wow/media/creature-display/{displayId}` - Mount 3D renders (used in generation script)
 
 ### Data Persistence Strategy
 - **User Data (Todos/Channels)**: Backend database with localStorage fallback
@@ -353,6 +380,19 @@ WoW class colors are centralized in `src/scripts/utils/wow-constants.js` using o
 - ~18-20% CSS size reduction
 
 ## 📋 Changelog
+
+### 2025-11-15
+- **My Mounts Feature** 🐎
+  - Added personal mount collection viewer
+  - Tab-based UI for browsing by expansion with scroll arrows
+  - Lazy loading with shimmer placeholder (no flash on slow connections)
+  - Per-tab progress tracking for image loading
+  - Faction icons (Alliance/Horde) and source badges on each mount
+  - 3D render images from Battle.net CDN with fallback handling
+  - Static mount database generation script (1,481 mounts cataloged)
+  - ID-based heuristics for expansion categorization
+  - Frosted glass mount name overlays
+  - Only displays mounts you own (matched against full database)
 
 ### 2025-10-27
 - **Guild Search Improvements**
