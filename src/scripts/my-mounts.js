@@ -4,6 +4,7 @@ import AuthService from './services/auth.js';
 import AccountService from './services/account-service.js';
 import WoWAPI from './api/wow-api.js';
 import { getAllMountData, getMountImageUrl } from './data/generated-mount-data.js';
+import { getMountSpellId } from './data/mount-spell-ids.js';
 
 // Expansion names (from API expansion IDs)
 const EXPANSIONS = {
@@ -192,7 +193,7 @@ class MountsPage {
     `;
 
     // Render active tab's mounts
-    html += this.renderExpansionMounts(this.activeTab);
+    html += await this.renderExpansionMounts(this.activeTab);
 
     html += `
         </div>
@@ -213,6 +214,9 @@ class MountsPage {
     `;
 
     this.container.innerHTML = html;
+
+    // Refresh Wowhead tooltips after content is added
+    this.refreshWowheadTooltips();
 
     // Set up tab click handlers
     this.setupTabHandlers();
@@ -242,49 +246,27 @@ class MountsPage {
     });
   }
 
-  renderExpansionMounts(expId) {
+  async renderExpansionMounts(expId) {
     const mounts = this.groupedMounts[expId] || [];
 
     let html = `<div class="mounts-grid">`;
 
-    mounts.forEach(mount => {
+    for (const mount of mounts) {
       const imageUrl = getMountImageUrl(mount.data.image);
       const placeholderUrl = 'https://wow.zamimg.com/images/wow/icons/large/inv_misc_questionmark.jpg';
 
-      // Create Wowhead link for tooltip
-      const wowheadLink = `<a href="https://www.wowhead.com/spell=${mount.data.id}" data-wowhead="spell=${mount.data.id}">${mount.data.name}</a>`;
-
-      // Determine faction icons (using Wowhead icon URLs)
-      const faction = mount.data.faction;
-      let factionIconsHtml = '';
-
-      if (faction === 'ALLIANCE') {
-        factionIconsHtml = '<div class="faction-icons"><img src="https://wow.zamimg.com/images/wow/icons/small/inv_misc_tournaments_banner_human.jpg" alt="Alliance" class="faction-icon" /></div>';
-      } else if (faction === 'HORDE') {
-        factionIconsHtml = '<div class="faction-icons"><img src="https://wow.zamimg.com/images/wow/icons/small/inv_misc_tournaments_banner_orc.jpg" alt="Horde" class="faction-icon" /></div>';
-      } else {
-        // BOTH factions
-        factionIconsHtml = '<div class="faction-icons"><img src="https://wow.zamimg.com/images/wow/icons/small/inv_misc_tournaments_banner_human.jpg" alt="Alliance" class="faction-icon" /><img src="https://wow.zamimg.com/images/wow/icons/small/inv_misc_tournaments_banner_orc.jpg" alt="Horde" class="faction-icon" /></div>';
-      }
+      // Get the correct spell ID for Wowhead tooltips
+      const spellId = await getMountSpellId(mount.data.id);
 
       html += `
-        <div class="mount-item">
-          ${factionIconsHtml}
-          <div class="mount-source">${mount.data.source}</div>
-          <img
-            data-src="${imageUrl}"
-            data-fallback="${placeholderUrl}"
-            alt="${mount.data.name}"
-            class="mount-image lazy-load"
-            loading="lazy"
-          />
-          <div class="mount-info">
-            <div class="mount-name">${mount.data.name}</div>
+        <div class="mount-item" data-mount-id="${mount.data.id}">
+          <div class="mount-icon-container">
+            <a href="https://www.wowhead.com/spell=${spellId}" target="_blank" data-wowhead="spell=${spellId}" class="mount-icon-link"></a>
           </div>
-          <div class="mount-tooltip">${wowheadLink}</div>
+          <div class="mount-name-text">${mount.data.name}</div>
         </div>
       `;
-    });
+    }
 
     html += `</div>`;
 
@@ -302,7 +284,7 @@ class MountsPage {
     });
   }
 
-  switchTab(expId) {
+  async switchTab(expId) {
     if (this.activeTab === expId) return;
 
     this.activeTab = expId;
@@ -315,7 +297,7 @@ class MountsPage {
     // Update content
     const tabContent = document.getElementById('tab-content');
     if (tabContent) {
-      tabContent.innerHTML = this.renderExpansionMounts(expId);
+      tabContent.innerHTML = await this.renderExpansionMounts(expId);
 
       // Reset progress counter for new tab
       this.loadedImages = 0;
@@ -338,8 +320,104 @@ class MountsPage {
 
       // Re-setup lazy loading for new images
       this.setupLazyLoading();
+
+      // Refresh Wowhead tooltips for new tab content
+      this.refreshWowheadTooltips();
     }
   }
+
+  refreshWowheadTooltips() {
+    // Refresh Wowhead tooltips after dynamic content loads
+    if (typeof window.$WowheadPower !== 'undefined') {
+      window.$WowheadPower.refreshLinks();
+
+      // Immediately start watching for icon changes
+      this.watchForIconChanges();
+
+      // Also do a delayed upgrade as backup
+      setTimeout(() => {
+        this.upgradeMountIcons();
+      }, 500);
+    }
+  }
+
+  watchForIconChanges() {
+    // Watch for when Wowhead adds background-image styles and immediately upgrade them
+    const iconLinks = document.querySelectorAll('.mount-icon-link');
+
+    iconLinks.forEach(link => {
+      const observer = new MutationObserver(() => {
+        const style = link.getAttribute('style');
+        if (style && style.includes('background-image')) {
+          // Immediately upgrade to jpg version
+          let newStyle = style.replace(/\/tiny\//g, '/large/');
+          newStyle = newStyle.replace(/\.gif/g, '.jpg');
+          link.setAttribute('style', newStyle);
+          link.style.backgroundSize = 'contain';
+          link.style.width = '64px';
+          link.style.height = '64px';
+
+          // Show the icon now that it's upgraded
+          link.classList.add('icon-ready');
+
+          // Disconnect observer since we're done
+          observer.disconnect();
+        }
+      });
+
+      observer.observe(link, {
+        attributes: true,
+        attributeFilter: ['style']
+      });
+
+      // Stop observing after 2 seconds to prevent memory leaks
+      setTimeout(() => {
+        observer.disconnect();
+        // Show icon anyway if observer hasn't triggered
+        if (!link.classList.contains('icon-ready')) {
+          link.classList.add('icon-ready');
+        }
+      }, 2000);
+    });
+  }
+
+  upgradeMountIcons() {
+    // Upgrade Wowhead's tiny icons to large icons
+    const iconLinks = document.querySelectorAll('.mount-icon-link');
+
+    // Edge case mounts that should always show fallback icon
+    const forceNoIconMounts = [1798, 2304, 2305, 2308]; // Azure Worldchiller, Chaos-Forged mounts
+
+    iconLinks.forEach(link => {
+      // Get mount ID from parent container
+      const mountItem = link.closest('.mount-item');
+      const mountId = mountItem ? parseInt(mountItem.getAttribute('data-mount-id')) : null;
+
+      // Force fallback for specific edge case mounts
+      if (forceNoIconMounts.includes(mountId)) {
+        link.classList.add('no-icon');
+        return;
+      }
+
+      // Check if Wowhead has added a background-image
+      const style = link.getAttribute('style');
+      if (style && style.includes('background-image')) {
+        // Replace "tiny" with "large" AND ".gif" with ".jpg" in the URL
+        let newStyle = style.replace(/\/tiny\//g, '/large/');
+        newStyle = newStyle.replace(/\.gif/g, '.jpg');
+        link.setAttribute('style', newStyle);
+
+        // Also set background-size to ensure large icons display properly
+        link.style.backgroundSize = 'contain';
+        link.style.width = '64px';
+        link.style.height = '64px';
+      } else {
+        // No icon from Wowhead - add fallback with red X indicator
+        link.classList.add('no-icon');
+      }
+    });
+  }
+
 
   setupLazyLoading() {
     const images = document.querySelectorAll('.mount-image.lazy-load');
