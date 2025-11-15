@@ -363,6 +363,9 @@
             top: 15px;
             left: 15px;
             font-size: 8px;
+            @media (max-width: 1024px) {
+              font-size: 14px;
+            }
             color: rgba(255, 255, 255, 0.8);
             background: rgba(225, 46, 44, 0.2);
             padding: 2px 8px;
@@ -420,6 +423,9 @@
 
             .mount-name {
               font-size: 12px;
+              @media (max-width: 1024px) {
+                font-size: 16px;
+              }
               color: white;
               text-align: center;
               line-height: 1.3;
