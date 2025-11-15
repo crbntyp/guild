@@ -106,6 +106,7 @@ guild/
 │   │   ├── my-characters.js      # My characters page
 │   │   ├── my-todos.js           # Todos page
 │   │   ├── my-youtube.js         # YouTube page
+│   │   ├── my-mounts.js          # Mounts collection page
 │   │   ├── gallery.js            # Gallery page
 │   │   └── mythic-plus.js        # Mythic+ leaderboards page
 │   ├── styles/
@@ -142,6 +143,7 @@ guild/
 │   │       ├── _gallery.scss
 │   │       ├── _my-todos.scss
 │   │       ├── _my-youtube.scss
+│   │       ├── _my-mounts.scss
 │   │       └── _mythic-plus.scss
 │   ├── img/                      # Images
 │   │   ├── bgs/                       # Background images (26 WoW locations)
@@ -155,6 +157,7 @@ guild/
 │   ├── my-characters.html        # My characters page
 │   ├── my-todos.html             # Todos page
 │   ├── my-youtube.html           # YouTube page
+│   ├── my-mounts.html            # Mounts collection page
 │   ├── gallery.html              # Gallery page
 │   └── mythic-plus.html          # Mythic+ leaderboards page
 ├── dist/                         # Build output (gitignored)
@@ -1126,6 +1129,284 @@ guild: {
 
 ---
 
-**Last Updated:** 2025-01-12
+**Last Updated:** 2025-11-15
 **Application Version:** 1.0.0
 **Author:** Jonny Pyper (carbontype)
+
+---
+
+## My Mounts Feature (Added 2025-11-15)
+
+### Overview
+
+The My Mounts page displays a user's World of Warcraft mount collection organized by expansion. The feature shows only owned mounts with their 3D render images, grouped by WoW expansion from Classic through The War Within.
+
+### Architecture
+
+**Data Generation Approach:**
+- Static mount database generated via script (`scripts/generate-mount-data.js`)
+- One-time generation fetches all 1,481 mounts from Battle.net API
+- Stores mount metadata (name, description, image URL, source, faction, expansion)
+- Expansion determined via ID-based heuristics (fallback since API doesn't provide it)
+
+**Runtime Approach:**
+- Fetches user's owned mounts from Battle.net collections API
+- Matches owned mounts with generated database by mount ID
+- Only displays mounts that exist in both (owned + have image data)
+- Groups by expansion using database's heuristic field
+
+### Files Added/Modified
+
+**Data Generation:**
+- `scripts/generate-mount-data.js` - Mount database generator script
+- `data/mounts-generated.json` - Generated database of all 1,481 mounts (gitignored in dist, committed in data/)
+- Added `"generate:mounts": "node scripts/generate-mount-data.js"` to package.json
+
+**HTML:**
+- `src/my-mounts.html` - Page structure with header and content container
+
+**JavaScript:**
+- `src/scripts/my-mounts.js` - Main page logic with MountsPage class
+- `src/scripts/data/generated-mount-data.js` - Loader for generated mount database
+- `src/scripts/api/wow-api.js` - Added `getCharacterMountsCollection()` method
+
+**SCSS:**
+- `src/styles/pages/_my-mounts.scss` - Page-specific styles
+- `src/styles/main.scss` - Added import for _my-mounts.scss
+
+**Navigation:**
+- `src/scripts/components/top-bar.js` - Added "My Mounts" link under "My Account" dropdown
+
+### API Integration
+
+**Collections Endpoint:** `/profile/wow/character/{realmSlug}/{characterName}/collections/mounts`
+- **Namespace:** `profile-eu`
+- **Authentication:** Requires user's Battle.net access token
+- **Returns:** List of owned mounts with mount ID, name, and is_useable flag
+- **Note:** Does NOT include expansion_id (we use database heuristic instead)
+
+**Mount Data Endpoint:** `/data/wow/mount/{mountId}` (used during generation)
+- **Namespace:** `static-eu`
+- **Returns:** Mount metadata including name, description, source, faction, creature displays
+
+**Creature Display Endpoint:** `/data/wow/media/creature-display/{displayId}` (used during generation)
+- **Namespace:** `static-eu`
+- **Returns:** 3D render image URLs for mounts
+
+### Page Features
+
+1. **Authentication Check**
+   - Redirects unauthenticated users with message to login
+   - Uses AuthService to verify user login status
+
+2. **Mount Count in Header**
+   - Page title shows "My Mounts (count)" where count is total owned mounts
+   - Dynamically updated after API load
+
+3. **Image Loading Progress Bar**
+   - Shows progress bar while mount images lazy load
+   - Displays "Loading images: X / Y" count
+   - Fades out automatically when all images loaded
+   - Uses red gradient progress fill
+
+4. **Mount Organization**
+   - Groups mounts by expansion using database heuristic
+   - Displays expansions in reverse chronological order (newest first)
+   - Only shows expansions that have owned mounts
+   - Each expansion card shows mount count
+
+5. **Mount Display**
+   - 5-column grid layout of mount 3D renders
+   - Lazy loading with Intersection Observer (loads 200px before viewport)
+   - Shimmer effect on placeholders while loading
+   - Fade-in animation when images load
+   - Mount name overlay with frosted glass effect
+   - Hover effects: translateY(-4px) lift
+
+6. **Mount Name Styling**
+   - Semi-transparent black background (rgba(0, 0, 0, 0.5))
+   - Backdrop filter: blur(10px) + brightness(0.3) for frosted glass effect
+   - White text, uppercase, letter-spacing 1.5px
+   - Font-weight 300 (light)
+   - Positioned -20px from top (overlaps image)
+   - Pill-shaped (border-radius: 50px)
+
+7. **Expansion Mapping**
+   ```javascript
+   const EXPANSIONS = {
+     0: 'Classic',
+     1: 'The Burning Crusade',
+     2: 'Wrath of the Lich King',
+     3: 'Cataclysm',
+     4: 'Mists of Pandaria',
+     5: 'Warlords of Draenor',
+     6: 'Legion',
+     7: 'Battle for Azeroth',
+     8: 'Shadowlands',
+     9: 'Dragonflight',
+     10: 'The War Within'
+   }
+   ```
+
+8. **Expansion Heuristics (ID Ranges)**
+   - The War Within (10): ID >= 1750
+   - Dragonflight (9): ID >= 1500
+   - Shadowlands (8): ID >= 1400
+   - Battle for Azeroth (7): ID >= 1000
+   - Legion (6): ID >= 750
+   - Warlords of Draenor (5): ID >= 550
+   - Mists of Pandaria (4): ID >= 450
+   - Cataclysm (3): ID >= 370
+   - Wrath of the Lich King (2): ID >= 250
+   - The Burning Crusade (1): ID >= 100
+   - Classic (0): ID < 100
+
+### Error Handling
+
+- **404/403 Errors:** Displays privacy settings message (collection may be private)
+- **No Characters:** Shows message if user has no WoW characters
+- **General Errors:** Displays error state with retry button
+- **Failed Images:** Question mark placeholder shown for mounts with broken image URLs
+- **Missing Images:** All mounts show placeholder initially, then swap to real image on load
+
+### UI Components
+
+**Progress Bar:**
+- Red gradient fill (linear-gradient(90deg, #e12e2c, #ff4444))
+- Smooth width transition (0.3s ease)
+- Shows count: "Loading images: X / Y"
+- Auto-fades out after all images loaded
+
+**Expansion Cards:**
+- Expansion name as heading
+- Mount count display (e.g., "341 mounts")
+- Single column layout
+- 5-column grid for mount items
+- Glassmorphism background with backdrop blur
+
+**Mount Items:**
+- Square aspect ratio (1:1)
+- 3D render images from Battle.net CDN
+- Placeholder → shimmer → fade-in sequence
+- Name overlay with frosted glass effect
+- Hover lift animation
+- Wowhead tooltip integration (hidden link for tooltip script)
+
+### Styling Architecture
+
+**Layout:**
+- Container max-width: 1290px
+- Single column expansion cards (changed from 2-column)
+- 5-column mount grid
+- Mobile responsive (adjusts grid columns)
+
+**Visual Effects:**
+- Glassmorphism: rgba(26, 26, 26, 0.3) + backdrop-filter: blur(5px)
+- Shimmer animation on lazy-loading images
+- Fade-in animation (0.3s) when images load
+- Frosted glass name overlay using backdrop-filter
+
+**Colors:**
+- Primary accent: #e12e2c (red)
+- Background: rgba(26, 26, 26, 0.3)
+- Text: white with various opacities
+- Border: rgba(255, 255, 255, 0.1)
+
+### Technical Implementation
+
+**Data Generation Script:**
+- Runtime: ~2-3 minutes for 1,481 mounts
+- Rate limiting: 50ms delay between requests
+- Error handling: Continues on individual mount failures
+- Output: JSON file with mount ID as key
+- Image fetching: Uses creature display media endpoint
+- Expansion logic: ID-based heuristic ranges
+
+**Lazy Loading:**
+- IntersectionObserver with 200px rootMargin
+- Loads images before entering viewport
+- Tracks progress for progress bar
+- Handles load errors with fallback placeholder
+- Caches loaded images (browser cache)
+
+**Performance:**
+- Only owned mounts rendered (not all 1,481)
+- Images lazy-loaded on scroll
+- No unnecessary API calls (uses generated database)
+- Shimmer effect provides visual feedback
+- Progressive enhancement (placeholder → image)
+
+### Mount Database Structure
+
+```json
+{
+  "generatedAt": "2025-11-15T08:55:05.834Z",
+  "version": "1.0.0",
+  "totalMounts": 1481,
+  "mounts": {
+    "6": {
+      "id": 6,
+      "name": "Brown Horse",
+      "description": "A favorite among Stormwind's guards...",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-2404.jpg",
+      "source": "Vendor",
+      "faction": "ALLIANCE",
+      "expansion": 0
+    }
+  }
+}
+```
+
+### Known Limitations
+
+1. **Expansion accuracy:** ID-based heuristics may miscategorize some mounts (especially edge cases)
+2. **Missing images:** Some mounts may have broken image URLs from Blizzard CDN
+3. **API limitations:** Collections endpoint doesn't provide expansion data
+4. **No caching:** Mount collection fetched fresh each page load
+5. **Image size:** Large 3D renders may take time to load (hence lazy loading)
+
+### Future Enhancements
+
+1. **Filtering & Search:**
+   - Search by mount name
+   - Filter by source type (vendor, drop, achievement, etc.)
+   - Filter by faction (Alliance, Horde, Both)
+   - Filter by usability
+
+2. **Collection Stats:**
+   - Percentage of total available mounts
+   - Missing mounts from each expansion
+   - Rarest mounts owned
+   - Most recent acquisitions
+
+3. **Mount Details Modal:**
+   - Full mount description
+   - Acquisition method/source
+   - Usability status
+   - Link to Wowhead for more info
+
+4. **Caching:**
+   - Cache mount collection data
+   - Cache generated mount database in localStorage
+   - Invalidate cache on mount acquisition
+
+5. **Alternative Views:**
+   - List view option
+   - Compact grid option
+   - Sorting options (name, date acquired, expansion)
+
+### Maintenance
+
+**Updating Mount Database:**
+```bash
+# Run generation script when new mounts are added to WoW
+npm run generate:mounts
+
+# Rebuilds data/mounts-generated.json
+# Should be run after major patches/expansions
+```
+
+**ID Heuristic Updates:**
+- Monitor new mount IDs from latest expansion
+- Update `getExpansionFromId()` thresholds in generate-mount-data.js
+- Re-run generation script after updates

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>My Mounts | My Personal Warcraft</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Muli:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <script>const whTooltips = {colorLinks: true, iconizeLinks: true, renameLinks: true};</script>
+    <script src="https://wow.zamimg.com/widgets/power.js"></script>
+</head>
+<body>
+    <div id="top-bar-root"></div>
+
+    <div class="container">
+        <div id="mounts-container">
+            <div class="mounts-header">
+                <div class="mounts-header-info">
+                    <h1>My Mounts <span id="mount-count" class="mount-count"></span></h1>
+                    <span class="info-description">Track your mount collection across all expansions. View your progress and discover which mounts you're still missing.</span>
+                </div>
+            </div>
+
+            <div id="mounts-content" class="mounts-content">
+                <div class="loading-state">
+                    <i class="las la-circle-notch la-spin"></i>
+                    <p>Loading your mount collection...</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="footer-root"></div>
+    </div>
+
+    <script type="module" src="scripts/my-mounts.js"></script>
+</body>
+</html>
