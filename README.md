@@ -81,7 +81,7 @@ A modern World of Warcraft companion application featuring guild roster manageme
 - Quick access to character details
 
 ### 🐎 My Mounts (Auth Required) **NEW!**
-- Browse your complete mount collection (1,481 total mounts cataloged)
+- Browse your personal mount collection
 - **Tab-Based UI** - Navigate by expansion with smooth scrolling arrows
 - **Lazy Loading** - Images load as you scroll with shimmer effect
 - **Per-Tab Progress** - Track image loading progress for each expansion
@@ -90,7 +90,7 @@ A modern World of Warcraft companion application featuring guild roster manageme
 - 3D render images from Battle.net CDN
 - Organized by expansion (Classic through The War Within)
 - Frosted glass mount name overlays
-- Only displays mounts you own
+- Only displays mounts you own (matched against database of 1,481 cataloged mounts)
 - Static database generation (no repeated API calls)
 
 ### 🏆 Mythic+ Leaderboards
@@ -383,16 +383,16 @@ WoW class colors are centralized in `src/scripts/utils/wow-constants.js` using o
 
 ### 2025-11-15
 - **My Mounts Feature** 🐎
-  - Added complete mount collection viewer (1,481 mounts cataloged)
+  - Added personal mount collection viewer
   - Tab-based UI for browsing by expansion with scroll arrows
   - Lazy loading with shimmer placeholder (no flash on slow connections)
   - Per-tab progress tracking for image loading
   - Faction icons (Alliance/Horde) and source badges on each mount
   - 3D render images from Battle.net CDN with fallback handling
-  - Static mount database generation script
+  - Static mount database generation script (1,481 mounts cataloged)
   - ID-based heuristics for expansion categorization
   - Frosted glass mount name overlays
-  - Only displays owned mounts from user's collection
+  - Only displays mounts you own (matched against full database)
 
 ### 2025-10-27
 - **Guild Search Improvements**
