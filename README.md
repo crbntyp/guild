@@ -94,13 +94,10 @@ A modern World of Warcraft companion application featuring guild roster manageme
 ### 🐎 My Mounts (Auth Required) **NEW!**
 - Browse your personal mount collection
 - **Tab-Based UI** - Navigate by expansion with smooth scrolling arrows
-- **Lazy Loading** - Images load as you scroll with shimmer effect
-- **Per-Tab Progress** - Track image loading progress for each expansion
-- **Faction Icons** - See Alliance, Horde, or both faction availability
-- **Source Badges** - Shows how each mount was obtained (Vendor, Drop, Quest, etc.)
-- 3D render images from Battle.net CDN
+- **Wowhead Integration** - Icons link directly to Wowhead pages with tooltips on hover
+- **High-Quality Icons** - Automatically upgraded from .gif to .jpg for crisp display
+- **Spell ID Mapping** - Automated scraper builds accurate mount→spell ID database
 - Organized by expansion (Classic through The War Within)
-- Frosted glass mount name overlays
 - Only displays mounts you own (matched against database of 1,481 cataloged mounts)
 - Static database generation (no repeated API calls)
 
