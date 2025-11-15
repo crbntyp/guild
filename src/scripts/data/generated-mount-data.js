@@ -12,7 +12,7 @@ async function loadMountData() {
   }
 
   try {
-    const response = await fetch('/data/mounts-generated.json');
+    const response = await fetch('data/mounts-generated.json');
     if (!response.ok) {
       throw new Error(`Failed to load mount data: ${response.status}`);
     }
