@@ -5,20 +5,41 @@ A modern World of Warcraft companion application featuring guild roster manageme
 ## 📸 Screenshots
 
 <div align="center">
-  <img src="src/gitimgs/image-1.png" alt="Guild Roster" width="48%">
-  <img src="src/gitimgs/image-2.png" alt="Character Modal" width="48%">
-  <img src="src/gitimgs/image-3.png" alt="Guild Search" width="48%">
-  <img src="src/gitimgs/image-4.png" alt="Character Details" width="48%">
-  <img src="src/gitimgs/image-5.png" alt="Mythic+ Leaderboards" width="48%">
-  <img src="src/gitimgs/image-6.png" alt="Meta Composition" width="48%">
-  <img src="src/gitimgs/image-7.png" alt="Spec Statistics" width="48%">
-  <img src="src/gitimgs/image-8.png" alt="Dungeon Grid" width="48%">
-  <img src="src/gitimgs/image-9.png" alt="My Characters" width="48%">
-  <img src="src/gitimgs/image-10.png" alt="YouTube Manager" width="48%">
-  <img src="src/gitimgs/image-11.png" alt="Video Player" width="48%">
-  <img src="src/gitimgs/image-12.png" alt="Todos Manager" width="48%">
-  <img src="src/gitimgs/image-13.png" alt="Gallery View" width="48%">
-  <img src="src/gitimgs/image-14.png" alt="Background Rotator" width="48%">
+  <img src="src/gitimgs/logo-guild.png" alt="Guild Logo" width="60%">
+</div>
+
+<div align="center">
+  <div style="display: inline-block; width: 48%; padding: 10px; vertical-align: top;">
+    <img src="src/gitimgs/Screenshot 2025-11-15 at 21.21.52.png" alt="Application Screenshot 1" width="100%">
+  </div>
+  <div style="display: inline-block; width: 48%; padding: 10px; vertical-align: top;">
+    <img src="src/gitimgs/Screenshot 2025-11-15 at 21.22.54.png" alt="Application Screenshot 2" width="100%">
+  </div>
+
+  <div style="display: inline-block; width: 48%; padding: 10px; vertical-align: top;">
+    <img src="src/gitimgs/Screenshot 2025-11-15 at 21.24.29.png" alt="Application Screenshot 3" width="100%">
+  </div>
+  <div style="display: inline-block; width: 48%; padding: 10px; vertical-align: top;">
+    <img src="src/gitimgs/Screenshot 2025-11-15 at 21.25.03.png" alt="Application Screenshot 4" width="100%">
+  </div>
+
+  <div style="display: inline-block; width: 48%; padding: 10px; vertical-align: top;">
+    <img src="src/gitimgs/Screenshot 2025-11-15 at 21.26.40.png" alt="Application Screenshot 5" width="100%">
+  </div>
+  <div style="display: inline-block; width: 48%; padding: 10px; vertical-align: top;">
+    <img src="src/gitimgs/Screenshot 2025-11-15 at 21.26.51.png" alt="Application Screenshot 6" width="100%">
+  </div>
+
+  <div style="display: inline-block; width: 48%; padding: 10px; vertical-align: top;">
+    <img src="src/gitimgs/Screenshot 2025-11-15 at 21.27.28.png" alt="Application Screenshot 7" width="100%">
+  </div>
+  <div style="display: inline-block; width: 48%; padding: 10px; vertical-align: top;">
+    <img src="src/gitimgs/Screenshot 2025-11-15 at 21.27.37.png" alt="Application Screenshot 8" width="100%">
+  </div>
+
+  <div style="display: inline-block; width: 48%; padding: 10px; vertical-align: top;">
+    <img src="src/gitimgs/Screenshot 2025-11-15 at 21.27.52.png" alt="Application Screenshot 9" width="100%">
+  </div>
 </div>
 
 ## ✨ Features
