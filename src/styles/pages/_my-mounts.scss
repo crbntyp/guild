@@ -313,10 +313,6 @@
         grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
         gap: 16px;
         @media (max-width: 1024px) {
-          grid-template-columns: 1fr 1fr 1fr 1fr;
-        }
-
-        @media (max-width: 768px) {
           grid-template-columns: 1fr 1fr 1fr;
         }
 
@@ -364,7 +360,7 @@
             left: 15px;
             font-size: 8px;
             @media (max-width: 1024px) {
-              font-size: 14px;
+              font-size: 10px;
             }
             color: rgba(255, 255, 255, 0.8);
             background: rgba(225, 46, 44, 0.2);
@@ -424,7 +420,7 @@
             .mount-name {
               font-size: 12px;
               @media (max-width: 1024px) {
-                font-size: 16px;
+                font-size: 14px;
               }
               color: white;
               text-align: center;
@@ -498,34 +494,7 @@
       }
 
       .tab-content {
-        .mounts-grid {
-          //grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-          gap: 12px;
-
-          .mount-item {
-            padding: 6px;
-
-            .mount-source {
-              font-size: 8px;
-              padding: 2px 6px;
-              top: 8px;
-              left: 8px;
-            }
-
-            .mount-image {
-              width: 100%;
-              height: auto;
-            }
-
-            .mount-info {
-              .mount-name {
-                font-size: 10px;
-                padding: 3px 8px;
-                letter-spacing: 0.5px;
-              }
-            }
-          }
-        }
+       
       }
     }
 
