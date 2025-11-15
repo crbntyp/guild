@@ -312,13 +312,27 @@
         display: grid;
         grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
         gap: 16px;
+        @media (max-width: 1024px) {
+          grid-template-columns: 1fr 1fr 1fr 1fr;
+        }
+
+        @media (max-width: 768px) {
+          grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        @media (max-width: 550px) {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        @media (max-width: 450px) {
+          grid-template-columns: 1fr;
+        }
 
         .mount-item {
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: start;
-          padding: 8px;
           border-radius: 8px;
           transition: all 0.3s ease;
           cursor: pointer;
@@ -479,7 +493,7 @@
 
       .tab-content {
         .mounts-grid {
-          grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+          //grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
           gap: 12px;
 
           .mount-item {
