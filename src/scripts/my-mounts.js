@@ -272,8 +272,8 @@ class MountsPage {
           ${factionIconsHtml}
           <div class="mount-source">${mount.data.source}</div>
           <img
-            src="${placeholderUrl}"
             data-src="${imageUrl}"
+            data-fallback="${placeholderUrl}"
             alt="${mount.data.name}"
             class="mount-image lazy-load"
             loading="lazy"
@@ -387,6 +387,7 @@ class MountsPage {
         if (entry.isIntersecting) {
           const img = entry.target;
           const src = img.getAttribute('data-src');
+          const fallback = img.getAttribute('data-fallback');
 
           if (src) {
             // Load the image
@@ -398,8 +399,8 @@ class MountsPage {
               updateProgress();
             };
             tempImg.onerror = () => {
-              // Use placeholder on error
-              img.src = 'https://wow.zamimg.com/images/wow/icons/large/inv_misc_questionmark.jpg';
+              // Use fallback question mark only on error
+              img.src = fallback;
               img.classList.remove('lazy-load');
               img.classList.add('error');
               updateProgress();
