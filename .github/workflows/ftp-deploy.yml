@@ -48,7 +48,7 @@ jobs:
           lftp ${FTP_HOST} <<EOF
           set ftp:ssl-allow no
           set ftp:passive-mode on
-          mkdir -f player
+          mkdir -f guild
           cd guild
           lcd ./dist
           mirror --reverse --verbose --exclude .git/ --exclude node_modules/
