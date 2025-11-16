@@ -3,7 +3,7 @@ import PageInitializer from './utils/page-initializer.js';
 import AuthService from './services/auth.js';
 import AccountService from './services/account-service.js';
 import WoWAPI from './api/wow-api.js';
-import { getAllMountData, getMountImageUrl } from './data/generated-mount-data.js';
+import { getAllMountData } from './data/generated-mount-data.js';
 import { getMountSpellId } from './data/mount-spell-ids.js';
 
 // Expansion names (from API expansion IDs)
@@ -246,29 +246,95 @@ class MountsPage {
     });
   }
 
+  async getFarmableDropMounts(expId) {
+    // Get all mounts from database
+    const allMountsData = await getAllMountData();
+    const farmable = [];
+
+    // Filter for unowned drop-based mounts in this expansion
+    for (const [mountId, mountData] of Object.entries(allMountsData)) {
+      const id = parseInt(mountId);
+
+      // Check if: right expansion, is a drop, and NOT owned
+      if (
+        mountData.expansion === parseInt(expId) &&
+        mountData.source === 'Drop' &&
+        !this.ownedMountIds.has(id)
+      ) {
+        farmable.push(mountData);
+      }
+    }
+
+    return farmable;
+  }
+
   async renderExpansionMounts(expId) {
-    const mounts = this.groupedMounts[expId] || [];
+    const ownedMounts = this.groupedMounts[expId] || [];
+    const farmableMounts = await this.getFarmableDropMounts(expId);
 
-    let html = `<div class="mounts-grid">`;
+    let html = '';
 
-    for (const mount of mounts) {
-      const imageUrl = getMountImageUrl(mount.data.image);
-      const placeholderUrl = 'https://wow.zamimg.com/images/wow/icons/large/inv_misc_questionmark.jpg';
+    // Owned mounts section
+    if (ownedMounts.length > 0) {
+      html += `
+        <div class="mounts-section">
+          <div class="section-header">
+            <i class="las la-check-circle"></i>
+            <h3>Your Collection (${ownedMounts.length} mount${ownedMounts.length !== 1 ? 's' : ''})</h3>
+          </div>
+          <div class="mounts-grid">
+      `;
 
-      // Get the correct spell ID for Wowhead tooltips
-      const spellId = await getMountSpellId(mount.data.id);
+      for (const mount of ownedMounts) {
+        // Get the correct spell ID for Wowhead tooltips
+        const spellId = await getMountSpellId(mount.data.id);
+
+        html += `
+          <div class="mount-item" data-mount-id="${mount.data.id}">
+            <div class="mount-icon-container">
+              <a href="https://www.wowhead.com/spell=${spellId}" target="_blank" data-wowhead="spell=${spellId}" class="mount-icon-link"></a>
+            </div>
+            <div class="mount-name-text">${mount.data.name}</div>
+          </div>
+        `;
+      }
 
       html += `
-        <div class="mount-item" data-mount-id="${mount.data.id}">
-          <div class="mount-icon-container">
-            <a href="https://www.wowhead.com/spell=${spellId}" target="_blank" data-wowhead="spell=${spellId}" class="mount-icon-link"></a>
           </div>
-          <div class="mount-name-text">${mount.data.name}</div>
         </div>
       `;
     }
 
-    html += `</div>`;
+    // Farmable drops section
+    if (farmableMounts.length > 0) {
+      html += `
+        <div class="mounts-section farmable-section">
+          <div class="section-header">
+            <i class="las la-crosshairs"></i>
+            <h3>Farmable from Drops (${farmableMounts.length} available)</h3>
+          </div>
+          <div class="mounts-grid">
+      `;
+
+      for (const mountData of farmableMounts) {
+        // Get the correct spell ID for Wowhead tooltips
+        const spellId = await getMountSpellId(mountData.id);
+
+        html += `
+          <div class="mount-item unowned" data-mount-id="${mountData.id}">
+            <div class="mount-icon-container">
+              <a href="https://www.wowhead.com/spell=${spellId}" target="_blank" data-wowhead="spell=${spellId}" class="mount-icon-link"></a>
+            </div>
+            <div class="mount-name-text">${mountData.name}</div>
+          </div>
+        `;
+      }
+
+      html += `
+          </div>
+        </div>
+      `;
+    }
 
     return html;
   }
