@@ -167,6 +167,10 @@ class TopBar {
           <i class="las la-trophy"></i>
           <span>Mythic+</span>
         </a>
+        <a href="events.html" class="nav-link${getActiveClass('events.html')}">
+          <i class="las la-calendar"></i>
+          <span>Events</span>
+        </a>
         <a href="gallery.html" class="nav-link${getActiveClass('gallery.html')}">
           <i class="las la-images"></i>
           <span>Gallery</span>
@@ -201,6 +205,10 @@ class TopBar {
         <a href="mythic-plus.html" class="mobile-nav-link${getActiveClass('mythic-plus.html')}">
           <i class="las la-trophy"></i>
           <span>Mythic+</span>
+        </a>
+        <a href="events.html" class="mobile-nav-link${getActiveClass('events.html')}">
+          <i class="las la-calendar"></i>
+          <span>Events</span>
         </a>
         <a href="gallery.html" class="mobile-nav-link${getActiveClass('gallery.html')}">
           <i class="las la-images"></i>

@@ -26,7 +26,8 @@
     "clean": "rm -rf dist/* && mkdir -p dist",
     "clean:console": "node clean-console.cjs",
     "capture:season": "node scripts/capture-season-data.js",
-    "generate:mounts": "node scripts/generate-mount-data.js"
+    "generate:mounts": "node scripts/generate-mount-data.js",
+    "generate:events": "node scripts/generate-events-data.js"
   },
   "keywords": [],
   "author": "Jonny Pyper",

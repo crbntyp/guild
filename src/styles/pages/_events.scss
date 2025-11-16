@@ -1,0 +1,401 @@
+// Events page styles
+
+#events-container {
+  max-width: 1290px;
+  width: 100%;
+  margin: 0 auto;
+  min-height: calc(100vh - 317px);
+
+  .events-header {
+    @include page-header;
+
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: #fff;
+      margin: 0;
+    }
+  }
+
+  #events-content {
+    padding: 20px 0;
+
+    .events-section {
+      margin-bottom: 48px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .section-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 24px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+
+        i {
+          font-size: 28px;
+          color: #e12e2c;
+        }
+
+        h2 {
+          font-size: 22px;
+          font-weight: 600;
+          color: #fff;
+          margin: 0;
+        }
+      }
+
+      .events-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+
+        @media (max-width: 768px) {
+          grid-template-columns: 1fr;
+        }
+
+        .event-card {
+          background: rgba(26, 26, 26, 0.4);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 12px;
+          padding: 20px;
+          display: flex;
+          gap: 16px;
+          transition: all 0.3s ease;
+          position: relative;
+          overflow: hidden;
+
+
+          &:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+          }
+
+          .event-icon {
+            width: 64px;
+            height: 64px;
+            background: rgba(225, 46, 44, 0.15);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+
+            i {
+              font-size: 32px;
+              color: #e12e2c;
+            }
+          }
+
+          .event-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+
+            .event-name {
+              font-size: 16px;
+              font-weight: 600;
+              color: #fff;
+              margin: 0;
+              line-height: 1.3;
+            }
+
+            .event-category {
+              font-size: 12px;
+              color: rgba(255, 255, 255, 0.5);
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            }
+
+            .event-countdown {
+              font-size: 14px;
+              font-weight: 600;
+              color: #e12e2c;
+              margin-top: auto;
+              padding-top: 8px;
+              border-top: 1px solid rgba(255, 255, 255, 0.05);
+            }
+          }
+
+          // Category-specific colors
+          &.category-holiday {
+            &::before {
+              background: linear-gradient(135deg, #a855f7, #ec4899);
+            }
+
+            .event-icon {
+              background: rgba(168, 85, 247, 0.15);
+
+              i {
+                color: #a855f7;
+              }
+            }
+
+            .event-countdown {
+              color: #a855f7;
+            }
+          }
+
+          &.category-recurring {
+            &::before {
+              background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            }
+
+            .event-icon {
+              background: rgba(59, 130, 246, 0.15);
+
+              i {
+                color: #3b82f6;
+              }
+            }
+
+            .event-countdown {
+              color: #3b82f6;
+            }
+          }
+
+          &.category-pvp {
+            &::before {
+              background: linear-gradient(135deg, #dc2626, #991b1b);
+            }
+
+            .event-icon {
+              background: rgba(220, 38, 38, 0.15);
+
+              i {
+                color: #dc2626;
+              }
+            }
+
+            .event-countdown {
+              color: #dc2626;
+            }
+          }
+
+          &.category-raid,
+          &.category-dungeon {
+            &::before {
+              background: linear-gradient(135deg, #f59e0b, #d97706);
+            }
+
+            .event-icon {
+              background: rgba(245, 158, 11, 0.15);
+
+              i {
+                color: #f59e0b;
+              }
+            }
+
+            .event-countdown {
+              color: #f59e0b;
+            }
+          }
+
+          &.category-anniversary {
+            &::before {
+              background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            }
+
+            .event-icon {
+              background: rgba(251, 191, 36, 0.15);
+
+              i {
+                color: #fbbf24;
+              }
+            }
+
+            .event-countdown {
+              color: #fbbf24;
+            }
+          }
+
+          &.category-remix {
+            &::before {
+              background: linear-gradient(135deg, #06b6d4, #0891b2);
+            }
+
+            .event-icon {
+              background: rgba(6, 182, 212, 0.15);
+
+              i {
+                color: #06b6d4;
+              }
+            }
+
+            .event-countdown {
+              color: #06b6d4;
+            }
+          }
+
+          &.category-bonus {
+            &::before {
+              background: linear-gradient(135deg, #ec4899, #db2777);
+            }
+
+            .event-icon {
+              background: rgba(236, 72, 153, 0.15);
+
+              i {
+                color: #ec4899;
+              }
+            }
+
+            .event-countdown {
+              color: #ec4899;
+            }
+          }
+
+          &.category-darkmoon {
+            &::before {
+              background: linear-gradient(135deg, #6366f1, #4f46e5);
+            }
+
+            .event-icon {
+              background: rgba(99, 102, 241, 0.15);
+
+              i {
+                color: #6366f1;
+              }
+            }
+
+            .event-countdown {
+              color: #6366f1;
+            }
+          }
+
+          &.category-racing {
+            &::before {
+              background: linear-gradient(135deg, #eab308, #ca8a04);
+            }
+
+            .event-icon {
+              background: rgba(234, 179, 8, 0.15);
+
+              i {
+                color: #eab308;
+              }
+            }
+
+            .event-countdown {
+              color: #eab308;
+            }
+          }
+
+          &.category-special {
+            &::before {
+              background: linear-gradient(135deg, #14b8a6, #0d9488);
+            }
+
+            .event-icon {
+              background: rgba(20, 184, 166, 0.15);
+
+              i {
+                color: #14b8a6;
+              }
+            }
+
+            .event-countdown {
+              color: #14b8a6;
+            }
+          }
+
+          &.category-other {
+            &::before {
+              background: linear-gradient(135deg, #10b981, #059669);
+            }
+
+            .event-icon {
+              background: rgba(16, 185, 129, 0.15);
+
+              i {
+                color: #10b981;
+              }
+            }
+
+            .event-countdown {
+              color: #10b981;
+            }
+          }
+        }
+      }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      color: rgba(255, 255, 255, 0.5);
+
+      i {
+        font-size: 64px;
+        margin-bottom: 20px;
+      }
+
+      h2 {
+        font-size: 24px;
+        color: #fff;
+        margin-bottom: 12px;
+      }
+
+      p {
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 24px;
+      }
+
+      .btn-primary {
+        display: inline-block;
+        padding: 12px 24px;
+        background: #e12e2c;
+        color: #fff;
+        text-decoration: none;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background: #c82826;
+          transform: translateY(-2px);
+        }
+      }
+
+      &.error-state {
+        i {
+          color: #e12e2c;
+        }
+      }
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  #events-container {
+    .events-header {
+      h1 {
+        font-size: 24px;
+      }
+    }
+
+    #events-content {
+      .events-section {
+        .section-header {
+          i {
+            font-size: 24px;
+          }
+
+          h2 {
+            font-size: 18px;
+          }
+        }
+      }
+    }
+  }
+}

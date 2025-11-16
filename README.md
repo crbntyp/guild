@@ -1,6 +1,6 @@
 # My Personal Warcraft
 
-A modern World of Warcraft companion application featuring guild roster management, character tracking, mount collection browsing, YouTube video curation, personal todos, M+ leaderboard and comp stat tracking, and a stunning background gallery. Built with vanilla JavaScript and the Battle.net API.
+A modern World of Warcraft companion application featuring guild roster management, character tracking, mount collection browsing, live event calendar, YouTube video curation, personal todos, M+ leaderboard and comp stat tracking, and a stunning background gallery. Built with vanilla JavaScript and the Battle.net API.
 
 ## 📸 Screenshots
 
@@ -123,6 +123,25 @@ A modern World of Warcraft companion application featuring guild roster manageme
 - Smart 404 filtering for out-of-rotation dungeons
 - Automatic data refresh and caching
 
+### 📅 Upcoming Events **NEW!**
+- Live event calendar scraped from Wowhead
+- **Real-time Tracking** - Shows current and upcoming events (next 2 weeks)
+- **Live Countdowns** - Auto-updating timers showing time remaining
+- **Smart Categorization** - 11 color-coded event types:
+  - 🎂 Anniversary - WoW's birthday celebrations
+  - 🔄 Remix Events - Limited-time remix content
+  - 🔁 Recurring - Timewalking and weekly dungeon events
+  - ⚔️ PvP Events - Battleground brawls and arenas
+  - 🎁 Holidays - Seasonal celebrations
+  - ⭐ Bonus Events - Weekly rotating bonus rewards
+  - 🎪 Darkmoon Faire - Monthly carnival
+  - 🏁 Racing Cups - Dragonriding competitions
+  - ⚡ Special Events - Unique limited-time events
+  - 🏰 Raids/Dungeons - End-game PvE content
+- **Static Database** - 177 events generated from Wowhead data
+- **No Auth Required** - Available to all visitors
+- Automatic filtering of placeholder/invalid events
+
 ## 🏗️ Architecture
 
 ### Modern Component-Based Design
@@ -215,6 +234,7 @@ src/
 │   │   └── mount-data.js            # Mount data utilities
 │   ├── main.js                      # Guild roster page
 │   ├── gallery.js                   # Gallery page
+│   ├── events.js                    # Events calendar page
 │   ├── my-todos.js                  # Todos page
 │   ├── my-youtube.js                # YouTube page
 │   ├── my-characters.js             # My characters page
@@ -232,6 +252,7 @@ src/
 ├── assets/                          # Icons and fonts
 ├── index.html                       # Guild roster
 ├── gallery.html                     # Gallery
+├── events.html                      # Events calendar
 ├── my-todos.html                    # Todos
 ├── my-youtube.html                  # YouTube
 ├── my-characters.html               # My characters
@@ -239,10 +260,12 @@ src/
 └── mythic-plus.html                 # Mythic+ leaderboards
 
 data/
-└── mounts-generated.json            # Generated mount database (1,481 mounts)
+├── mounts-generated.json            # Generated mount database (1,481 mounts)
+└── events-generated.json            # Generated events database (177 events)
 
 scripts/
-└── generate-mount-data.js           # Mount database generator script
+├── generate-mount-data.js           # Mount database generator script
+└── generate-events-data.js          # Events database generator script
 
 server.cjs                           # Express backend
 ```
@@ -305,6 +328,7 @@ npm run build:img       # Copy images
 npm run build:assets    # Copy assets
 npm run build:fonts     # Copy fonts
 npm run generate:mounts # Generate mount database from Battle.net API
+npm run generate:events # Generate events database from Wowhead
 ```
 
 ## 🔌 API Integration
