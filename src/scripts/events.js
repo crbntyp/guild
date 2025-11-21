@@ -108,7 +108,7 @@ class EventsPage {
         <div class="events-section">
           <div class="section-header">
             <i class="las la-calendar-check"></i>
-            <h2>Active Now (${this.currentEvents.length})</h2>
+            <h3>Active Now (${this.currentEvents.length})</h3>
           </div>
           <div class="events-grid">
       `;
@@ -129,7 +129,7 @@ class EventsPage {
         <div class="events-section">
           <div class="section-header">
             <i class="las la-clock"></i>
-            <h2>Starting Soon (${this.upcomingEvents.length})</h2>
+            <h3>Starting Soon (${this.upcomingEvents.length})</h3>
           </div>
           <div class="events-grid">
       `;
@@ -149,7 +149,7 @@ class EventsPage {
       html = `
         <div class="empty-state">
           <i class="las la-calendar-times"></i>
-          <h2>No Active Events</h2>
+          <h3>No Active Events</h3>
           <p>There are no active or upcoming events in the next 2 weeks.</p>
         </div>
       `;
@@ -353,7 +353,7 @@ class EventsPage {
     this.container.innerHTML = `
       <div class="empty-state error-state">
         <i class="las la-exclamation-triangle"></i>
-        <h2>Error Loading Events</h2>
+        <h3>Error Loading Events</h3>
         <p>${error.message || 'An error occurred while loading events.'}</p>
         <button class="btn-primary" onclick="window.location.reload()">Try Again</button>
       </div>

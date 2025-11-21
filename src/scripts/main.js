@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           <img src="img/app-guild.png" alt="App Logo" />
         </div>
         <div class="info-header">
-          <h2>Guild</h2>
+          <h2>gld__</h2>
         </div>
 
         <p>An app to serve your day to day, build todos for your adventures, add your favourite youtube channels for talents, expansions and whatever else! <br /><br />Get started and login with your BNet account <i class="las la-heart"></i></p>

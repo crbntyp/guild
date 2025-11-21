@@ -6,14 +6,6 @@
   margin: 0 auto;
   min-height: calc(100vh - 317px);
 
-  .youtube-header {
-    @include page-header;
-
-    .btn-add-channel {
-      @include page-action-button;
-    }
-  }
-
   // Channels
   .youtube-channels {
     .empty-state {
@@ -229,25 +221,6 @@
 // Responsive
 @media (max-width: 768px) {
   #my-youtube-container {
-
-    .youtube-header {
-      flex-direction: column;
-      gap: 8px;
-      align-items: flex-start;
-      margin-bottom: 12px;
-      padding: 12px 0px;
-
-      .youtube-header-info {
-        .info-description {
-          margin-bottom: 12px;
-        }
-      }
-
-      h1 {
-        font-size: 22px;
-      }
-    }
-
     .youtube-channels {
       .channel-row {
         margin-bottom: 20px;

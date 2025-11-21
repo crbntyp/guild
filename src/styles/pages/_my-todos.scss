@@ -6,13 +6,6 @@
   margin: 0 auto;
   min-height: calc(100vh - 317px);
 
-  .todos-header {
-    @include page-header;
-
-    .btn-add-todo {
-      @include page-action-button;
-    }
-  }
 
   // Masonry Grid
   .todos-grid {
@@ -134,10 +127,11 @@
         }
       }
 
-      .todo-edit {
+      .todo-edit,
+      .todo-complete {
         background: none;
         border: none;
-        color: white;
+        color: #e12e2c;
         font-size: 16px;
         cursor: pointer;
         padding: 0;
@@ -148,24 +142,6 @@
 
         &:hover {
           color: #c82826;
-          transform: scale(1.1);
-        }
-      }
-
-      .todo-complete {
-        background: none;
-        border: none;
-        color: #00ff96;
-        font-size: 16px;
-        cursor: pointer;
-        padding: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s ease;
-
-        &:hover {
-          color: #00e085;
           transform: scale(1.1);
         }
       }
@@ -189,18 +165,3 @@
   }
 }
 
-// Responsive
-@media (max-width: 768px) {
-  #todos-container {
-
-    .todos-header {
-      flex-direction: column;
-      gap: 16px;
-      align-items: flex-start;
-
-      h1 {
-        font-size: 24px;
-      }
-    }
-  }
-}

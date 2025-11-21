@@ -27,21 +27,22 @@ class PageHeader {
     } = options;
 
     const actionButtonHTML = actionButton ? `
-      <button class="${actionButton.id}" id="${actionButton.id}">
+      <button class="page-header-action ${actionButton.id}" id="${actionButton.id}">
         <i class="las ${actionButton.icon}"></i>
         <span>${actionButton.text}</span>
       </button>
     ` : '';
 
     return `
-      <div class="${className}-header">
-        <div class="${className}-header-info">
-          <div class="${className}-header-top">
+      <div class="${className}-header page-header-panel">
+        <div class="page-header-content">
+          <div class="page-header-text">
             <h1>${title}</h1>
-            ${actionButtonHTML}
+            <p class="page-header-desc">${description}</p>
           </div>
-          <span class="info-description">${description}</span>
+          ${actionButtonHTML}
         </div>
+        <div class="page-header-border"></div>
       </div>
     `;
   }

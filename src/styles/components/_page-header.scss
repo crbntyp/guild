@@ -1,0 +1,123 @@
+// Page Header Panel - Fantasy Gaming UI
+// A balanced, asymmetric header with integrated action button
+
+.page-header-panel {
+  position: relative;
+  margin-bottom: 32px;
+  padding: 24px 0;
+
+  .page-header-content {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 32px;
+  }
+
+  .page-header-text {
+    flex: 1;
+    min-width: 0;
+
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #fff;
+      margin: 0 0 8px 0;
+      line-height: 1.2;
+
+      // Subtle text shadow for depth
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    .page-header-desc {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.5);
+      margin: 0;
+      line-height: 1.5;
+      max-width: 600px;
+    }
+  }
+
+  // Action button - subtle charcoal style
+  .page-header-action {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    color: white;
+    font-family: 'Muli', sans-serif;
+    font-size: 12px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    i {
+      font-size: 14px;
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+
+  // Bottom border with gradient fade
+  .page-header-border {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    border-bottom: 1px solid rgba(white, 0.1);
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .page-header-panel {
+    padding: 20px 0;
+    margin-bottom: 24px;
+
+    .page-header-content {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 20px;
+    }
+
+    .page-header-text {
+      text-align: center;
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .page-header-desc {
+        max-width: none;
+      }
+    }
+
+    .page-header-action {
+      align-self: center;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header-panel {
+    .page-header-text h1 {
+      font-size: 20px;
+    }
+
+    .page-header-action {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}

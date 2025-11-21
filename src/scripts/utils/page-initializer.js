@@ -6,6 +6,7 @@
 import TopBar from '../components/top-bar.js';
 import Footer from '../components/footer.js';
 import BackgroundRotator from '../components/background-rotator.js';
+import FireEffect from '../components/fire-effect.js';
 import authService from '../services/auth.js';
 import backgrounds from '../data/backgrounds.js';
 
@@ -45,6 +46,9 @@ class PageInitializer {
     // Initialize background rotator
     const bgRotator = new backgroundRotatorClass(bgImages, backgroundInterval, backgroundFadeTime);
     bgRotator.init();
+
+    // Initialize fire effect
+    FireEffect.init();
 
     // Check authentication if required
     if (requireAuth && !authService.isAuthenticated()) {

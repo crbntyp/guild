@@ -6,16 +6,6 @@
   margin: 0 auto;
   min-height: calc(100vh - 317px);
 
-  .events-header {
-    @include page-header;
-
-    h1 {
-      font-size: 32px;
-      font-weight: 700;
-      color: #fff;
-      margin: 0;
-    }
-  }
 
   #events-content {
     padding: 20px 0;
@@ -30,18 +20,18 @@
       .section-header {
         display: flex;
         align-items: center;
+        justify-content: center;
         gap: 12px;
-        margin-bottom: 24px;
+        margin-bottom: 20px;
         padding-bottom: 12px;
-        border-bottom: 2px solid rgba(255, 255, 255, 0.1);
 
         i {
-          font-size: 28px;
+          font-size: 24px;
           color: #e12e2c;
         }
 
-        h2 {
-          font-size: 22px;
+        h3 {
+          font-size: 18px;
           font-weight: 600;
           color: #fff;
           margin: 0;
@@ -391,7 +381,7 @@
             font-size: 24px;
           }
 
-          h2 {
+          h3 {
             font-size: 18px;
           }
         }
