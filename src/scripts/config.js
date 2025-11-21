@@ -13,7 +13,7 @@ const config = {
       ? 'http://localhost:8080/'
       : window.location.hostname.startsWith('192.168.')
         ? `http://${window.location.host}/`
-        : 'https://carbontype.co/guild/',
+        : 'https://www.crbntyp.com/gld/',
 
     // API endpoints by region
     endpoints: {
