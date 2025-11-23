@@ -1,4 +1,4 @@
-name: Deploy to FTP
+name: Deploy to SSH
 
 on:
   push:
@@ -25,32 +25,18 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Deploy to FTP via lftp
-        env:
-          FTP_HOST: ${{ secrets.FTP_SERVER }}
-          FTP_USER: ${{ secrets.FTP_USERNAME }}
-          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+      - name: Setup SSH key
         run: |
-          sudo apt-get update
-          sudo apt-get install -y lftp
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
-          # Create .netrc file for credentials (handles special chars properly)
-          cat > ~/.netrc <<NETRC
-          machine ${FTP_HOST}
-          login ${FTP_USER}
-          password ${FTP_PASS}
-          NETRC
-          chmod 600 ~/.netrc
-
-          echo "Attempting FTP connection to: ${FTP_HOST}"
-          echo "Username: ${FTP_USER}"
-
-          lftp ${FTP_HOST} <<EOF
-          set ftp:ssl-allow no
-          set ftp:passive-mode on
-          mkdir -f gld
-          cd gld
-          lcd ./dist
-          mirror --reverse --verbose --exclude .git/ --exclude node_modules/
-          bye
-          EOF
+      - name: Deploy via rsync
+        run: |
+          rsync -avz \
+            --exclude '.git/' \
+            --exclude 'node_modules/' \
+            --exclude '.DS_Store' \
+            ./dist/ \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/crbntyp/gld/
