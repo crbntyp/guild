@@ -1,5 +1,24 @@
 // Font imported from Google Fonts in HTML
 
+// Britanica Font (for crbntyp logo)
+@font-face {
+  font-family: "Britanica";
+  src: url("../fonts/britanica-bold.woff2") format("woff2"),
+       url("../fonts/britanica-bold.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Britanica";
+  src: url("../fonts/britanica-extra-bold.woff2") format("woff2"),
+       url("../fonts/britanica-extra-bold.woff") format("woff");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
 // Mixins (must be imported first for use in other files)
 @import 'mixins';
 

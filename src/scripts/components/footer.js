@@ -22,10 +22,7 @@ class Footer {
   render(container) {
     container.innerHTML = `
       <section class="credit">
-        <div class="logo">
-          <img src="img/logo.png" />
-          crbntyp
-        </div>
+        <span class="credit-logo">crbntyp</span>
       </section>
 
       <footer class="footer">

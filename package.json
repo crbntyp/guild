@@ -10,7 +10,7 @@
     "build:js:prod": "node build-prod.cjs",
     "build:img": "cpx \"src/img/**/*\" dist/img",
     "build:assets": "cpx \"src/assets/**/*\" dist/assets",
-    "build:fonts": "cpx \"node_modules/line-awesome/dist/line-awesome/fonts/**/*\" dist/fonts",
+    "build:fonts": "cpx \"node_modules/line-awesome/dist/line-awesome/fonts/**/*\" dist/fonts && cpx \"src/fonts/**/*\" dist/fonts",
     "build:data": "cpx \"data/**/*\" dist/data",
     "build": "npm run build:scss && npm run build:html && npm run build:js && npm run build:img && npm run build:assets && npm run build:fonts && npm run build:data",
     "build:prod": "npm run build:scss && npm run build:html && npm run build:js:prod && npm run build:img && npm run build:assets && npm run build:fonts && npm run build:data",
