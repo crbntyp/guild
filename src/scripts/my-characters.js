@@ -5,6 +5,7 @@ import PageInitializer from './utils/page-initializer.js';
 import CustomDropdown from './components/custom-dropdown.js';
 import characterModal from './components/character-modal.js';
 import CharacterCard from './components/character-card.js';
+import imagePreviewModal from './components/image-preview-modal.js';
 import config from './config.js';
 import { getClassName, getClassColor } from './utils/wow-constants.js';
 import { getClassIconUrl } from './utils/wow-icons.js';
@@ -347,10 +348,32 @@ async function loadAvatar(card, character) {
       const avatarAsset = media.assets.find(asset => asset.key === 'avatar');
       const imageUrl = insetAsset?.value || avatarAsset?.value;
 
+      // Get full render image for preview modal (main-raw or main)
+      const mainRawAsset = media.assets.find(asset => asset.key === 'main-raw');
+      const mainAsset = media.assets.find(asset => asset.key === 'main');
+      const fullRenderUrl = mainRawAsset?.value || mainAsset?.value || insetAsset?.value;
+
       if (imageUrl) {
         const img = new Image();
         img.onload = () => {
-          placeholder.innerHTML = `<img src="${imageUrl}" alt="${character.name}" class="character-avatar-img" />`;
+          placeholder.innerHTML = `
+            <img src="${imageUrl}" alt="${character.name}" class="character-avatar-img" />
+            <button class="magnify-icon" aria-label="View full character render" data-magnify data-full-render="${fullRenderUrl || ''}">
+              <i class="las la-search-plus"></i>
+            </button>
+          `;
+
+          // Add click handler for magnify icon
+          const magnifyBtn = placeholder.querySelector('.magnify-icon');
+          if (magnifyBtn && fullRenderUrl) {
+            magnifyBtn.addEventListener('click', (e) => {
+              e.stopPropagation(); // Prevent card click (opening character modal)
+              imagePreviewModal.open(fullRenderUrl, `${character.name} - Full Render`);
+            });
+          } else if (magnifyBtn) {
+            // Hide magnify if no full render available
+            magnifyBtn.style.display = 'none';
+          }
         };
         img.onerror = () => {
           // Hide card on 403/404 (privacy settings or invalid character)

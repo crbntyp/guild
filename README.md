@@ -56,6 +56,7 @@ A modern World of Warcraft companion application featuring guild roster manageme
   - Full equipment display with quality-colored borders
   - Item icons with hover tooltips
   - Character stats and specialization
+  - **Mythic+ Progression Tab** - Current season dungeon stats with key level, time, and timer bonus
   - Interactive modal with backdrop blur
 
 ### 🎬 YouTube Video Manager (Auth Required)
@@ -90,6 +91,7 @@ A modern World of Warcraft companion application featuring guild roster manageme
 - Guild rank display for guild members
 - Same advanced filtering as guild roster
 - Quick access to character details
+- **Full-Size Image Preview** - Magnify icon opens lightbox with full-body 3D render
 
 ### 🐎 My Mounts (Auth Required) **NEW!**
 - Browse your personal mount collection
@@ -412,6 +414,15 @@ WoW class colors are centralized in `src/scripts/utils/wow-constants.js` using o
 - ~18-20% CSS size reduction
 
 ## 📋 Changelog
+
+### 2025-12-17
+- **Character Modal Enhancements** 🔍
+  - Added full-size character image preview (magnify icon opens lightbox with full-body 3D render)
+  - Added Mythic+ Progression tab to character modal
+  - Shows current season dungeons with key level, completion time, and timer bonus
+  - Rating display with Blizzard color scheme
+  - Dungeon cards with background images from journal instance media
+  - Characters with no M+ activity show all dungeons with placeholder values
 
 ### 2025-11-15
 - **My Mounts Feature** 🐎

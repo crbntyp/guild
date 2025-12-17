@@ -347,6 +347,27 @@ class WoWAPI {
     }
   }
 
+  // Get character mythic keystone season details (best runs for a specific season)
+  async getCharacterMythicKeystoneSeasonDetails(realmSlug, characterName, seasonId) {
+    const encodedName = encodeURIComponent(characterName.toLowerCase());
+    const endpoint = `/profile/wow/character/${realmSlug}/${encodedName}/mythic-keystone-profile/season/${seasonId}`;
+
+    try {
+      const data = await battlenetClient.request(endpoint, {
+        params: {
+          namespace: config.api.namespace.profile
+        }
+      });
+      return data;
+    } catch (error) {
+      // Don't log 404s - they're expected for characters without M+ data for that season
+      if (error.status !== 404) {
+        console.error(`Error fetching mythic keystone season ${seasonId} for ${characterName}:`, error);
+      }
+      throw error;
+    }
+  }
+
   // Get journal instance (raid) media
   async getJournalInstanceMedia(instanceId) {
     const endpoint = `/data/wow/media/journal-instance/${instanceId}`;

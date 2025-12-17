@@ -1129,7 +1129,7 @@ guild: {
 
 ---
 
-**Last Updated:** 2025-11-15
+**Last Updated:** 2025-12-17
 **Application Version:** 1.0.0
 **Author:** Jonny Pyper (carbontype)
 
@@ -1410,3 +1410,167 @@ npm run generate:mounts
 - Monitor new mount IDs from latest expansion
 - Update `getExpansionFromId()` thresholds in generate-mount-data.js
 - Re-run generation script after updates
+
+---
+
+## Character Modal Enhancements (Added 2025-12-17)
+
+### Overview
+
+Two new features added to the character modal on both guild roster and my-characters pages:
+
+1. **Full-Size Character Image Preview** - Magnify glass icon opens a lightbox modal with the full-body character render
+2. **Mythic+ Progression Tab** - New tab showing current season dungeon stats for each character
+
+### Feature 1: Full-Size Character Image Preview
+
+**Purpose:** Allow users to view their character's full-body 3D render in a large lightbox overlay.
+
+**Files Added:**
+- `src/scripts/components/image-preview-modal.js` - Singleton lightbox modal component
+- `src/styles/components/_image-preview-modal.scss` - Lightbox styles + magnify icon styles
+
+**Files Modified:**
+- `src/scripts/components/character-card.js` - Added magnify icon button in avatar placeholder
+- `src/scripts/my-characters.js` - Added import, updated `loadAvatar()` to extract full render URL and attach click handler
+- `src/styles/main.scss` - Added import for image-preview-modal styles
+
+**How It Works:**
+1. When character avatar loads, the magnify icon appears on hover (bottom-right corner)
+2. `loadAvatar()` extracts the `main-raw` or `main` asset from the character media API response
+3. Clicking the magnify icon opens the `imagePreviewModal` singleton
+4. Modal displays the full-body render in a centered lightbox with dark backdrop
+5. Close via X button, clicking backdrop, or pressing Escape key
+
+**Character Media Assets (Battle.net API):**
+- `avatar` - Small square avatar
+- `inset` - Bust/portrait (used in character cards)
+- `main` - Full body render with class background
+- `main-raw` - Full body render transparent (PNG) - preferred
+
+**Component Structure:**
+```javascript
+class ImagePreviewModal {
+  constructor()     // Initialize singleton
+  init()           // Create modal DOM element
+  open(url, alt)   // Open with image URL
+  close()          // Close modal
+  handleKeydown()  // Escape key handler
+}
+```
+
+**SCSS Styles:**
+- `.image-preview-modal` - Full-screen overlay (z-index: 10001, above character modal)
+- `.image-preview-backdrop` - Dark backdrop with blur (rgba(0,0,0,0.92))
+- `.image-preview-content` - Centered container with scale animation
+- `.image-preview-img` - Max 90vw/85vh, object-fit contain
+- `.magnify-icon` - Hover-visible icon on character cards
+
+### Feature 2: Mythic+ Progression Tab
+
+**Purpose:** Display character-specific Mythic+ dungeon stats for the current season directly in the character modal.
+
+**Files Modified:**
+- `src/scripts/api/wow-api.js` - Added `getCharacterMythicKeystoneSeasonDetails()` method
+- `src/scripts/components/character-modal.js` - Added M+ tab, pane, and `loadMythicPlusProgression()` method
+- `src/styles/components/_character-modal.scss` - Added `.modal-mythic-plus` styles
+
+**How It Works:**
+1. New tab button (key icon) added to modal tab bar
+2. When modal opens, `loadMythicPlusProgression()` is called
+3. Fetches character's M+ profile from Battle.net API
+4. Fetches season-specific details to get `best_runs` array
+5. Displays all current season dungeons (8 for TWW S3) with character's stats
+6. Characters with no M+ activity show all dungeons with "-" and "--:--"
+
+**API Endpoints Used:**
+- `GET /profile/wow/character/{realm}/{name}/mythic-keystone-profile` - Base profile with seasons list and overall rating
+- `GET /profile/wow/character/{realm}/{name}/mythic-keystone-profile/season/{seasonId}` - Season details with `best_runs` array
+- `GET /data/wow/mythic-keystone/dungeon/index` - Current season dungeons list
+
+**Data Structure (Season Details Response):**
+```javascript
+{
+  best_runs: [
+    {
+      dungeon: { id: 378, name: "Halls of Atonement" },
+      keystone_level: 15,
+      duration: 1845000,        // milliseconds
+      keystone_upgrades: 2      // 0-3 timer bonus
+    }
+  ]
+}
+```
+
+**Current Season Dungeons (TWW Season 3):**
+- Halls of Atonement (378)
+- Tazavesh: Streets of Wonder (391)
+- Tazavesh: So'leah's Gambit (392)
+- Priory of the Sacred Flame (499)
+- Ara-Kara, City of Echoes (503)
+- The Dawnbreaker (505)
+- Operation: Floodgate (525)
+- Eco-Dome Al'dani (542)
+
+**Display Elements:**
+- **Rating display** - Overall M+ rating with Blizzard color scheme
+- **Dungeon cards** - Background image, name, stats
+- **Key level badge** - Color-coded: orange (15+), purple (10-14), blue (<10)
+- **Completion time** - Formatted as mm:ss
+- **Timer bonus** - +++ (gold), ++ (silver), + (bronze), - (depleted)
+
+**Rating Color Scheme (matches Blizzard):**
+```javascript
+getMythicRatingColor(rating) {
+  if (rating >= 3000) return '#ff8000'; // Orange
+  if (rating >= 2500) return '#a335ee'; // Purple
+  if (rating >= 2000) return '#0070dd'; // Blue
+  if (rating >= 1500) return '#1eff00'; // Green
+  if (rating >= 750) return '#ffffff';  // White
+  return 'rgba(255, 255, 255, 0.5)';   // Gray
+}
+```
+
+**SCSS Structure:**
+```scss
+.modal-mythic-plus {
+  .mythic-plus-rating     // Rating display box
+  .dungeons-list          // Dungeon cards container
+  .dungeon-instance       // Individual dungeon card
+    .dungeon-background-overlay
+    .dungeon-content
+      .dungeon-name
+      .dungeon-stats
+        .dungeon-key-level  // Colored badge
+        .dungeon-time       // mm:ss format
+        .timer-bonus        // +++/++/+/-
+}
+```
+
+### Dungeon to Journal Instance Mapping
+
+For background images, dungeon IDs are mapped to journal instance IDs:
+```javascript
+const dungeonToJournal = {
+  378: 1185,   // Halls of Atonement
+  391: 1194,   // Tazavesh: Streets of Wonder
+  392: 1194,   // Tazavesh: So'leah's Gambit
+  499: 1267,   // Priory of the Sacred Flame
+  503: 1271,   // Ara-Kara, City of Echoes
+  505: 1270,   // The Dawnbreaker
+  525: 1298,   // Operation: Floodgate
+  542: 1303    // Eco-Dome Al'dani
+};
+```
+
+### Maintenance Notes
+
+**Updating for New Seasons:**
+1. Update `currentSeasonDungeonIds` array in `character-modal.js`
+2. Update `dungeonToJournal` mapping with new dungeon→journal instance IDs
+3. Background images are fetched from journal instance media API
+
+**API Quirks:**
+- Base M+ profile returns seasons as `[{key: {...}, id: 15}]` - id is directly on object, not nested
+- Must fetch season-specific endpoint to get actual `best_runs` data
+- Rating is at `current_mythic_rating.rating` in base profile

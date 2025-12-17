@@ -83,6 +83,9 @@ class CharacterCard {
 
         <div class="character-avatar-placeholder">
           <i class="las la-spinner la-spin loading-spinner"></i>
+          <button class="magnify-icon" aria-label="View full character render" data-magnify>
+            <i class="las la-search-plus"></i>
+          </button>
         </div>
 
         <div class="member-header">

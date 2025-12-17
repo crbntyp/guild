@@ -231,6 +231,16 @@ class CharacterModal {
               </div>
             </div>
           </div>
+
+          <div class="modal-content-pane" data-pane="mythicplus">
+            <div class="modal-mythic-plus">
+              <h3>Mythic+ Progression</h3>
+              <div class="mythic-plus-loading">
+                <i class="las la-circle-notch la-spin"></i>
+                <span>Loading...</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     `;
@@ -259,6 +269,10 @@ class CharacterModal {
            <i class="las la-dragon"></i>
            <span class="modal-tab-tooltip">Raid Progression</span>
         </button>
+        <button class="modal-tab-btn" data-tab="mythicplus">
+           <i class="las la-key"></i>
+           <span class="modal-tab-tooltip">Mythic+</span>
+        </button>
       </div>
     `;
     modalWrapper.insertAdjacentHTML('beforeend', buttonsHTML);
@@ -266,10 +280,11 @@ class CharacterModal {
     // Initialize tab switching
     this.initializeTabSwitching();
 
-    // Load item icons, enchant icons, and raid progression
+    // Load item icons, enchant icons, raid progression, and M+ progression
     this.loadItemIcons(equipment);
     this.loadEnchantIcons();
     this.loadRaidProgression(character.realm?.slug || realm, character.name);
+    this.loadMythicPlusProgression(character.realm?.slug || realm, character.name);
 
     // Refresh Wowhead tooltips after modal loads
     setTimeout(() => {
@@ -868,6 +883,194 @@ class CharacterModal {
         }
       } catch (error) {
         console.error('Error loading raid background for instance', instanceId, ':', error);
+      }
+    }
+  }
+
+  /**
+   * Load Mythic+ progression data
+   */
+  async loadMythicPlusProgression(realmSlug, characterName) {
+    const container = this.modal.querySelector('.modal-mythic-plus');
+    if (!container) return;
+
+    try {
+      // Fetch current season dungeons list
+      const dungeonIndex = await wowAPI.getMythicKeystoneDungeons();
+      const currentDungeons = dungeonIndex?.dungeons || [];
+
+      // Fetch character's M+ profile
+      let mplusProfile = null;
+      let characterBestRuns = [];
+      let overallRating = 0;
+
+      try {
+        mplusProfile = await wowAPI.getCharacterMythicKeystoneProfile(realmSlug, characterName);
+
+        // Get overall rating from profile
+        overallRating = mplusProfile?.current_mythic_rating?.rating ||
+                       mplusProfile?.mythic_rating?.rating || 0;
+
+        // The base profile returns seasons with links - we need to fetch the season details
+        // to get the actual best_runs data
+        if (mplusProfile?.seasons?.length > 0) {
+          // Find current season (highest ID) - id is directly on the season object
+          const currentSeasonRef = mplusProfile.seasons.reduce((max, s) =>
+            (s.id || 0) > (max?.id || 0) ? s : max, null);
+
+          if (currentSeasonRef?.id) {
+            try {
+              // Fetch the detailed season data which contains best_runs
+              const seasonDetails = await wowAPI.getCharacterMythicKeystoneSeasonDetails(
+                realmSlug, characterName, currentSeasonRef.id
+              );
+
+              if (seasonDetails?.best_runs) {
+                characterBestRuns = seasonDetails.best_runs;
+              }
+            } catch (seasonError) {
+              // Silently fail - character may not have data for this season
+            }
+          }
+        }
+      } catch (error) {
+        // Character has no M+ data - continue with empty data
+      }
+
+      // TWW Season 3 dungeon to Journal Instance mapping for backgrounds
+      const dungeonToJournal = {
+        378: 1185,   // Halls of Atonement
+        391: 1194,   // Tazavesh: Streets of Wonder
+        392: 1194,   // Tazavesh: So'leah's Gambit
+        499: 1267,   // Priory of the Sacred Flame
+        503: 1271,   // Ara-Kara, City of Echoes
+        505: 1270,   // The Dawnbreaker
+        525: 1298,   // Operation: Floodgate
+        542: 1303    // Eco-Dome Al'dani
+      };
+
+      // Current season dungeon IDs (TWW Season 3)
+      const currentSeasonDungeonIds = [378, 391, 392, 499, 503, 505, 525, 542];
+
+      // Filter to only current season dungeons
+      const seasonDungeons = currentDungeons.filter(d => currentSeasonDungeonIds.includes(d.id));
+
+      // Build dungeon cards for current season dungeons only
+      const dungeonsHTML = seasonDungeons.map(dungeon => {
+        // Find character's best run for this dungeon
+        const bestRun = characterBestRuns.find(run =>
+          run.dungeon?.id === dungeon.id
+        );
+
+        const keyLevel = bestRun?.keystone_level || 0;
+        const duration = bestRun?.duration || 0;
+        const upgrades = bestRun?.keystone_upgrades || 0; // 0-3 for timer bonus
+
+        // Format duration (milliseconds to mm:ss)
+        let timeStr = '--:--';
+        if (duration > 0) {
+          const totalSeconds = Math.floor(duration / 1000);
+          const minutes = Math.floor(totalSeconds / 60);
+          const seconds = totalSeconds % 60;
+          timeStr = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Determine badge color based on key level
+        let badgeClass = '';
+        if (keyLevel >= 15) badgeClass = 'mythic-badge-high';
+        else if (keyLevel >= 10) badgeClass = 'mythic-badge-mid';
+        else if (keyLevel > 0) badgeClass = 'mythic-badge-low';
+
+        // Timer upgrade indicators
+        let timerIndicator = '';
+        if (keyLevel > 0) {
+          if (upgrades >= 3) timerIndicator = '<span class="timer-bonus gold">+++</span>';
+          else if (upgrades === 2) timerIndicator = '<span class="timer-bonus silver">++</span>';
+          else if (upgrades === 1) timerIndicator = '<span class="timer-bonus bronze">+</span>';
+          else timerIndicator = '<span class="timer-bonus depleted">-</span>';
+        }
+
+        const journalId = dungeonToJournal[dungeon.id] || '';
+
+        return `
+          <div class="dungeon-instance" data-dungeon-id="${dungeon.id}" data-journal-id="${journalId}">
+            <div class="dungeon-background-overlay"></div>
+            <div class="dungeon-content">
+              <div class="dungeon-name">${dungeon.name}</div>
+              <div class="dungeon-stats">
+                <div class="dungeon-key-level ${badgeClass}">
+                  ${keyLevel > 0 ? `+${keyLevel}` : '-'}
+                </div>
+                <div class="dungeon-time">${timeStr}</div>
+                ${timerIndicator}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Rating color (matches Blizzard's color scheme)
+      const ratingColor = this.getMythicRatingColor(overallRating);
+
+      container.innerHTML = `
+        <h3>Mythic+ Progression</h3>
+        <div class="mythic-plus-rating" style="color: ${ratingColor}">
+          <span class="rating-label">Rating</span>
+          <span class="rating-value">${Math.round(overallRating)}</span>
+        </div>
+        <div class="dungeons-list">${dungeonsHTML}</div>
+      `;
+
+      // Load dungeon backgrounds
+      this.loadDungeonIcons();
+
+    } catch (error) {
+      console.error('Error loading M+ progression:', error);
+      container.innerHTML = `
+        <h3>Mythic+ Progression</h3>
+        <div class="no-mythic-data">
+          <p>No Mythic+ data available</p>
+        </div>
+      `;
+    }
+  }
+
+  /**
+   * Get color for M+ rating (matches Blizzard's color scheme)
+   */
+  getMythicRatingColor(rating) {
+    if (rating >= 3000) return '#ff8000'; // Orange (very high)
+    if (rating >= 2500) return '#a335ee'; // Purple (epic)
+    if (rating >= 2000) return '#0070dd'; // Blue (rare)
+    if (rating >= 1500) return '#1eff00'; // Green (uncommon)
+    if (rating >= 750) return '#ffffff';  // White (common)
+    return 'rgba(255, 255, 255, 0.5)';    // Gray (no rating)
+  }
+
+  /**
+   * Load dungeon background images asynchronously
+   */
+  async loadDungeonIcons() {
+    const dungeonInstances = this.modal.querySelectorAll('.dungeon-instance[data-journal-id]');
+
+    for (const dungeonInstance of dungeonInstances) {
+      const journalId = dungeonInstance.dataset.journalId;
+
+      if (!journalId) continue;
+
+      try {
+        const mediaData = await wowAPI.getJournalInstanceMedia(parseInt(journalId));
+
+        if (mediaData?.assets && mediaData.assets.length > 0) {
+          const tileAsset = mediaData.assets.find(asset => asset.key === 'tile');
+
+          if (tileAsset?.value) {
+            dungeonInstance.style.backgroundImage = `url('${tileAsset.value}')`;
+            dungeonInstance.classList.add('has-background');
+          }
+        }
+      } catch (error) {
+        console.error('Error loading dungeon background for journal', journalId, ':', error);
       }
     }
   }
