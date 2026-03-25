@@ -58,6 +58,7 @@ export function clearRosterState(guildRoster) {
   guildRoster.roster = null;
   guildRoster.itemLevels.clear();
   guildRoster.genders.clear();
+  guildRoster.lastLogins.clear();
   guildRoster.invalidCharacters.clear();
   guildRoster.characterSpecs.clear();
 }

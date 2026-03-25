@@ -21,8 +21,12 @@ class GuildRoster {
     this.searchTerm = '';
     this.itemLevels = new Map(); // Store item levels for sorting
     this.genders = new Map(); // Store character genders
+    this.lastLogins = new Map(); // Store last login timestamps
     this.invalidCharacters = new Set(); // Track characters that return 404
     this.characterSpecs = new Map(); // Store character specs
+
+    // Midnight expansion launch date - characters not logged in since have stale ilvl data
+    this.MIDNIGHT_LAUNCH = new Date('2026-03-02T00:00:00Z').getTime();
     this.sortDropdown = null; // Custom dropdown for sorting
     this.classDropdown = null; // Custom dropdown for class filter
 
@@ -34,6 +38,24 @@ class GuildRoster {
   // Helper to create unique character key (name + realm)
   getCharacterKey(characterName, realmSlug) {
     return `${characterName.toLowerCase()}-${realmSlug}`;
+  }
+
+  // Compare two roster members by ilvl, deprioritizing stale pre-Midnight characters
+  compareByIlvl(a, b) {
+    const realmA = a.character.realm?.slug || config.guild.realmSlug;
+    const realmB = b.character.realm?.slug || config.guild.realmSlug;
+    const keyA = this.getCharacterKey(a.character.name, realmA);
+    const keyB = this.getCharacterKey(b.character.name, realmB);
+
+    const staleA = (this.lastLogins.get(keyA) || 0) < this.MIDNIGHT_LAUNCH;
+    const staleB = (this.lastLogins.get(keyB) || 0) < this.MIDNIGHT_LAUNCH;
+
+    // Stale characters always sort below active ones
+    if (staleA !== staleB) return staleA ? 1 : -1;
+
+    const ilvlA = this.itemLevels.get(keyA) || 0;
+    const ilvlB = this.itemLevels.get(keyB) || 0;
+    return ilvlB - ilvlA;
   }
 
   async load() {
@@ -57,6 +79,7 @@ class GuildRoster {
         // Restore cached enriched data BEFORE getting roster
         this.itemLevels = cachedEnrichedData.itemLevels;
         this.genders = cachedEnrichedData.genders;
+        this.lastLogins = cachedEnrichedData.lastLogins || new Map();
         this.invalidCharacters = cachedEnrichedData.invalidCharacters;
         this.characterSpecs = cachedEnrichedData.characterSpecs || new Map();
 
@@ -67,15 +90,7 @@ class GuildRoster {
 
         // Sort by ilvl if needed (now that we have cached item levels)
         if (this.sortBy === 'ilvl' && this.itemLevels.size > 0) {
-          this.roster.sort((a, b) => {
-            const realmA = a.character.realm?.slug || config.guild.realmSlug;
-            const realmB = b.character.realm?.slug || config.guild.realmSlug;
-            const keyA = this.getCharacterKey(a.character.name, realmA);
-            const keyB = this.getCharacterKey(b.character.name, realmB);
-            const ilvlA = this.itemLevels.get(keyA) || 0;
-            const ilvlB = this.itemLevels.get(keyB) || 0;
-            return ilvlB - ilvlA; // Descending order (highest ilvl first)
-          });
+          this.roster.sort((a, b) => this.compareByIlvl(a, b));
         }
 
         // Render immediately with cached data
@@ -124,6 +139,7 @@ class GuildRoster {
         return {
           itemLevels: new Map(data.itemLevels),
           genders: new Map(data.genders),
+          lastLogins: new Map(data.lastLogins || []),
           invalidCharacters: new Set(data.invalidCharacters),
           characterSpecs: new Map(data.characterSpecs || [])
         };
@@ -142,6 +158,7 @@ class GuildRoster {
       const data = {
         itemLevels: Array.from(this.itemLevels.entries()),
         genders: Array.from(this.genders.entries()),
+        lastLogins: Array.from(this.lastLogins.entries()),
         invalidCharacters: Array.from(this.invalidCharacters),
         characterSpecs: Array.from(this.characterSpecs.entries()),
         timestamp: Date.now()
@@ -704,6 +721,11 @@ class GuildRoster {
             this.genders.set(characterKey, profile.gender.type);
           }
 
+          // Store last login timestamp
+          if (profile.last_login_timestamp) {
+            this.lastLogins.set(characterKey, profile.last_login_timestamp);
+          }
+
           if (itemLevel) {
             ilvlElement.textContent = itemLevel;
             this.itemLevels.set(characterKey, itemLevel);
@@ -768,6 +790,11 @@ class GuildRoster {
           // Store gender from profile
           if (profile.gender) {
             this.genders.set(characterKey, profile.gender.type);
+          }
+
+          // Store last login timestamp
+          if (profile.last_login_timestamp) {
+            this.lastLogins.set(characterKey, profile.last_login_timestamp);
           }
 
           if (itemLevel) {
@@ -863,15 +890,16 @@ class GuildRoster {
     // Get all member cards
     const cards = Array.from(rosterGrid.querySelectorAll('.member-card'));
 
-    // Sort cards by item level (descending)
+    // Sort cards by item level (descending), stale pre-Midnight characters pushed down
     cards.sort((a, b) => {
-      const nameA = a.dataset.character;
-      const realmA = a.dataset.realm;
-      const keyA = this.getCharacterKey(nameA, realmA);
+      const keyA = this.getCharacterKey(a.dataset.character, a.dataset.realm);
+      const keyB = this.getCharacterKey(b.dataset.character, b.dataset.realm);
 
-      const nameB = b.dataset.character;
-      const realmB = b.dataset.realm;
-      const keyB = this.getCharacterKey(nameB, realmB);
+      const staleA = (this.lastLogins.get(keyA) || 0) < this.MIDNIGHT_LAUNCH;
+      const staleB = (this.lastLogins.get(keyB) || 0) < this.MIDNIGHT_LAUNCH;
+
+      // Stale characters always sort below active ones
+      if (staleA !== staleB) return staleA ? 1 : -1;
 
       const ilvlA = this.itemLevels.get(keyA) || 0;
       const ilvlB = this.itemLevels.get(keyB) || 0;

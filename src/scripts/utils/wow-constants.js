@@ -65,7 +65,11 @@ export const RACE_NAMES = {
   36: 'Mag\'har Orc',
   37: 'Mechagnome',
   52: 'Dracthyr',
-  70: 'Earthen'
+  70: 'Dracthyr',
+  84: 'Earthen',
+  85: 'Earthen',
+  86: 'Haranir',
+  91: 'Haranir'
 };
 
 // Guild rank colors (customizable)

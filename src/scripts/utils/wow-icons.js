@@ -157,6 +157,18 @@ export const RACE_ICON_URLS = {
   84: {  // Earthen (The War Within 2024)
     male: 'https://warcraft.wiki.gg/images/thumb/IconSmall_Earthen_Male.gif/48px-IconSmall_Earthen_Male.gif',
     female: 'https://warcraft.wiki.gg/images/thumb/IconSmall_Earthen_Female.gif/48px-IconSmall_Earthen_Female.gif'
+  },
+  85: {  // Earthen (second faction)
+    male: 'https://warcraft.wiki.gg/images/thumb/IconSmall_Earthen_Male.gif/48px-IconSmall_Earthen_Male.gif',
+    female: 'https://warcraft.wiki.gg/images/thumb/IconSmall_Earthen_Female.gif/48px-IconSmall_Earthen_Female.gif'
+  },
+  86: {  // Haranir (Midnight 2025)
+    male: 'https://warcraft.wiki.gg/images/IconSmall_Haranir_Male.gif',
+    female: 'https://warcraft.wiki.gg/images/IconSmall_Haranir_Female.gif'
+  },
+  91: {  // Haranir (second faction)
+    male: 'https://warcraft.wiki.gg/images/IconSmall_Haranir_Male.gif',
+    female: 'https://warcraft.wiki.gg/images/IconSmall_Haranir_Female.gif'
   }
 };
 
@@ -228,6 +240,7 @@ export const SPEC_ICON_NAMES = {
   // Demon Hunter
   577: 'ability_demonhunter_specdps',
   581: 'ability_demonhunter_spectank',
+  1480: 'classicon_demonhunter_void',
   // Druid
   102: 'spell_nature_starfall',
   103: 'ability_druid_catform',
@@ -263,7 +276,7 @@ export const SPEC_ICON_NAMES = {
   261: 'ability_stealth',
   // Shaman
   262: 'spell_nature_lightning',
-  263: 'spell_nature_lightningshield',
+  263: 'spell_shaman_improvedstormstrike',
   264: 'spell_nature_magicimmunity',
   // Warlock
   265: 'spell_shadow_deathcoil',
