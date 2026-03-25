@@ -1,0 +1,44 @@
+// Raids page styles
+
+#raids-container {
+  max-width: 1290px;
+  width: 100%;
+  margin: 0 auto;
+  min-height: calc(100vh - 317px);
+
+  #raids-content {
+    padding: 20px 0;
+  }
+
+  .no-raids {
+    text-align: center;
+    padding: 60px 20px;
+    color: rgba(255, 255, 255, 0.5);
+
+    i {
+      margin-bottom: 16px;
+      color: rgba(255, 255, 255, 0.3);
+    }
+
+    p {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .no-raids-sub {
+      font-size: 13px;
+      margin-top: 8px;
+      color: rgba(255, 255, 255, 0.3);
+    }
+  }
+
+  .raids-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 16px;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+}

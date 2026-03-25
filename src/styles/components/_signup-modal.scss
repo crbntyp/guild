@@ -1,0 +1,263 @@
+// Signup modal styles
+
+.signup-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.signup-modal {
+  background: #1e1e1e;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.signup-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #fff;
+  }
+}
+
+.signup-modal-close {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px;
+
+  &:hover {
+    color: #fff;
+  }
+}
+
+.signup-modal-body {
+  padding: 20px;
+}
+
+.signup-loading {
+  text-align: center;
+  padding: 40px 0;
+  color: rgba(255, 255, 255, 0.5);
+
+  p {
+    margin-top: 12px;
+  }
+}
+
+.signup-empty {
+  text-align: center;
+  padding: 30px 0;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.signup-raid-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+
+  strong {
+    font-size: 14px;
+    color: #fff;
+  }
+
+  .signup-raid-difficulty {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 3px;
+
+    &.normal { background: rgba(30, 255, 0, 0.15); color: #1eff00; }
+    &.heroic { background: rgba(163, 53, 238, 0.15); color: #a335ee; }
+    &.mythic { background: rgba(255, 128, 0, 0.15); color: #ff8000; }
+  }
+}
+
+.signup-step-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0 0 10px 0;
+}
+
+// Character grid
+.signup-character-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 250px;
+  overflow-y: auto;
+  margin-bottom: 16px;
+}
+
+.signup-character-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  &.selected {
+    background: rgba(163, 53, 238, 0.15);
+    border-color: rgba(163, 53, 238, 0.5);
+  }
+}
+
+.signup-char-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 3px;
+}
+
+.signup-char-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.signup-char-name {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.signup-char-realm {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+// Confirm section
+.signup-confirm-section {
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.signup-selected-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+
+  span {
+    font-size: 13px;
+  }
+
+  .signup-spec {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .signup-ilvl {
+    color: rgba(255, 215, 0, 0.7);
+    font-size: 11px;
+  }
+}
+
+.signup-field {
+  margin-bottom: 12px;
+
+  label {
+    display: block;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 6px;
+  }
+}
+
+.signup-role-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.signup-role-btn,
+.signup-status-btn {
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  &.active {
+    background: rgba(163, 53, 238, 0.2);
+    border-color: rgba(163, 53, 238, 0.5);
+    color: #fff;
+  }
+}
+
+.signup-note-input {
+  width: 100%;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  color: #fff;
+  font-size: 12px;
+  font-family: inherit;
+  box-sizing: border-box;
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: rgba(163, 53, 238, 0.5);
+  }
+}
+
+.btn-signup-confirm {
+  width: 100%;
+  padding: 10px;
+  background: rgba(163, 53, 238, 0.3);
+  border: 1px solid rgba(163, 53, 238, 0.5);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 4px;
+
+  &:hover {
+    background: rgba(163, 53, 238, 0.5);
+  }
+}

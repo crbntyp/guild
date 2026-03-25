@@ -1,0 +1,263 @@
+// Raid card component styles
+
+.raid-card {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 16px;
+  transition: border-color 0.2s ease;
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  &.status-full {
+    border-color: rgba(16, 185, 129, 0.4);
+  }
+
+  &.status-cancelled {
+    opacity: 0.5;
+  }
+
+  // Header
+  .raid-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    gap: 12px;
+  }
+
+  .raid-card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+
+    h3 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+    }
+  }
+
+  .raid-difficulty-badge {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 3px;
+    letter-spacing: 0.5px;
+
+    &.difficulty-normal {
+      background: rgba(30, 255, 0, 0.15);
+      color: #1eff00;
+      border: 1px solid rgba(30, 255, 0, 0.3);
+    }
+
+    &.difficulty-heroic {
+      background: rgba(163, 53, 238, 0.15);
+      color: #a335ee;
+      border: 1px solid rgba(163, 53, 238, 0.3);
+    }
+
+    &.difficulty-mythic {
+      background: rgba(255, 128, 0, 0.15);
+      color: #ff8000;
+      border: 1px solid rgba(255, 128, 0, 0.3);
+    }
+  }
+
+  .raid-card-date {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    flex-shrink: 0;
+
+    .raid-date {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .raid-time {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .raid-countdown {
+      font-size: 10px;
+      color: rgba(255, 215, 0, 0.8);
+      font-weight: 600;
+    }
+  }
+
+  .raid-card-description {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0 0 12px 0;
+    line-height: 1.4;
+  }
+
+  // Progress bar
+  .raid-card-progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .raid-progress-bar {
+    flex: 1;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .raid-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #a335ee, #ff8000);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+  }
+
+  .raid-progress-text {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  // Role indicators
+  .raid-card-roles {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+
+  .raid-role {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .raid-role-icon {
+    font-size: 14px;
+
+    &.tank { color: #4a9eff; }
+    &.healer { color: #10b981; }
+    &.dps { color: #ef4444; }
+  }
+
+  .raid-role-count {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    font-variant-numeric: tabular-nums;
+  }
+
+  // Signup list
+  .raid-signups-empty {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.3);
+    text-align: center;
+    padding: 8px 0;
+  }
+
+  .raid-signups-list {
+    margin-bottom: 12px;
+  }
+
+  .raid-signup-group {
+    margin-bottom: 6px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .raid-signup-role-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 4px;
+
+    &.tank { color: #4a9eff; }
+    &.healer { color: #10b981; }
+    &.dps { color: #ef4444; }
+  }
+
+  .raid-signup-member {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-right: 10px;
+    margin-bottom: 4px;
+  }
+
+  .raid-signup-icon {
+    width: 16px;
+    height: 16px;
+    border-radius: 2px;
+  }
+
+  .raid-signup-name {
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .tentative-icon {
+    font-size: 12px;
+    color: rgba(245, 158, 11, 0.7);
+  }
+
+  // Actions
+  .raid-card-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .raid-signed-up {
+    font-size: 12px;
+    color: rgba(16, 185, 129, 0.8);
+  }
+
+  .btn-raid-signup,
+  .btn-raid-withdraw {
+    padding: 6px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-raid-signup {
+    background: rgba(163, 53, 238, 0.3);
+    color: #a335ee;
+    border: 1px solid rgba(163, 53, 238, 0.4);
+
+    &:hover {
+      background: rgba(163, 53, 238, 0.5);
+    }
+  }
+
+  .btn-raid-withdraw {
+    background: rgba(239, 68, 68, 0.2);
+    color: rgba(239, 68, 68, 0.8);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+
+    &:hover {
+      background: rgba(239, 68, 68, 0.4);
+    }
+  }
+}
