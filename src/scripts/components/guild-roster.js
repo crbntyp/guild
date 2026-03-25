@@ -732,11 +732,7 @@ class GuildRoster {
             ilvlElement.textContent = 'N/A';
           }
         } catch (error) {
-          const is404 = error.status === 404 || (error.message && error.message.includes('404'));
-          if (is404) {
-            const characterKey = this.getCharacterKey(characterName, realmSlug);
-            this.invalidCharacters.add(characterKey);
-          } else {
+          if (error.status !== 404 && error.status !== 403) {
             console.error(`Error loading item level for ${characterName}:`, error);
           }
           ilvlElement.textContent = 'N/A';
@@ -757,7 +753,6 @@ class GuildRoster {
     const batchSize = 30;
     let successCount = 0;
     let failCount = 0;
-    let foundInvalidCharacters = false;
 
     const cardsArray = Array.from(memberCards);
     for (let i = 0; i < cardsArray.length; i += batchSize) {
@@ -806,14 +801,9 @@ class GuildRoster {
             failCount++;
           }
         } catch (error) {
-          // Track 404 errors - character doesn't exist
-          const is404 = error.status === 404 || (error.message && error.message.includes('404'));
-          if (is404) {
-            const characterKey = this.getCharacterKey(characterName, realmSlug);
-            this.invalidCharacters.add(characterKey);
-            foundInvalidCharacters = true;
-          } else {
-            // Log other errors normally
+          // Don't hide characters that return 404 - they may still be valid guild members
+          // whose profile hasn't updated (e.g. after expansion stat squash)
+          if (error.status !== 404 && error.status !== 403) {
             console.error(`Error loading item level for ${characterName}:`, error);
           }
           ilvlElement.textContent = 'N/A';
@@ -828,7 +818,7 @@ class GuildRoster {
     }
 
     // Re-sort the full roster and re-render so pagination reflects correct order
-    if (foundInvalidCharacters || (this.sortBy === 'ilvl' && this.itemLevels.size > 0)) {
+    if (this.sortBy === 'ilvl' && this.itemLevels.size > 0) {
       if (this.sortBy === 'ilvl') {
         this.roster.sort((a, b) => this.compareByIlvl(a, b));
       }
