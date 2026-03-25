@@ -945,20 +945,20 @@ class CharacterModal {
         // Character has no M+ data - continue with empty data
       }
 
-      // TWW Season 3 dungeon to Journal Instance mapping for backgrounds
+      // Midnight Season 1 dungeon to Journal Instance mapping for backgrounds
       const dungeonToJournal = {
-        378: 1185,   // Halls of Atonement
-        391: 1194,   // Tazavesh: Streets of Wonder
-        392: 1194,   // Tazavesh: So'leah's Gambit
-        499: 1267,   // Priory of the Sacred Flame
-        503: 1271,   // Ara-Kara, City of Echoes
-        505: 1270,   // The Dawnbreaker
-        525: 1298,   // Operation: Floodgate
-        542: 1303    // Eco-Dome Al'dani
+        161: 476,    // Skyreach
+        239: 945,    // Seat of the Triumvirate
+        402: 1201,   // Algeth'ar Academy
+        556: 278,    // Pit of Saron
+        557: 1299,   // Windrunner Spire
+        558: 1300,   // Magisters' Terrace
+        559: 1316,   // Nexus-Point Xenas
+        560: 1315    // Maisara Caverns
       };
 
-      // Current season dungeon IDs (TWW Season 3)
-      const currentSeasonDungeonIds = [378, 391, 392, 499, 503, 505, 525, 542];
+      // Current season dungeon IDs (Midnight Season 1)
+      const currentSeasonDungeonIds = [161, 239, 402, 556, 557, 558, 559, 560];
 
       // Filter to only current season dungeons
       const seasonDungeons = currentDungeons.filter(d => currentSeasonDungeonIds.includes(d.id));
