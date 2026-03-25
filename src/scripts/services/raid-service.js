@@ -2,9 +2,9 @@ import authService from './auth.js';
 
 class RaidService {
   constructor() {
-    // Same-origin on production, localhost proxy for dev
-    this.baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-      ? '/api'
+    // Use live VPS API for both dev and production (no local PHP server)
+    this.baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.'))
+      ? 'https://crbntyp.com/gld/api'
       : '/gld/api';
   }
 
