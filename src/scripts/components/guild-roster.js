@@ -215,15 +215,7 @@ class GuildRoster {
 
     // Sort by ilvl if selected (after roster is loaded)
     if (this.sortBy === 'ilvl' && this.itemLevels.size > 0) {
-      this.roster.sort((a, b) => {
-        const realmA = a.character.realm?.slug || config.guild.realmSlug;
-        const realmB = b.character.realm?.slug || config.guild.realmSlug;
-        const keyA = this.getCharacterKey(a.character.name, realmA);
-        const keyB = this.getCharacterKey(b.character.name, realmB);
-        const ilvlA = this.itemLevels.get(keyA) || 0;
-        const ilvlB = this.itemLevels.get(keyB) || 0;
-        return ilvlB - ilvlA; // Descending order (highest ilvl first)
-      });
+      this.roster.sort((a, b) => this.compareByIlvl(a, b));
     }
 
     this.render();
@@ -455,6 +447,13 @@ class GuildRoster {
 
         if (missingCards.length > 0) {
           await this.loadItemLevelsForCards(missingCards);
+          // Re-sort and re-render after new ilvl data loaded
+          if (this.sortBy === 'ilvl') {
+            this.roster.sort((a, b) => this.compareByIlvl(a, b));
+            this.render();
+            this.updateItemLevelsInDOM();
+            this.updateRaceIconsWithGender();
+          }
         }
       } else {
         // No cache or forced refresh - do full load
@@ -828,21 +827,19 @@ class GuildRoster {
       }
     }
 
-    // Re-render roster if we found any invalid characters
-    if (foundInvalidCharacters) {
+    // Re-sort the full roster and re-render so pagination reflects correct order
+    if (foundInvalidCharacters || (this.sortBy === 'ilvl' && this.itemLevels.size > 0)) {
+      if (this.sortBy === 'ilvl') {
+        this.roster.sort((a, b) => this.compareByIlvl(a, b));
+      }
       this.render();
-      // Restore cached item levels after re-render
       this.updateItemLevelsInDOM();
-      return; // Skip the rest since we're re-rendering
+      this.updateRaceIconsWithGender();
+      return;
     }
 
     // Update race icons now that we have gender data
     this.updateRaceIconsWithGender();
-
-    // Re-sort DOM elements without re-rendering if sorting by ilvl
-    if (this.sortBy === 'ilvl' && this.itemLevels.size > 0) {
-      this.sortDOMByIlvl();
-    }
   }
 
   // Update race icons with correct gender after gender data is loaded
