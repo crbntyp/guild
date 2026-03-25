@@ -247,7 +247,7 @@ class GuildRoster {
     this.applyFilters();
   }
 
-  render() {
+  render(skipIconLoad = false) {
     if (!this.roster || this.roster.length === 0) {
       this.container.innerHTML = '<p class="no-results">No guild members found.</p>';
       return;
@@ -313,7 +313,7 @@ class GuildRoster {
     this.initializeDropdowns();
     this.attachEventListeners();
     this.attachPaginationListeners();
-    this.loadAllIcons();
+    if (!skipIconLoad) this.loadAllIcons();
   }
 
   renderMiniPagination(totalPages, totalCharacters, endIndex) {
@@ -836,52 +836,65 @@ class GuildRoster {
    * Fetches profiles for any roster member missing ilvl data, then re-sorts and re-renders.
    */
   async loadAllItemLevels() {
-    if (!this.roster || this.roster.length === 0) return;
+    if (this._loadingAllIlvls || !this.roster || this.roster.length === 0) return;
+    this._loadingAllIlvls = true;
 
-    // Find roster members missing ilvl data
-    const missing = this.roster.filter(member => {
-      const realmSlug = member.character.realm?.slug || config.guild.realmSlug;
-      const key = this.getCharacterKey(member.character.name, realmSlug);
-      return !this.itemLevels.has(key);
-    });
-
-    if (missing.length === 0) return;
-
-    const batchSize = 30;
-    for (let i = 0; i < missing.length; i += batchSize) {
-      const batch = missing.slice(i, i + batchSize);
-
-      await Promise.all(batch.map(async (member) => {
-        const characterName = member.character.name;
+    try {
+      // Find roster members missing ilvl data
+      const missing = this.roster.filter(member => {
         const realmSlug = member.character.realm?.slug || config.guild.realmSlug;
-        const characterKey = this.getCharacterKey(characterName, realmSlug);
+        const key = this.getCharacterKey(member.character.name, realmSlug);
+        return !this.itemLevels.has(key);
+      });
 
-        try {
-          const profile = await characterService.fetchCharacterProfile(realmSlug, characterName);
-          if (!profile) return;
+      if (missing.length === 0) return;
 
-          const itemLevel = profile.equipped_item_level || profile.average_item_level;
-          if (profile.gender) this.genders.set(characterKey, profile.gender.type);
-          if (profile.last_login_timestamp) this.lastLogins.set(characterKey, profile.last_login_timestamp);
-          if (itemLevel) this.itemLevels.set(characterKey, itemLevel);
-        } catch (error) {
-          if (error.status !== 404 && error.status !== 403) {
-            console.error(`Error loading item level for ${characterName}:`, error);
+      const batchSize = 30;
+      for (let i = 0; i < missing.length; i += batchSize) {
+        const batch = missing.slice(i, i + batchSize);
+
+        await Promise.all(batch.map(async (member) => {
+          const characterName = member.character.name;
+          const realmSlug = member.character.realm?.slug || config.guild.realmSlug;
+          const characterKey = this.getCharacterKey(characterName, realmSlug);
+
+          try {
+            const profile = await characterService.fetchCharacterProfile(realmSlug, characterName);
+            if (!profile) return;
+
+            const itemLevel = profile.equipped_item_level || profile.average_item_level;
+            if (profile.gender) this.genders.set(characterKey, profile.gender.type);
+            if (profile.last_login_timestamp) this.lastLogins.set(characterKey, profile.last_login_timestamp);
+            if (itemLevel) this.itemLevels.set(characterKey, itemLevel);
+          } catch (error) {
+            if (error.status !== 404 && error.status !== 403) {
+              console.error(`Error loading item level for ${characterName}:`, error);
+            }
           }
+        }));
+
+        if (i + batchSize < missing.length) {
+          await new Promise(resolve => setTimeout(resolve, 500));
         }
-      }));
-
-      if (i + batchSize < missing.length) {
-        await new Promise(resolve => setTimeout(resolve, 500));
       }
-    }
 
-    // All data loaded - re-sort and re-render once
-    if (this.sortBy === 'ilvl') {
-      this.roster.sort((a, b) => this.compareByIlvl(a, b));
-      this.render();
-      this.updateItemLevelsInDOM();
-      this.updateRaceIconsWithGender();
+      // All data loaded - re-sort roster and re-render without triggering full icon+ilvl chain
+      if (this.sortBy === 'ilvl') {
+        this.roster.sort((a, b) => this.compareByIlvl(a, b));
+        this.render(true);
+        // Load visuals for the re-rendered page (no ilvl fetching)
+        this.loadClassIcons();
+        this.updateItemLevelsInDOM();
+        this.updateSpecsFromCache();
+        this.updateRaceIconsWithGender();
+        await Promise.all([
+          this.loadSpecIcons(),
+          this.loadRaceFactionIcons(),
+          this.loadCharacterAvatarsFromCache()
+        ]);
+      }
+    } finally {
+      this._loadingAllIlvls = false;
     }
   }
 
