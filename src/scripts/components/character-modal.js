@@ -1003,15 +1003,12 @@ class CharacterModal {
         return `
           <div class="dungeon-instance" data-dungeon-id="${dungeon.id}" data-journal-id="${journalId}">
             <div class="dungeon-background-overlay"></div>
+            <div class="dungeon-time-badge">${timeStr}</div>
             <div class="dungeon-content">
-              <div class="dungeon-name">${dungeon.name}</div>
-              <div class="dungeon-stats">
-                <div class="dungeon-key-level ${badgeClass}">
-                  ${keyLevel > 0 ? `+${keyLevel}` : '-'}
-                </div>
-                <div class="dungeon-time">${timeStr}</div>
-                ${timerIndicator}
+              <div class="dungeon-key-level ${badgeClass}">
+                ${keyLevel > 0 ? `+${keyLevel}` : '-'}
               </div>
+              <div class="dungeon-name">${dungeon.name}</div>
             </div>
           </div>
         `;
