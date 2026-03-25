@@ -447,14 +447,14 @@ class GuildRoster {
 
         if (missingCards.length > 0) {
           await this.loadItemLevelsForCards(missingCards);
-          // Re-sort and re-render after new ilvl data loaded
           if (this.sortBy === 'ilvl') {
             this.roster.sort((a, b) => this.compareByIlvl(a, b));
-            this.render();
-            this.updateItemLevelsInDOM();
-            this.updateRaceIconsWithGender();
+            this.sortDOMByIlvl();
           }
         }
+
+        // Load ilvl for ALL remaining roster members not on current page
+        this.loadAllItemLevels();
       } else {
         // No cache or forced refresh - do full load
 
@@ -817,19 +817,72 @@ class GuildRoster {
       }
     }
 
-    // Re-sort the full roster and re-render so pagination reflects correct order
+    // Sort current page DOM and update race icons
     if (this.sortBy === 'ilvl' && this.itemLevels.size > 0) {
-      if (this.sortBy === 'ilvl') {
-        this.roster.sort((a, b) => this.compareByIlvl(a, b));
-      }
-      this.render();
-      this.updateItemLevelsInDOM();
-      this.updateRaceIconsWithGender();
-      return;
+      this.roster.sort((a, b) => this.compareByIlvl(a, b));
+      this.sortDOMByIlvl();
     }
 
     // Update race icons now that we have gender data
     this.updateRaceIconsWithGender();
+
+    // Load ilvl for ALL remaining roster members in the background
+    // so sorting is accurate across all pages
+    this.loadAllItemLevels();
+  }
+
+  /**
+   * Load item levels for ALL roster members (not just visible page).
+   * Fetches profiles for any roster member missing ilvl data, then re-sorts and re-renders.
+   */
+  async loadAllItemLevels() {
+    if (!this.roster || this.roster.length === 0) return;
+
+    // Find roster members missing ilvl data
+    const missing = this.roster.filter(member => {
+      const realmSlug = member.character.realm?.slug || config.guild.realmSlug;
+      const key = this.getCharacterKey(member.character.name, realmSlug);
+      return !this.itemLevels.has(key);
+    });
+
+    if (missing.length === 0) return;
+
+    const batchSize = 30;
+    for (let i = 0; i < missing.length; i += batchSize) {
+      const batch = missing.slice(i, i + batchSize);
+
+      await Promise.all(batch.map(async (member) => {
+        const characterName = member.character.name;
+        const realmSlug = member.character.realm?.slug || config.guild.realmSlug;
+        const characterKey = this.getCharacterKey(characterName, realmSlug);
+
+        try {
+          const profile = await characterService.fetchCharacterProfile(realmSlug, characterName);
+          if (!profile) return;
+
+          const itemLevel = profile.equipped_item_level || profile.average_item_level;
+          if (profile.gender) this.genders.set(characterKey, profile.gender.type);
+          if (profile.last_login_timestamp) this.lastLogins.set(characterKey, profile.last_login_timestamp);
+          if (itemLevel) this.itemLevels.set(characterKey, itemLevel);
+        } catch (error) {
+          if (error.status !== 404 && error.status !== 403) {
+            console.error(`Error loading item level for ${characterName}:`, error);
+          }
+        }
+      }));
+
+      if (i + batchSize < missing.length) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+    }
+
+    // All data loaded - re-sort and re-render once
+    if (this.sortBy === 'ilvl') {
+      this.roster.sort((a, b) => this.compareByIlvl(a, b));
+      this.render();
+      this.updateItemLevelsInDOM();
+      this.updateRaceIconsWithGender();
+    }
   }
 
   // Update race icons with correct gender after gender data is loaded
