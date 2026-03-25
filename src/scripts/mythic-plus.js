@@ -215,9 +215,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // Try each recent period until we find one with leaderboard data
             for (const testPeriodId of recentPeriods) {
-              // Try first dungeon (Halls of Atonement, ID 378) to see if this period has data
+              // Try first dungeon (Windrunner Spire, ID 557) to see if this period has data
               try {
-                const testLeaderboard = await wowApi.getMythicKeystoneLeaderboard(378, testPeriodId);
+                const testLeaderboard = await wowApi.getMythicKeystoneLeaderboard(557, testPeriodId);
                 if (testLeaderboard && testLeaderboard.leading_groups && testLeaderboard.leading_groups.length > 0) {
                   periodId = testPeriodId;
                   foundPeriodWithData = true;
@@ -271,22 +271,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Manual mapping of dungeon IDs to journal instance IDs for backgrounds
             // Add mappings here as needed for current season dungeons
             const dungeonToJournalMap = {
-              // TWW Season 3 (Jan 2025+)
-              378: 1185, // Halls of Atonement
-              391: 1194, // Tazavesh: Streets of Wonder (part of Tazavesh, the Veiled Market)
-              392: 1194, // Tazavesh: So'leah's Gambit (part of Tazavesh, the Veiled Market)
-              499: 1267, // Priory of the Sacred Flame
-              503: 1271, // Ara-Kara, City of Echoes
-              505: 1270, // The Dawnbreaker
-              525: 1298, // Operation: Floodgate
-              542: 1303  // Eco-Dome Al'dani
+              // Midnight Season 1
+              161: 476,    // Skyreach
+              239: 945,    // Seat of the Triumvirate
+              402: 1201,   // Algeth'ar Academy
+              556: 278,    // Pit of Saron
+              557: 1299,   // Windrunner Spire
+              558: 1300,   // Magisters' Terrace
+              559: 1316,   // Nexus-Point Xenas
+              560: 1315    // Maisara Caverns
             };
 
             // Manual name overrides for dungeons with incorrect API names
-            // Add overrides here as needed
             const dungeonNameOverrides = {
-              391: "Tazavesh: Streets of Wonder",
-              392: "Tazavesh: So'leah's Gambit"
             };
 
             // Helper function to fetch a single dungeon with retry logic
