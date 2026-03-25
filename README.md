@@ -2,6 +2,8 @@
 
 A modern World of Warcraft companion application featuring guild roster management, character tracking, mount collection browsing, live event calendar, YouTube video curation, personal todos, M+ leaderboard and comp stat tracking, and a stunning background gallery. Built with vanilla JavaScript and the Battle.net API.
 
+**Now updated for the Midnight expansion** — includes new Haranir race, Devourer Demon Hunter spec, Midnight raids, Season 17 Mythic+ dungeons, and ilvl squash handling.
+
 ## 📸 Screenshots
 
 <div align="center">
@@ -414,6 +416,38 @@ WoW class colors are centralized in `src/scripts/utils/wow-constants.js` using o
 - ~18-20% CSS size reduction
 
 ## 📋 Changelog
+
+### 2026-03-25 — Midnight Expansion Update
+- **New Race: Haranir** 🦌
+  - Added Haranir race support (IDs 86, 91) with male and female icons
+  - Added missing Earthen second faction ID (85)
+  - Fixed Dracthyr race ID 70 (was incorrectly labelled as Earthen)
+
+- **New Spec: Devourer** 😈
+  - Added Demon Hunter Devourer spec (ID 1480) with void icon
+  - Updated Mythic+ spec ID list to include Devourer
+
+- **Midnight Raids** ⚔️
+  - Added The Voidspire (6 bosses), March on Quel'Danas (2 bosses), and The Dreamrift (1 boss)
+  - Raid imagery loads automatically via Blizzard journal instance API
+
+- **Mythic+ Season 17 (Midnight Season 1)** 🏆
+  - Updated character modal and mythic-plus page for new season
+  - 8 dungeons: Windrunner Spire, Magisters' Terrace, Nexus-Point Xenas, Maisara Caverns, Skyreach, Seat of the Triumvirate, Algeth'ar Academy, Pit of Saron
+  - Background imagery mapped for all dungeons
+  - Redesigned dungeon cards — key level badge with stacked name and time
+
+- **Item Level Squash Handling** 📊
+  - Characters not logged in since Midnight launch (March 2, 2026) are deprioritized in ilvl sort
+  - Uses `last_login_timestamp` from character profiles to detect stale data
+  - Loads ilvl for ALL roster members (not just current page) for accurate sorting
+  - Complete enriched data cached to localStorage for instant subsequent loads
+
+- **Bug Fixes** 🔧
+  - Fixed Enhancement Shaman spec icon (was showing Elemental icon)
+  - Fixed ilvl sorting across paginated pages
+  - Fixed characters disappearing when profile API returns 404
+  - Fixed cascading re-render loop when loading ilvl data
 
 ### 2025-12-17
 - **Character Modal Enhancements** 🔍
