@@ -618,6 +618,14 @@ class CharacterModal {
 
       // Define all raids organized by expansion
       const expansionRaidData = {
+        11: { // Midnight
+          name: "Midnight",
+          raids: [
+            { name: "The Voidspire", bossCount: 6, instanceId: 1307 },
+            { name: "March on Quel'Danas", bossCount: 2, instanceId: 1308 },
+            { name: "The Dreamrift", bossCount: 1, instanceId: 1314 }
+          ]
+        },
         10: { // The War Within
           name: "The War Within",
           raids: [
