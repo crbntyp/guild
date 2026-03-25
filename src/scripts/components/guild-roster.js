@@ -65,7 +65,8 @@ class GuildRoster {
     }
 
     // Generate cache key for this guild's enriched data
-    const enrichedCacheKey = `enriched-roster:${config.guild.realmSlug}:${config.guild.nameSlug}`;
+    this.enrichedCacheKey = `enriched-roster:${config.guild.realmSlug}:${config.guild.nameSlug}`;
+    const enrichedCacheKey = this.enrichedCacheKey;
 
     // Check if we have cached enriched data
     const cachedEnrichedData = this.getEnrichedDataFromCache(enrichedCacheKey);
@@ -112,14 +113,21 @@ class GuildRoster {
       try {
         await guildService.fetchGuildRoster();
         this.roster = guildService.getRosterMembers({
-          sortBy: this.sortBy
+          sortBy: this.sortBy === 'ilvl' ? 'name' : this.sortBy
         });
+
+        // If sorting by ilvl, load ALL profiles before rendering
+        // so the sort order is correct from the start
+        if (this.sortBy === 'ilvl') {
+          await this.fetchAllProfiles();
+          this.roster.sort((a, b) => this.compareByIlvl(a, b));
+        }
 
         this.render();
 
-        // Load all data and cache it
+        // Load visual icons (specs, race, avatars)
         await this.loadAllIcons();
-        this.saveEnrichedDataToCache(enrichedCacheKey);
+        this.saveEnrichedDataToCache(this.enrichedCacheKey);
       } catch (error) {
         this.showError(error.message);
       }
@@ -832,6 +840,49 @@ class GuildRoster {
   }
 
   /**
+   * Fetch profiles for all roster members to get ilvl, gender, and last login data.
+   * Does not touch the DOM - purely data loading.
+   */
+  async fetchAllProfiles() {
+    if (!this.roster || this.roster.length === 0) return;
+
+    const members = this.roster.filter(member => {
+      const realmSlug = member.character.realm?.slug || config.guild.realmSlug;
+      const key = this.getCharacterKey(member.character.name, realmSlug);
+      return !this.itemLevels.has(key);
+    });
+
+    const batchSize = 30;
+    for (let i = 0; i < members.length; i += batchSize) {
+      const batch = members.slice(i, i + batchSize);
+
+      await Promise.all(batch.map(async (member) => {
+        const characterName = member.character.name;
+        const realmSlug = member.character.realm?.slug || config.guild.realmSlug;
+        const characterKey = this.getCharacterKey(characterName, realmSlug);
+
+        try {
+          const profile = await characterService.fetchCharacterProfile(realmSlug, characterName);
+          if (!profile) return;
+
+          const itemLevel = profile.equipped_item_level || profile.average_item_level;
+          if (profile.gender) this.genders.set(characterKey, profile.gender.type);
+          if (profile.last_login_timestamp) this.lastLogins.set(characterKey, profile.last_login_timestamp);
+          if (itemLevel) this.itemLevels.set(characterKey, itemLevel);
+        } catch (error) {
+          if (error.status !== 404 && error.status !== 403) {
+            console.error(`Error loading profile for ${characterName}:`, error);
+          }
+        }
+      }));
+
+      if (i + batchSize < members.length) {
+        await new Promise(resolve => setTimeout(resolve, 200));
+      }
+    }
+  }
+
+  /**
    * Load item levels for ALL roster members (not just visible page).
    * Fetches profiles for any roster member missing ilvl data, then re-sorts and re-renders.
    */
@@ -840,49 +891,12 @@ class GuildRoster {
     this._loadingAllIlvls = true;
 
     try {
-      // Find roster members missing ilvl data
-      const missing = this.roster.filter(member => {
-        const realmSlug = member.character.realm?.slug || config.guild.realmSlug;
-        const key = this.getCharacterKey(member.character.name, realmSlug);
-        return !this.itemLevels.has(key);
-      });
+      await this.fetchAllProfiles();
 
-      if (missing.length === 0) return;
-
-      const batchSize = 30;
-      for (let i = 0; i < missing.length; i += batchSize) {
-        const batch = missing.slice(i, i + batchSize);
-
-        await Promise.all(batch.map(async (member) => {
-          const characterName = member.character.name;
-          const realmSlug = member.character.realm?.slug || config.guild.realmSlug;
-          const characterKey = this.getCharacterKey(characterName, realmSlug);
-
-          try {
-            const profile = await characterService.fetchCharacterProfile(realmSlug, characterName);
-            if (!profile) return;
-
-            const itemLevel = profile.equipped_item_level || profile.average_item_level;
-            if (profile.gender) this.genders.set(characterKey, profile.gender.type);
-            if (profile.last_login_timestamp) this.lastLogins.set(characterKey, profile.last_login_timestamp);
-            if (itemLevel) this.itemLevels.set(characterKey, itemLevel);
-          } catch (error) {
-            if (error.status !== 404 && error.status !== 403) {
-              console.error(`Error loading item level for ${characterName}:`, error);
-            }
-          }
-        }));
-
-        if (i + batchSize < missing.length) {
-          await new Promise(resolve => setTimeout(resolve, 500));
-        }
-      }
-
-      // All data loaded - re-sort roster and re-render without triggering full icon+ilvl chain
+      // Re-sort and re-render with complete data
       if (this.sortBy === 'ilvl') {
         this.roster.sort((a, b) => this.compareByIlvl(a, b));
         this.render(true);
-        // Load visuals for the re-rendered page (no ilvl fetching)
         this.loadClassIcons();
         this.updateItemLevelsInDOM();
         this.updateSpecsFromCache();
@@ -892,6 +906,11 @@ class GuildRoster {
           this.loadRaceFactionIcons(),
           this.loadCharacterAvatarsFromCache()
         ]);
+      }
+
+      // Save complete enriched data to cache
+      if (this.enrichedCacheKey) {
+        this.saveEnrichedDataToCache(this.enrichedCacheKey);
       }
     } finally {
       this._loadingAllIlvls = false;
