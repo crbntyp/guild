@@ -864,17 +864,6 @@
             z-index: 1;
           }
 
-          .dungeon-time-badge {
-            position: absolute;
-            top: 3px;
-            right: 3px;
-            font-size: 10px;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.5);
-            font-variant-numeric: tabular-nums;
-            z-index: 3;
-          }
-
           .dungeon-content {
             position: relative;
             z-index: 2;
@@ -888,9 +877,15 @@
               color: rgba(255, 255, 255, 0.95);
               text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
               flex: 1;
-              white-space: nowrap;
-              overflow: hidden;
-              text-overflow: ellipsis;
+              display: flex;
+              flex-direction: column;
+
+              .dungeon-time {
+                font-size: 10px;
+                font-weight: 400;
+                color: rgba(255, 255, 255, 0.5);
+                font-variant-numeric: tabular-nums;
+              }
             }
 
             .dungeon-key-level {
