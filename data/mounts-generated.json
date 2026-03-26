@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2025-11-15T09:25:16.509Z",
+  "generatedAt": "2026-03-26T21:34:58.369Z",
   "version": "1.0.0",
-  "totalMounts": 1481,
+  "totalMounts": 1578,
   "mounts": {
     "6": {
       "id": 6,
@@ -83,6 +83,15 @@
       "source": "Vendor",
       "faction": "BOTH",
       "expansion": 0
+    },
+    "16": {
+      "id": 16,
+      "name": "Nether-Warped Drake",
+      "description": "Lost in the nether, found by you.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-139510.jpg",
+      "source": "Profession",
+      "faction": "BOTH",
+      "expansion": 10
     },
     "17": {
       "id": 17,
@@ -7653,6 +7662,15 @@
       "faction": "BOTH",
       "expansion": 7
     },
+    "1374": {
+      "id": 1374,
+      "name": "Bonecleaver's Skullboar",
+      "description": "Sabreil was known for the ruthless efficiency with which she dismembered foes, feeding their bones to her loyal skullboar.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-98167.jpg",
+      "source": "Drop",
+      "faction": "BOTH",
+      "expansion": 10
+    },
     "1375": {
       "id": 1375,
       "name": "Lurid Bloodtusk",
@@ -10434,6 +10452,15 @@
       "faction": "BOTH",
       "expansion": 10
     },
+    "1946": {
+      "id": 1946,
+      "name": "Jeweled Jade Scarab",
+      "description": "The razor-thin wings of this scarab are well-protected by a gleaming, yet indestructible jade-carved carapace.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-114744.jpg",
+      "source": "Promotion",
+      "faction": "BOTH",
+      "expansion": 10
+    },
     "1947": {
       "id": 1947,
       "name": "Hateforged Blazecycle",
@@ -10974,6 +11001,15 @@
       "faction": "BOTH",
       "expansion": 10
     },
+    "2161": {
+      "id": 2161,
+      "name": "Elder Glowmite",
+      "description": "Glowmites slowly grow larger as they age. This one has lived a long, full life.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-119387.jpg",
+      "source": "Vendor",
+      "faction": "BOTH",
+      "expansion": 10
+    },
     "2162": {
       "id": 2162,
       "name": "Cyan Glowmite",
@@ -11286,6 +11322,15 @@
       "description": "The skyrazor was one of the most vicious abominations to emerge from Queen Ansurek's experiments with the Black Blood of the Old Gods.",
       "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-119980.jpg",
       "source": "Drop",
+      "faction": "BOTH",
+      "expansion": 10
+    },
+    "2220": {
+      "id": 2220,
+      "name": "Retrained Skyrazor",
+      "description": "One of a handful of skyrazors captured by Arathi forces during the Sureki offensive after Queen Ansurek's downfall, this beast has found great use in sniffing out void corruption at home and abroad.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-119982.jpg",
+      "source": "Vendor",
       "faction": "BOTH",
       "expansion": 10
     },
@@ -12423,6 +12468,15 @@
       "faction": "BOTH",
       "expansion": 10
     },
+    "2550": {
+      "id": 2550,
+      "name": "K'arroc Swiftwing",
+      "description": "A gift for services rendered, this K'arroc has seen its share of hazardous flights.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-126545.jpg",
+      "source": "Unknown",
+      "faction": "BOTH",
+      "expansion": 10
+    },
     "2552": {
       "id": 2552,
       "name": "Lavender K'arroc",
@@ -12657,6 +12711,15 @@
       "faction": "BOTH",
       "expansion": 10
     },
+    "2595": {
+      "id": 2595,
+      "name": "Swift Spectral Dragonhawk",
+      "description": "Even the dead need a lift every now and then.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-131506.jpg",
+      "source": "Achievement",
+      "faction": "BOTH",
+      "expansion": 10
+    },
     "2598": {
       "id": 2598,
       "name": "Voidlight Surger",
@@ -12726,6 +12789,60 @@
       "description": "A cosmic terror warped and hardened by the cruelties of the Nexus-King, now oathsworn to your service.",
       "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-127493.jpg",
       "source": "Profession",
+      "faction": "BOTH",
+      "expansion": 10
+    },
+    "2607": {
+      "id": 2607,
+      "name": "Ashes of Belo'ren",
+      "description": "One of Al'ar's last clutch, Belo'ren was taken to the Isle of Quel'Danas and raised to defend the Sunwell from any who would threaten it with his very life. It is said that death will never claim him.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-130474.jpg",
+      "source": "Drop",
+      "faction": "BOTH",
+      "expansion": 10
+    },
+    "2608": {
+      "id": 2608,
+      "name": "Light-Forged Mechsuit",
+      "description": "Cooperation between the newly-awakened earthen Ordinants and the smiths of Hallowfall has resulted an improved, light-forged earthen mechsuit.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-130496.jpg",
+      "source": "Achievement",
+      "faction": "BOTH",
+      "expansion": 10
+    },
+    "2612": {
+      "id": 2612,
+      "name": "Void-Forged Overseer",
+      "description": "After the Sepulcher of the First Ones was opened, this construct of the First Ones was stolen by the brokers and sold to the ethereals in a transaction at the Veiled Market. Under the ethereals' ingenious modifications, it integrated the mysteries of the Aether, gliding through the air with extraordinary elegance, leaving behind a trail of shimmering stardust.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-130706.jpg",
+      "source": "Promotion",
+      "faction": "BOTH",
+      "expansion": 10
+    },
+    "2614": {
+      "id": 2614,
+      "name": "Fierce Grimlynx",
+      "description": "This grimlynx has seen many battles against the creatures in the Rift of Aln.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-128677.jpg",
+      "source": "Vendor",
+      "faction": "BOTH",
+      "expansion": 10
+    },
+    "2615": {
+      "id": 2615,
+      "name": "Rootstalker Grimlynx",
+      "description": "With fur to match the deep roots and armor to match the vast foliage, these Grimlynx are equipped to be some of the ultimate hunters of Harandar.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-128675.jpg",
+      "source": "Drop",
+      "faction": "BOTH",
+      "expansion": 10
+    },
+    "2616": {
+      "id": 2616,
+      "name": "Ivory Grimlynx",
+      "description": "Ivory grimlynxes have a strong independent streak. It takes an especially brave Haranir to ride them.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-128676.jpg",
+      "source": "Achievement",
       "faction": "BOTH",
       "expansion": 10
     },
@@ -12870,6 +12987,15 @@
       "description": "Twisted by the void, these winged creatures now rule the skies of K'aresh.",
       "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-131602.jpg",
       "source": "Unknown",
+      "faction": "BOTH",
+      "expansion": 10
+    },
+    "2634": {
+      "id": 2634,
+      "name": "Scorching Valor",
+      "description": "Some cannot be held back or restrained. Scorching Valor will seek greatness and only serve those who can serve their pursuit.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-131664.jpg",
+      "source": "In-Game Shop",
       "faction": "BOTH",
       "expansion": 10
     },
@@ -13161,6 +13287,24 @@
       "faction": "BOTH",
       "expansion": 10
     },
+    "2693": {
+      "id": 2693,
+      "name": "Amani Sunfeather",
+      "description": "Born of Abundance and the forest's renewal, these eagles gleam in the setting sun, a living sign of the Amani's rekindled strength.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-129971.jpg",
+      "source": "Vendor",
+      "faction": "BOTH",
+      "expansion": 10
+    },
+    "2694": {
+      "id": 2694,
+      "name": "Amani Windcaller",
+      "description": "Swift as the storm and sharp as lightning, these sacred eagles bear the mark of Akil'zon, carrying their riders on the winds of her blessing.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-125983.jpg",
+      "source": "Vendor",
+      "faction": "BOTH",
+      "expansion": 10
+    },
     "2696": {
       "id": 2696,
       "name": "Highlands Gobbler",
@@ -13197,6 +13341,42 @@
       "faction": "BOTH",
       "expansion": 10
     },
+    "2700": {
+      "id": 2700,
+      "name": "Frostfall Groveglider",
+      "description": "These high-flying denizens of Azeroth's tallest trees have developed a thick, silky coat to adapt to even the coldest climates.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-136389.jpg",
+      "source": "In-Game Shop",
+      "faction": "BOTH",
+      "expansion": 10
+    },
+    "2701": {
+      "id": 2701,
+      "name": "Cindertuft Groveglider",
+      "description": "Native to Hyjal, these mischievous tree-dwellers underwent a startling transformation when the Firelands made its appearance in the region.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-136418.jpg",
+      "source": "In-Game Shop",
+      "faction": "BOTH",
+      "expansion": 10
+    },
+    "2702": {
+      "id": 2702,
+      "name": "Gloombough Groveglider",
+      "description": "The Gloombough not only have uniquely dark coloring, but are entirely nocturnal, making them one of the rarest tree-dwellers to spot in person.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-136419.jpg",
+      "source": "In-Game Shop",
+      "faction": "BOTH",
+      "expansion": 10
+    },
+    "2703": {
+      "id": 2703,
+      "name": "Blossombranch Groveglider",
+      "description": "These enchanting grovegliders are known for their coloring, reminiscent of some of Pandaria's treasured blossoming trees.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-136420.jpg",
+      "source": "In-Game Shop",
+      "faction": "BOTH",
+      "expansion": 10
+    },
     "2705": {
       "id": 2705,
       "name": "Chestnut Courser",
@@ -13215,12 +13395,57 @@
       "faction": "BOTH",
       "expansion": 10
     },
+    "2707": {
+      "id": 2707,
+      "name": "Brilliant Petalwing",
+      "description": "This beast glows with a radiance no void could suppress.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-129738.jpg",
+      "source": "Achievement",
+      "faction": "BOTH",
+      "expansion": 10
+    },
+    "2708": {
+      "id": 2708,
+      "name": "Vibrant Petalwing",
+      "description": "Filling the skies of Harandar with a striking pink hue, the Vibrant Petalwing attained its noteworthy pigment through the nectar of various flora it consumes.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-129737.jpg",
+      "source": "Drop",
+      "faction": "BOTH",
+      "expansion": 10
+    },
+    "2710": {
+      "id": 2710,
+      "name": "Cerulean Sporeglider",
+      "description": "This sporeglider likes to gently nuzzle its riders.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-125195.jpg",
+      "source": "Vendor",
+      "faction": "BOTH",
+      "expansion": 10
+    },
+    "2713": {
+      "id": 2713,
+      "name": "Ruddy Sporeglider",
+      "description": "This sporeglider derived its striking hue from the unique fungus growing around Teldrassil's roots.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-125194.jpg",
+      "source": "Drop",
+      "faction": "BOTH",
+      "expansion": 10
+    },
     "2716": {
       "id": 2716,
       "name": "(PH) Legion Remix Mount",
       "description": "The talbuks of Argus have grown long, coarse fur of brilliant colors that reflects the hues of their broken planet.",
       "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-76294.jpg",
       "source": "World Event",
+      "faction": "BOTH",
+      "expansion": 10
+    },
+    "2719": {
+      "id": 2719,
+      "name": "Starspark Netherdrake",
+      "description": "After flying you to the ends of Outland and beyond, the netherwing drake was eventually drawn to the blue skies of Azeroth as well.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-137348.jpg",
+      "source": "Promotion",
       "faction": "BOTH",
       "expansion": 10
     },
@@ -13331,6 +13556,654 @@
       "source": "Promotion",
       "faction": "BOTH",
       "expansion": 10
+    },
+    "2733": {
+      "id": 2733,
+      "name": "Calamitous Carrion",
+      "description": "Bearing Zul'Aman's fiercest riders, its shadowed wings strike down any who dare resist.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-137607.jpg",
+      "source": "Achievement",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2734": {
+      "id": 2734,
+      "name": "Convalescent Carrion",
+      "description": "Circling above the dying and the doomed, its wings herald plague, ruin, and the certainty that nothing left in its shadow will rise again.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-137610.jpg",
+      "source": "Achievement",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2747": {
+      "id": 2747,
+      "name": "Untainted Grove Crawler",
+      "description": "Somehow this grove crawler remains untouched by the horrors that overran Fungara Village.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-137944.jpg",
+      "source": "Drop",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2749": {
+      "id": 2749,
+      "name": "Echo of Aln'sharan",
+      "description": "Heed well the song of the Goddess.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-137945.jpg",
+      "source": "Drop",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2751": {
+      "id": 2751,
+      "name": "Augmented Stormray",
+      "description": "Captured from K'aresh and mutated by Charonus, this stormray escaped from Voidscar Arena and has wandered the Voidstorm.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-137617.jpg",
+      "source": "Drop",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2753": {
+      "id": 2753,
+      "name": "Fiery Dragonhawk",
+      "description": "A dragonhawk whose wings shine as brightly as the leaves of its Eversong home.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-138059.jpg",
+      "source": "Vendor",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2755": {
+      "id": 2755,
+      "name": "Umbral Dragonhawk",
+      "description": "Cloaked in blackened tones, this Dragonhawk glides with calm precision, its somber coloring lending it an air of quiet distinction.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-138061.jpg",
+      "source": "Vendor",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2756": {
+      "id": 2756,
+      "name": "Crimson Dragonhawk",
+      "description": "A strikingly colored Dragonhawk admired across Quel'Thalas, its vivid red wings cutting bright arcs through the skies as it glides with smooth, effortless grace.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-138062.jpg",
+      "source": "Vendor",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2758": {
+      "id": 2758,
+      "name": "Cobalt Dragonhawk",
+      "description": "A rare breed of Dragonhawk that soars the Thalassian skies on azure wings after having escaped from the Sunwing Rookery.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-138064.jpg",
+      "source": "Drop",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2760": {
+      "id": 2760,
+      "name": "Amani Sharptalon",
+      "description": "A rare variety of the Amani eagle, Sharptalons strike with terrifying precision and fly with unparalleled grace.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-129972.jpg",
+      "source": "Drop",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2761": {
+      "id": 2761,
+      "name": "Crimson Silvermoon Hawkstrider",
+      "description": "The pride of the Silvermoon Court, these hawkstriders are prized for their vibrant red plumage and purebred elegance.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-131414.jpg",
+      "source": "Vendor",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2762": {
+      "id": 2762,
+      "name": "Cerulean Hawkstrider",
+      "description": "A brilliant-plumed hawkstrider that escaped from the Silvermoon stables, who knows where in Eversong it may be hiding?",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-131415.jpg",
+      "source": "Drop",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2764": {
+      "id": 2764,
+      "name": "Duskbrute Harrower",
+      "description": "These harrowers are attracted to the constant battle cries and bloodshed across Slayer's Rise.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-138076.jpg",
+      "source": "Drop",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2767": {
+      "id": 2767,
+      "name": "Contained Stormarion Defender",
+      "description": "While often aggressive, some Harrowers can be tamed and taught to aid in defensive military techniques. This Harrower looks over the Stormarion Core to ensure none can breach it.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-138078.jpg",
+      "source": "World Event",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2769": {
+      "id": 2769,
+      "name": "Preyseeker's Hubris",
+      "description": "Larger mana wyrms are sometimes used as mounts by Blood Elves, but are more frequently kept as status symbols.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-137182.jpg",
+      "source": "Vendor",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2770": {
+      "id": 2770,
+      "name": "Preyseeker's Wrath",
+      "description": "Mana wyrms that are large and strong enough to support full barding and rider are quite rare and highly prized.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-137178.jpg",
+      "source": "Vendor",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2771": {
+      "id": 2771,
+      "name": "Preyseeker's Nightmare",
+      "description": "Golden mana wyrms are an uncommon mutation. Some of Astalor's side experiments have included efforts to increase their population..",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-137144.jpg",
+      "source": "Achievement",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2772": {
+      "id": 2772,
+      "name": "Blessed Amani Burrower",
+      "description": "A creature blessed by the wilds, it moves with the steadfast spirit and gentle strength the Amani hold sacred.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-138066.jpg",
+      "source": "Vendor",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2773": {
+      "id": 2773,
+      "name": "Giganto Manis",
+      "description": "Whispers tell of the Giganto Manis, a titanic creature said to dwell within Azeroth's very veins. Those who claim to have seen it speak of claws vast enough to pierce a dragon's heart, and sharp enough to carve through the finest armor forged by mortal hands.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-138068.jpg",
+      "source": "Achievement",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2775": {
+      "id": 2775,
+      "name": "Witherbark Pango",
+      "description": "This rather rambunctious Pango escaped from the Witherbark Tribe after having its armor affixed. Finders keepers!",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-138067.jpg",
+      "source": "Drop",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2776": {
+      "id": 2776,
+      "name": "Amani Blessed Bear",
+      "description": "Once symbols of conquest, these war-bears now stride again, reborn through Nalorakk's blessing and the renewed spirit of the Amani.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-125982.jpg",
+      "source": "Vendor",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2778": {
+      "id": 2778,
+      "name": "Ancestral War Bear",
+      "description": "Its tread resounds with the memory of ancient warriors, a living symbol of the unwavering ferocity the Amani revere.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-138073.jpg",
+      "source": "Drop",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2785": {
+      "id": 2785,
+      "name": "Relinquished Scarlet Charger",
+      "description": "No longer a tool of the Scarlet Crusade, this charger now guides recruits down the path of the Light with renewed purpose.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-137712.jpg",
+      "source": "Quest",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2786": {
+      "id": 2786,
+      "name": "Hexed Vilefeather Eagle",
+      "description": "Once a proud sky-hunter, she now soars on withered wings, her spirit twisted by lingering necromantic curses that seep through every rotting plume and ghostlit eye.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-131635.jpg",
+      "source": "Drop",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2789": {
+      "id": 2789,
+      "name": "Ravenous Shredclaw",
+      "description": "Fast and dependable, Shredclaws were one of the first creatures tamed in the Voidstorm. Their owners learned quickly not to leave them alone with their pets.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-138126.jpg",
+      "source": "Vendor",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2790": {
+      "id": 2790,
+      "name": "Insatiable Shredclaw",
+      "description": "The shredclaw has fully embraced the way of the Void: never satisfied, constantly seeking out new strength to dominate and new prey to devour.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-138127.jpg",
+      "source": "Drop",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2791": {
+      "id": 2791,
+      "name": "Prowling Shredclaw",
+      "description": "According to ren'dorei scouts, shredclaws are often seen hunting in packs.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-138125.jpg",
+      "source": "Vendor",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2792": {
+      "id": 2792,
+      "name": "Frenzied Shredclaw",
+      "description": "Once a pack member dies, these shredclaws enter a frenzy of rage that not even a hulking ultradon can stop.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-138124.jpg",
+      "source": "Vendor",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2793": {
+      "id": 2793,
+      "name": "Vicious Snaplizard",
+      "description": "These creatures are found sneaking through the battlefield and climbing over obstactles, ready to cause trouble for the Alliance.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-138128.jpg",
+      "source": "Achievement",
+      "faction": "HORDE",
+      "expansion": 11
+    },
+    "2794": {
+      "id": 2794,
+      "name": "Vicious Snaplizard",
+      "description": "These creatures are found sneaking through the battlefield and climbing over obstactles, ready to cause trouble for the Horde.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-138129.jpg",
+      "source": "Achievement",
+      "faction": "ALLIANCE",
+      "expansion": 11
+    },
+    "2795": {
+      "id": 2795,
+      "name": "Bronze Wilderling",
+      "description": "The regal wilderlings twist through the sky, free as the unbound magic that sustains their flight.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-138326.jpg",
+      "source": "Drop",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2796": {
+      "id": 2796,
+      "name": "Bronze Aquilon",
+      "description": "The reliable steeds of Bastion are designed to mirror the proud and noble warriors of the Ascended.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-138322.jpg",
+      "source": "Drop",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2797": {
+      "id": 2797,
+      "name": "Bronze Corpsefly",
+      "description": "It takes a great deal of effort to decorate a corpsefly, but some would say the efforts are worth it.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-138324.jpg",
+      "source": "Vendor",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2798": {
+      "id": 2798,
+      "name": "Bronze Gravewing",
+      "description": "While dark and ominous is the preferred aesthetic of those who reside in Revendreth, there are some who still favor gleaming luster.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-138323.jpg",
+      "source": "Vendor",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2801": {
+      "id": 2801,
+      "name": "Galactic Gladiator's Goredrake",
+      "description": "Originating from the void, fully armored and ready for combat.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-139089.jpg",
+      "source": "Achievement",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2802": {
+      "id": 2802,
+      "name": "Geargrinder Mk. 11",
+      "description": "Undergoes a new iteration each time it explodes!",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-138340.jpg",
+      "source": "Unknown",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2803": {
+      "id": 2803,
+      "name": "Skypaw Glimmerfur",
+      "description": "A Glimmerfur's coat takes on properties of its environment much like a camouflage. Patterns of bright blue skies and majestic white clouds have earned this glimmerfur the nickname \"Skypaw.\"",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-138435.jpg",
+      "source": "Vendor",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2804": {
+      "id": 2804,
+      "name": "Crimson Lupine",
+      "description": "Once, the First Ones desired creations with fierce devotion they could mold to their purposes. The lupine of Zerith Mortis are one of their many creations, and those bearing crimson forms are said to be the most powerful of all.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-138451.jpg",
+      "source": "Vendor",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2805": {
+      "id": 2805,
+      "name": "Spectral Hawkstrider",
+      "description": "Phalanx Breaker of the Silvermoon Cavalry, this companion of the past ever wills its rider forward.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-138492.jpg",
+      "source": "Drop",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2807": {
+      "id": 2807,
+      "name": "Brawlin' Bruno",
+      "description": "Said to be leaner and potentially even meaner than the venerable Bruce. Bruno's legacy is yet to be written.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-138446.jpg",
+      "source": "World Event",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2808": {
+      "id": 2808,
+      "name": "Ballistic Bronco",
+      "description": "Ideal transportation for a Brawler that always hits their mark.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-138747.jpg",
+      "source": "World Event",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2815": {
+      "id": 2815,
+      "name": "Snowpaw Glimmerfur Prowler",
+      "description": "The snowpaw inhabit the frigid afterlives of the Shadowlands, reveling in their frosty environment. Travelers thought lost to the deadly blizzards of Northrend would sometimes miraculously be found alive, proclaiming that they owe their lives to the mysterious foxes that protected them.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-138874.jpg",
+      "source": "Vendor",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2817": {
+      "id": 2817,
+      "name": "Lucent Hawkstrider",
+      "description": "A loyal creature of Thalassian nobility, it finds comfort holed up in the Magisters' Terrace.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-138969.jpg",
+      "source": "Drop",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2823": {
+      "id": 2823,
+      "name": "Savage Crimson Battle Turtle",
+      "description": "This savage turtle sees red at every turn. Though slow in speed, it is vital to remember that nothing can outrun a cannon.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-139099.jpg",
+      "source": "Trading Post",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2825": {
+      "id": 2825,
+      "name": "Cloudborn Razorwing",
+      "description": "A very rare Korthian creature, due to limited cloud cover.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-100252.jpg",
+      "source": "Trading Post",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2827": {
+      "id": 2827,
+      "name": "Sanguine Harrower",
+      "description": "A brutal aerial predator of the Voidstorm, the Sanguine Harrower makes up for its lack of stealth with a terrifying visage and hunting prowess.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-139395.jpg",
+      "source": "Drop",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2828": {
+      "id": 2828,
+      "name": "Voidbound Stormray",
+      "description": "With its razor-sharp teeth, the Voidbound Stormray look eager to bite you.  It will, but only if you let it.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-139300.jpg",
+      "source": "Vendor",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2829": {
+      "id": 2829,
+      "name": "Lab-grown Stormray",
+      "description": "Through the intensive research in the void, researchers were able to bring this Stormray back to life completely tamed.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-139301.jpg",
+      "source": "Achievement",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2831": {
+      "id": 2831,
+      "name": "Tenebrous Harrower",
+      "description": "The fiercest harrowers of Voidstorm are often twisted by the void and bound to Xal'atath's will.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-139474.jpg",
+      "source": "Achievement",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2833": {
+      "id": 2833,
+      "name": "Arboreal Pseudoshell",
+      "description": "The plants of the deep lands often emulate the creatures of Azeroth. The purpose of the mimicry is unknown, but can be quite disturbing when the terrestrial mollusks are on the wrong end of an arboreal meal.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-139484.jpg",
+      "source": "Trading Post",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2834": {
+      "id": 2834,
+      "name": "Cabbage Pseudoshell",
+      "description": "The plants of the deep lands often emulate the creatures of of Azeroth. The purpose of the mimicry is unknown, but can be quite disturbing when the terrestrial mollusks are on the wrong end of an arboreal meal.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-139485.jpg",
+      "source": "Trading Post",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2835": {
+      "id": 2835,
+      "name": "Lavender Pseudoshell",
+      "description": "The plants of the deep lands often emulate the creatures of of Azeroth. The purpose of the mimicry is unknown, but can be quite disturbing when the terrestrial mollusks are on the wrong end of an arboreal meal.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-139486.jpg",
+      "source": "Trading Post",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2836": {
+      "id": 2836,
+      "name": "Accented Pseudoshell",
+      "description": "The plants of the deep lands often emulate the creatures of of Azeroth. The purpose of the mimicry is unknown, but can be quite disturbing when the terrestrial mollusks are on the wrong end of an arboreal meal.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-139487.jpg",
+      "source": "Trading Post",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2838": {
+      "id": 2838,
+      "name": "Fantastical Goblin Waveshredder",
+      "description": "When you're ready for fun you're ready for the Fantastical Goblin Waveshredder. Guaranteed to bring the fun.\r\n\r\n\r\n\r\n*Disclaimer: Fun not guaranteed",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-139557.jpg",
+      "source": "Promotion",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2840": {
+      "id": 2840,
+      "name": "Silvermoon's Arcane Defender",
+      "description": "A gilded variant of the Arcane Guardian, most often seen guarding the more opulent districts of Silvermoon City.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-138591.jpg",
+      "source": "Vendor",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2841": {
+      "id": 2841,
+      "name": "Elven Arcane Guardian",
+      "description": "Sworn defender of the Elven people, animated by arcane power and an unyielding will to protect.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-138592.jpg",
+      "source": "Vendor",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2842": {
+      "id": 2842,
+      "name": "Arcanovoid Construct",
+      "description": "The Void's influence is far-reaching and overpowering enough that even an Arcane Guardian can be made to kneel.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-139810.jpg",
+      "source": "Achievement",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2843": {
+      "id": 2843,
+      "name": "Ghastropod",
+      "description": "This snail make a deliberate decision to plunge itself into the slime canals of Undercity. It emerged bigger, stronger but not faster than before.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-139670.jpg",
+      "source": "Promotion",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2845": {
+      "id": 2845,
+      "name": "Vicious Snapvine",
+      "description": "The Snapvines have always been dangerous, but we never realized that the deep variants were independent, and could fly. This Snapvine is always wanting to see more of the world and be fed.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-139690.jpg",
+      "source": "Trading Post",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2846": {
+      "id": 2846,
+      "name": "Ferocious Snapvine",
+      "description": "The Snapvines have always been dangerous, but we never realized that the deep variants were independent, and could fly. The fruit from this beast is especially delicious when baked in a pie.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-139691.jpg",
+      "source": "Trading Post",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2847": {
+      "id": 2847,
+      "name": "Blooded Snapvine",
+      "description": "The Snapvines have always been dangerous, but we never realized that the deep variants were independent, and could fly. The distinct, bold coloring means the creature has eaten recently.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-139692.jpg",
+      "source": "Trading Post",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2848": {
+      "id": 2848,
+      "name": "Savage Snapvine",
+      "description": "The Snapvines have always been dangerous, but we never realized that the deep variants were independent, and could fly. Why would anyone want to find one of those things, much less ride one? But the fruit is good.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-139693.jpg",
+      "source": "Trading Post",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2849": {
+      "id": 2849,
+      "name": "Hypo-Speed X6000",
+      "description": "A compilation of nuts, bolts, gears, and treated wood paneling make for an unusually speedy ride.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-139761.jpg",
+      "source": "Promotion",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2850": {
+      "id": 2850,
+      "name": "Fluffy Comfy Flying Quilt",
+      "description": "Woven together by some of the finest Dalaran mages, this flying quilt is known for its comfort and fluffy pillows.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-139896.jpg",
+      "source": "Trading Post",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2851": {
+      "id": 2851,
+      "name": "Gruffy Comfy Flying Quilt",
+      "description": "Woven together by some of the grumpiest Dalaran mages, this flying quilt is known for its comfort and fluffy pillows.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-139897.jpg",
+      "source": "Trading Post",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2852": {
+      "id": 2852,
+      "name": "Comfy Bel'ameth Flying Quilt",
+      "description": "Ainderu Summerleaf's hand-woven quilts are popular among the children of Bel'ameth.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-139898.jpg",
+      "source": "Trading Post",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2853": {
+      "id": 2853,
+      "name": "Comfy Silvermoon Flying Quilt",
+      "description": "Sempstress Ambershine's enchanted quilts became a must-buy trend for the noble-borne children of Silvermoon City.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-139899.jpg",
+      "source": "Trading Post",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2912": {
+      "id": 2912,
+      "name": "Vivacious Chloroceros",
+      "description": "Catching a chloroceros mane leaf mid-air is considered a sign of good luck among the Haranir. The more vivacious the leaf, the greater the luck.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-139923.jpg",
+      "source": "Achievement",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2913": {
+      "id": 2913,
+      "name": "Vivid Chloroceros",
+      "description": "The healthier the chloroceros, the more vivid the foliage.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-139925.jpg",
+      "source": "Vendor",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2914": {
+      "id": 2914,
+      "name": "Fel Spirehawk",
+      "description": "Looking into the eyes of this mystical beast is like peering into the heart of a fel corrupted sun. Goggles are recommended when you're riding.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-140095.jpg",
+      "source": "Promotion",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2917": {
+      "id": 2917,
+      "name": "Anu'shalla, Shadow's Guidance",
+      "description": "Her wings cut through the sky like shadows on a moonlit night.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-140721.jpg",
+      "source": "Achievement",
+      "faction": "BOTH",
+      "expansion": 11
+    },
+    "2969": {
+      "id": 2969,
+      "name": "Swift Spectral Dragonhawk",
+      "description": "Even the dead need a lift every now and then.",
+      "image": "https://render.worldofwarcraft.com/eu/npcs/zoom/creature-display-137273.jpg",
+      "source": "Achievement",
+      "faction": "BOTH",
+      "expansion": 11
     }
   }
 }

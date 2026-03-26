@@ -119,7 +119,10 @@ async function fetchCreatureDisplayImage(creatureDisplayId, accessToken) {
  * This is a heuristic fallback for when API doesn't provide expansion data
  */
 function getExpansionFromId(mountId) {
-  // The War Within (11.x) - IDs 1750+
+  // Midnight (12.x) - IDs 2733+
+  if (mountId >= 2733) return 11;
+
+  // The War Within (11.x) - IDs 1750-2732
   if (mountId >= 1750) return 10;
 
   // Dragonflight (10.x) - IDs 1500-1749

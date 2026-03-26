@@ -18,7 +18,8 @@ const EXPANSIONS = {
   7: 'Battle for Azeroth',
   8: 'Shadowlands',
   9: 'Dragonflight',
-  10: 'The War Within'
+  10: 'The War Within',
+  11: 'Midnight'
 };
 
 console.log('⚡ My Mounts initialized');
