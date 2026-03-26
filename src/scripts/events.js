@@ -411,8 +411,8 @@ class EventsPage {
     // PvP
     if (name.includes('pvp brawl') || name.includes('battleground') || name.includes('arena skirmish')) return 'https://wow.zamimg.com/images/content/short-headers/retail/categories/pvp.jpg';
 
-    // Darkmoon Faire — use Karazhan (closest thematic match)
-    if (name.includes('darkmoon')) return `${cdn}/karazhan-small.jpg`;
+    // Darkmoon Faire
+    if (name.includes('darkmoon')) return 'https://wow.zamimg.com/optimized/guide-header-revamp/uploads/guide/header/692.jpg';
 
     // Holidays
     if (name.includes('winter veil') || name.includes('feast of winter')) return `${cdn}/naxxramas-small.jpg`;
