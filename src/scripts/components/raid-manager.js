@@ -10,6 +10,16 @@ class RaidManager {
     this.authService = authService;
     this.raids = [];
     this.signupModal = null;
+
+    // Read server (guild) ID from URL param or localStorage
+    const urlParams = new URLSearchParams(window.location.search);
+    const serverParam = urlParams.get('server');
+    if (serverParam) {
+      localStorage.setItem('gld_raid_server', serverParam);
+      this.guildId = serverParam;
+    } else {
+      this.guildId = localStorage.getItem('gld_raid_server') || null;
+    }
   }
 
   async init() {
@@ -46,7 +56,7 @@ class RaidManager {
     const content = document.getElementById('raids-content');
 
     try {
-      const raids = await raidService.getRaids();
+      const raids = await raidService.getRaids(false, this.guildId);
 
       // Fetch full details (with signups) for each raid
       this.raids = await Promise.all(
@@ -71,11 +81,13 @@ class RaidManager {
     const userId = user?.id;
 
     if (this.raids.length === 0) {
+      const message = this.guildId
+        ? '<p>No upcoming raids</p><p class="no-raids-sub">Create one via your Discord bot, ask your GM!</p>'
+        : '<p>No raids found</p><p class="no-raids-sub">Click a raid signup link from your Discord server to get started</p>';
       content.innerHTML = `
         <div class="no-raids">
           <i class="las la-dungeon la-3x"></i>
-          <p>No upcoming raids</p>
-          <p class="no-raids-sub">Create one via your discord bot, ask your GM!</p>
+          ${message}
         </div>
       `;
       return;

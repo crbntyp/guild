@@ -9,6 +9,14 @@ if ($method === 'GET') {
     // List raids with signup counts
     $status = $_GET['status'] ?? 'open';
     $past = isset($_GET['past']);
+    $guildId = $_GET['guild'] ?? null;
+
+    $guildFilter = '';
+    $params = [];
+    if ($guildId) {
+        $guildFilter = 'AND r.discord_guild_id = :guild_id';
+        $params[':guild_id'] = $guildId;
+    }
 
     if ($past) {
         $stmt = $db->prepare("
@@ -20,12 +28,12 @@ if ($method === 'GET') {
                    SUM(CASE WHEN s.is_reserve = 1 AND s.status != 'declined' THEN 1 ELSE 0 END) as reserve_count
             FROM raids r
             LEFT JOIN raid_signups s ON r.id = s.raid_id
-            WHERE r.status IN ('completed', 'cancelled')
+            WHERE r.status IN ('completed', 'cancelled') $guildFilter
             GROUP BY r.id
             ORDER BY r.raid_date DESC
             LIMIT 20
         ");
-        $stmt->execute();
+        $stmt->execute($params);
     } else {
         $stmt = $db->prepare("
             SELECT r.*,
@@ -36,11 +44,11 @@ if ($method === 'GET') {
                    SUM(CASE WHEN s.is_reserve = 1 AND s.status != 'declined' THEN 1 ELSE 0 END) as reserve_count
             FROM raids r
             LEFT JOIN raid_signups s ON r.id = s.raid_id
-            WHERE r.status IN ('open', 'full')
+            WHERE r.status IN ('open', 'full') $guildFilter
             GROUP BY r.id
             ORDER BY r.raid_date ASC
         ");
-        $stmt->execute();
+        $stmt->execute($params);
     }
 
     $raids = $stmt->fetchAll();

@@ -17,10 +17,11 @@ class RaidService {
     return headers;
   }
 
-  async getRaids(past = false) {
-    const url = past
-      ? `${this.baseUrl}/raids.php?past=1`
-      : `${this.baseUrl}/raids.php`;
+  async getRaids(past = false, guildId = null) {
+    const params = new URLSearchParams();
+    if (past) params.set('past', '1');
+    if (guildId) params.set('guild', guildId);
+    const url = `${this.baseUrl}/raids.php?${params.toString()}`;
     const response = await fetch(url);
     if (!response.ok) throw new Error('Failed to fetch raids');
     const data = await response.json();
