@@ -73,3 +73,20 @@ function verifyBnetToken() {
 function getRequestBody() {
     return json_decode(file_get_contents('php://input'), true) ?: [];
 }
+
+/**
+ * Notify Discord bot via internal webhook (fire and forget)
+ */
+function notifyDiscord($data) {
+    $ch = curl_init('http://127.0.0.1:3002');
+    curl_setopt_array($ch, [
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => json_encode($data),
+        CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => 2,
+        CURLOPT_CONNECTTIMEOUT => 1
+    ]);
+    curl_exec($ch);
+    curl_close($ch);
+}

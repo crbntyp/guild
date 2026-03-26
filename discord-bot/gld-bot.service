@@ -1,0 +1,16 @@
+[Unit]
+Description=gld Discord Bot
+After=network.target mysql.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/var/www/crbntyp/gld-bot
+ExecStart=/usr/bin/node bot.js
+Restart=always
+RestartSec=10
+Environment=NODE_ENV=production
+EnvironmentFile=/var/www/crbntyp/gld-bot/.env
+
+[Install]
+WantedBy=multi-user.target

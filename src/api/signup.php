@@ -152,11 +152,25 @@ if ($method === 'POST') {
     $stmt->execute([':raid_id' => $raidId]);
     $result = $stmt->fetch();
 
+    $wasFull = $raid['status'] === 'full';
     if ((int)$result['count'] >= (int)$raid['max_players']) {
         $db->prepare("UPDATE raids SET status = 'full' WHERE id = :id")->execute([':id' => $raidId]);
+        // Notify Discord if raid just became full
+        if (!$wasFull) {
+            notifyDiscord(['event' => 'raid_full', 'raid_id' => $raidId]);
+        }
     } else {
         $db->prepare("UPDATE raids SET status = 'open' WHERE id = :id AND status = 'full'")->execute([':id' => $raidId]);
     }
+
+    // Notify Discord of signup
+    notifyDiscord([
+        'event' => 'signup',
+        'raid_id' => $raidId,
+        'character_name' => $data['character_name'],
+        'role' => $role,
+        'is_reserve' => (bool)$isReserve
+    ]);
 
     echo json_encode(['success' => true, 'is_reserve' => (bool)$isReserve]);
 
@@ -215,8 +229,8 @@ if ($method === 'POST') {
         exit;
     }
 
-    // Get the withdrawing player's role before deleting
-    $stmt = $db->prepare("SELECT role, is_reserve FROM raid_signups WHERE raid_id = :raid_id AND bnet_user_id = :uid");
+    // Get the withdrawing player's info before deleting
+    $stmt = $db->prepare("SELECT character_name, role, is_reserve FROM raid_signups WHERE raid_id = :raid_id AND bnet_user_id = :uid");
     $stmt->execute([':raid_id' => $raidId, ':uid' => (int)$user['id']]);
     $withdrawing = $stmt->fetch();
 
@@ -248,6 +262,14 @@ if ($method === 'POST') {
             $db->prepare("UPDATE raids SET status = 'open' WHERE id = :id AND status = 'full'")->execute([':id' => $raidId]);
         }
     }
+
+    // Notify Discord of withdrawal
+    notifyDiscord([
+        'event' => 'withdraw',
+        'raid_id' => $raidId,
+        'character_name' => $withdrawing['character_name'],
+        'role' => $withdrawing['role']
+    ]);
 
     echo json_encode(['success' => true]);
 
