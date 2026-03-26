@@ -6,7 +6,7 @@ module.exports = {
 
   // MySQL
   db: {
-    host: 'localhost',
+    host: '127.0.0.1',
     user: 'gld_user',
     password: 'GldPass123!',
     database: 'gld'

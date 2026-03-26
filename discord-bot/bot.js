@@ -8,6 +8,15 @@ const client = new Client({
 
 let db;
 
+// Raid image URLs (large versions from Blizzard render CDN)
+const RAID_IMAGES = {
+  'The Voidspire': 'https://render.worldofwarcraft.com/us/zones/the-voidspire-large.jpg',
+  "March on Quel'Danas": 'https://render.worldofwarcraft.com/us/zones/march-on-queldanas-large.jpg',
+  'The Dreamrift': 'https://render.worldofwarcraft.com/us/zones/the-dreamrift-large.jpg',
+  'Nerub-ar Palace': 'https://render.worldofwarcraft.com/us/zones/nerubar-palace-small.jpg',
+  'Liberation of Undermine': 'https://render.worldofwarcraft.com/us/zones/liberation-of-undermine-small.jpg'
+};
+
 async function getDb() {
   if (!db) {
     db = await mysql.createPool({
@@ -42,19 +51,28 @@ async function postRaidEmbed(raid, title, description) {
   const raidDate = new Date(raid.raid_date);
   const timestamp = Math.floor(raidDate.getTime() / 1000);
 
+  const raidImage = RAID_IMAGES[raid.title] || null;
+  const raidDescription = raid.description
+    ? `${description}\n\n> ${raid.description}`
+    : description;
+
   const embed = new EmbedBuilder()
     .setTitle(title)
-    .setDescription(description)
+    .setDescription(raidDescription)
     .setColor(DIFFICULTY_COLORS[raid.difficulty] || 0xA335EE)
     .addFields(
       { name: 'Difficulty', value: raid.difficulty.charAt(0).toUpperCase() + raid.difficulty.slice(1), inline: true },
       { name: 'Date', value: `<t:${timestamp}:F>`, inline: true },
       { name: 'Countdown', value: `<t:${timestamp}:R>`, inline: true },
-      { name: 'Roster', value: `0/${raid.max_players} (${raid.max_tanks}T / ${raid.max_healers}H / ${raid.max_dps}D)`, inline: false }
+      { name: 'Roster', value: `0/${raid.max_players} (${raid.max_tanks}T / ${raid.max_healers}H / ${raid.max_dps}D)`, inline: false },
+      { name: 'Sign Up', value: `[Open gld__ Raids](${config.appUrl}/raids.html)`, inline: false }
     )
-    .setURL(`${config.appUrl}/raids.html`)
-    .setFooter({ text: 'Sign up at gld__' })
+    .setFooter({ text: 'gld__ Raid Signup' })
     .setTimestamp();
+
+  if (raidImage) {
+    embed.setImage(raidImage);
+  }
 
   try {
     const message = await channel.send({ embeds: [embed] });
@@ -150,6 +168,7 @@ client.on('interactionCreate', async (interaction) => {
     const title = interaction.options.getString('title');
     const dateStr = interaction.options.getString('date');
     const difficulty = interaction.options.getString('difficulty') || 'heroic';
+    const description = interaction.options.getString('description') || null;
     const maxPlayers = interaction.options.getInteger('max_players') || 20;
     const tanks = interaction.options.getInteger('tanks') || 2;
     const healers = interaction.options.getInteger('healers') || 4;
@@ -169,9 +188,9 @@ client.on('interactionCreate', async (interaction) => {
       const utcDate = raidDate.toISOString().slice(0, 19).replace('T', ' ');
 
       const [result] = await pool.execute(
-        `INSERT INTO raids (title, raid_date, max_players, max_tanks, max_healers, max_dps, difficulty, status, created_by_battletag)
-         VALUES (?, ?, ?, ?, ?, ?, ?, 'open', ?)`,
-        [title, utcDate, maxPlayers, tanks, healers, dps, difficulty, `Discord:${interaction.user.tag}`]
+        `INSERT INTO raids (title, description, raid_date, max_players, max_tanks, max_healers, max_dps, difficulty, status, created_by_battletag)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'open', ?)`,
+        [title, description, utcDate, maxPlayers, tanks, healers, dps, difficulty, `Discord:${interaction.user.tag}`]
       );
 
       const raidId = result.insertId;

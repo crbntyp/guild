@@ -1,6 +1,7 @@
 // Raids Page
 import PageInitializer from './utils/page-initializer.js';
 import RaidManager from './components/raid-manager.js';
+import authService from './services/auth.js';
 
 console.log('⚡ Raids Page initialized');
 
@@ -13,12 +14,30 @@ const raidBackgrounds = [
 
 document.addEventListener('DOMContentLoaded', async () => {
   await PageInitializer.init({
-    requireAuth: true,
+    requireAuth: false,
     backgrounds: raidBackgrounds,
     backgroundInterval: 10000,
-    onInit: async ({ authService }) => {
-      const raidManager = new RaidManager('raids-container', authService);
-      await raidManager.init();
+    onInit: async () => {
+      if (authService.isAuthenticated()) {
+        const raidManager = new RaidManager('raids-container', authService);
+        await raidManager.init();
+      } else {
+        const container = document.getElementById('raids-container');
+        container.innerHTML = `
+          <div class="raids-login-prompt">
+            <i class="las la-dungeon la-4x"></i>
+            <h2>Raid Signups</h2>
+            <p>Log in with your Battle.net account to view and sign up for upcoming raids.</p>
+            <button class="btn-login-raids" id="btn-login-raids">
+              <i class="las la-user"></i>
+              Login with Battle.net
+            </button>
+          </div>
+        `;
+        document.getElementById('btn-login-raids').addEventListener('click', () => {
+          authService.login();
+        });
+      }
     }
   });
 });
