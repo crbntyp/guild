@@ -13,10 +13,11 @@ if ($method === 'GET') {
     if ($past) {
         $stmt = $db->prepare("
             SELECT r.*,
-                   COUNT(s.id) as signup_count,
-                   SUM(CASE WHEN s.role = 'tank' AND s.status != 'declined' THEN 1 ELSE 0 END) as tank_count,
-                   SUM(CASE WHEN s.role = 'healer' AND s.status != 'declined' THEN 1 ELSE 0 END) as healer_count,
-                   SUM(CASE WHEN s.role = 'dps' AND s.status != 'declined' THEN 1 ELSE 0 END) as dps_count
+                   SUM(CASE WHEN s.is_reserve = 0 AND s.status != 'declined' THEN 1 ELSE 0 END) as signup_count,
+                   SUM(CASE WHEN s.role = 'tank' AND s.is_reserve = 0 AND s.status != 'declined' THEN 1 ELSE 0 END) as tank_count,
+                   SUM(CASE WHEN s.role = 'healer' AND s.is_reserve = 0 AND s.status != 'declined' THEN 1 ELSE 0 END) as healer_count,
+                   SUM(CASE WHEN s.role = 'dps' AND s.is_reserve = 0 AND s.status != 'declined' THEN 1 ELSE 0 END) as dps_count,
+                   SUM(CASE WHEN s.is_reserve = 1 AND s.status != 'declined' THEN 1 ELSE 0 END) as reserve_count
             FROM raids r
             LEFT JOIN raid_signups s ON r.id = s.raid_id
             WHERE r.status IN ('completed', 'cancelled')
@@ -28,10 +29,11 @@ if ($method === 'GET') {
     } else {
         $stmt = $db->prepare("
             SELECT r.*,
-                   COUNT(s.id) as signup_count,
-                   SUM(CASE WHEN s.role = 'tank' AND s.status != 'declined' THEN 1 ELSE 0 END) as tank_count,
-                   SUM(CASE WHEN s.role = 'healer' AND s.status != 'declined' THEN 1 ELSE 0 END) as healer_count,
-                   SUM(CASE WHEN s.role = 'dps' AND s.status != 'declined' THEN 1 ELSE 0 END) as dps_count
+                   SUM(CASE WHEN s.is_reserve = 0 AND s.status != 'declined' THEN 1 ELSE 0 END) as signup_count,
+                   SUM(CASE WHEN s.role = 'tank' AND s.is_reserve = 0 AND s.status != 'declined' THEN 1 ELSE 0 END) as tank_count,
+                   SUM(CASE WHEN s.role = 'healer' AND s.is_reserve = 0 AND s.status != 'declined' THEN 1 ELSE 0 END) as healer_count,
+                   SUM(CASE WHEN s.role = 'dps' AND s.is_reserve = 0 AND s.status != 'declined' THEN 1 ELSE 0 END) as dps_count,
+                   SUM(CASE WHEN s.is_reserve = 1 AND s.status != 'declined' THEN 1 ELSE 0 END) as reserve_count
             FROM raids r
             LEFT JOIN raid_signups s ON r.id = s.raid_id
             WHERE r.status IN ('open', 'full')
@@ -54,6 +56,7 @@ if ($method === 'GET') {
         $raid['tank_count'] = (int)$raid['tank_count'];
         $raid['healer_count'] = (int)$raid['healer_count'];
         $raid['dps_count'] = (int)$raid['dps_count'];
+        $raid['reserve_count'] = (int)$raid['reserve_count'];
     }
 
     echo json_encode(['raids' => $raids]);
