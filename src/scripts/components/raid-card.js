@@ -59,14 +59,17 @@ class RaidCard {
       hour: '2-digit', minute: '2-digit'
     });
 
-    // Countdown
+    // Countdown - always present
     let countdownStr = '';
-    if (!isPast && raid.status === 'open') {
+    if (isPast) {
+      countdownStr = 'Passed';
+    } else {
       const diff = raidDate - now;
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
       const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      if (days > 0) countdownStr = `${days}d ${hours}h`;
-      else if (hours > 0) countdownStr = `${hours}h`;
+      if (days > 1) countdownStr = `${days}d ${hours}h`;
+      else if (days === 1) countdownStr = 'Tomorrow';
+      else if (hours > 0) countdownStr = 'Today';
       else countdownStr = 'Soon';
     }
 
@@ -110,7 +113,7 @@ class RaidCard {
             <div class="raid-card-date">
               <span class="raid-date">${dateStr}</span>
               <span class="raid-time">${timeStr}</span>
-              ${countdownStr ? `<span class="raid-countdown">${countdownStr}</span>` : ''}
+              <span class="raid-countdown">${countdownStr}</span>
             </div>
           </div>
           ${raid.description ? `<p class="raid-card-description">${raid.description}</p>` : ''}
