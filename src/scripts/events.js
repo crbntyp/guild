@@ -408,8 +408,8 @@ class EventsPage {
     if (name.includes('draenor dungeon')) return `${cdn}/hellfire-citadel-small.jpg`;
     if (name.includes('timewalking') || name.includes('dungeon event')) return `${cdn}/ulduar-small.jpg`;
 
-    // PvP — use thematic zone art
-    if (name.includes('pvp brawl') || name.includes('battleground') || name.includes('arena skirmish')) return `${cdn}/vault-of-archavon-small.jpg`;
+    // PvP
+    if (name.includes('pvp brawl') || name.includes('battleground') || name.includes('arena skirmish')) return 'https://wow.zamimg.com/images/content/short-headers/retail/categories/pvp.jpg';
 
     // Darkmoon Faire — use Karazhan (closest thematic match)
     if (name.includes('darkmoon')) return `${cdn}/karazhan-small.jpg`;
