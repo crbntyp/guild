@@ -2,6 +2,7 @@ import raidService from '../services/raid-service.js';
 import RaidCard from './raid-card.js';
 import SignupModal from './signup-modal.js';
 import PageHeader from './page-header.js';
+import wowAPI from '../api/wow-api.js';
 
 class RaidManager {
   constructor(containerId, authService) {
@@ -91,6 +92,29 @@ class RaidManager {
     content.innerHTML = `<div class="raids-grid">${raidsHTML}</div>`;
 
     this.attachRaidListeners();
+    this.loadRaidBackgrounds();
+  }
+
+  async loadRaidBackgrounds() {
+    const cards = this.container.querySelectorAll('.raid-card[data-instance-id]');
+
+    for (const card of cards) {
+      const instanceId = card.dataset.instanceId;
+      if (!instanceId) continue;
+
+      try {
+        const mediaData = await wowAPI.getJournalInstanceMedia(parseInt(instanceId));
+        if (mediaData?.assets) {
+          const tileAsset = mediaData.assets.find(asset => asset.key === 'tile');
+          if (tileAsset?.value) {
+            card.style.backgroundImage = `url('${tileAsset.value}')`;
+            card.classList.add('has-background');
+          }
+        }
+      } catch (error) {
+        // Background not available, no problem
+      }
+    }
   }
 
   attachRaidListeners() {

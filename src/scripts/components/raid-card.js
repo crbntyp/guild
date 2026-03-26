@@ -1,7 +1,26 @@
 import { getClassColor, getClassName } from '../utils/wow-constants.js';
 import { getClassIconUrl, getSpecIconUrl } from '../utils/wow-icons.js';
 
+// Map raid names to journal instance IDs for background imagery
+const RAID_INSTANCE_IDS = {
+  'The Voidspire': 1307,
+  'March on Quel\'Danas': 1308,
+  'The Dreamrift': 1314,
+  'Nerub-ar Palace': 1273,
+  'Liberation of Undermine': 1296,
+  'Manaforge Omega': 1302
+};
+
 class RaidCard {
+  static getInstanceId(raidTitle) {
+    // Try exact match first, then partial match
+    if (RAID_INSTANCE_IDS[raidTitle]) return RAID_INSTANCE_IDS[raidTitle];
+    for (const [name, id] of Object.entries(RAID_INSTANCE_IDS)) {
+      if (raidTitle.toLowerCase().includes(name.toLowerCase())) return id;
+    }
+    return null;
+  }
+
   static render(raid, userSignup = null) {
     const raidDate = new Date(raid.raid_date);
     const now = new Date();
@@ -71,8 +90,12 @@ class RaidCard {
       }
     }
 
+    const instanceId = this.getInstanceId(raid.title);
+
     return `
-      <div class="raid-card ${statusClass}" data-raid-id="${raid.id}">
+      <div class="raid-card ${statusClass}" data-raid-id="${raid.id}" data-instance-id="${instanceId || ''}">
+        <div class="raid-card-bg-overlay"></div>
+        <div class="raid-card-inner">
         <div class="raid-card-header">
           <div class="raid-card-title">
             <h3>${raid.title}</h3>
@@ -111,6 +134,7 @@ class RaidCard {
 
         ${signupListHTML}
         ${actionHTML}
+      </div>
       </div>
     `;
   }
