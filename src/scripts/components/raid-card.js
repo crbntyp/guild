@@ -13,10 +13,11 @@ const RAID_INSTANCE_IDS = {
 
 class RaidCard {
   static getInstanceId(raidTitle) {
-    // Try exact match first, then partial match
-    if (RAID_INSTANCE_IDS[raidTitle]) return RAID_INSTANCE_IDS[raidTitle];
+    // Normalize quotes/apostrophes for matching
+    const normalize = (s) => s.toLowerCase().replace(/['"'"]/g, '');
+    const normalizedTitle = normalize(raidTitle);
     for (const [name, id] of Object.entries(RAID_INSTANCE_IDS)) {
-      if (raidTitle.toLowerCase().includes(name.toLowerCase())) return id;
+      if (normalizedTitle.includes(normalize(name))) return id;
     }
     return null;
   }
