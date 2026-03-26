@@ -424,7 +424,7 @@ class EventsPage {
     if (name.includes('love is in the air')) return `${cdn}/sunwell-plateau-small.jpg`;
 
     // Bonus events
-    if (name.includes('pet battle')) return `${cdn}/darkheart-thicket-small.jpg`;
+    if (name.includes('pet battle')) return 'https://wow.zamimg.com/optimized/guide-header-revamp/images/content/tall-headers/retail/categories/battle-pets.jpg';
     if (name.includes('world quest')) return `${cdn}/the-battle-for-mount-hyjal-small.jpg`;
     if (name.includes('delves')) return `${cdn}/neltharions-lair-small.jpg`;
 
