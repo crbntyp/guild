@@ -438,6 +438,7 @@ class EventsPage {
     if (name.includes('cup')) return `${cdn}/vault-of-the-incarnates-small.jpg`;
 
     // Special events
+    if (name.includes('tadpoles')) return 'https://wow.zamimg.com/uploads/screenshots/normal/619347-march-of-the-tadpoles.jpg';
     if (name.includes('trial of style')) return `${cdn}/the-ruby-sanctum-small.jpg`;
     if (name.includes('secrets of azeroth')) return `${cdn}/temple-of-ahnqiraj-small.jpg`;
 
