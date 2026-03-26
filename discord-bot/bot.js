@@ -64,8 +64,8 @@ async function postRaidEmbed(raid, title, description) {
       { name: 'Difficulty', value: raid.difficulty.charAt(0).toUpperCase() + raid.difficulty.slice(1), inline: true },
       { name: 'Date', value: `<t:${timestamp}:F>`, inline: true },
       { name: 'Countdown', value: `<t:${timestamp}:R>`, inline: true },
-      { name: 'Roster', value: `0/${raid.max_players} (${raid.max_tanks}T / ${raid.max_healers}H / ${raid.max_dps}D)`, inline: false },
-      { name: 'Sign Up', value: `[Open gld__ Raids](${config.appUrl}/raids.html)`, inline: false }
+      { name: 'Roster', value: `0/${raid.max_players} — 🛡️ ${raid.max_tanks} 💚 ${raid.max_healers} ⚔️ ${raid.max_dps}`, inline: false },
+      { name: '\u200b', value: `**[SIGN UP!](${config.appUrl}/raids.html)**`, inline: false }
     )
     .setFooter({ text: 'gld__ Raid Signup' })
     .setTimestamp();
