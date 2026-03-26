@@ -61,6 +61,12 @@ class EventsPage {
         return;
       }
 
+      // Filter out raid instances (handled on the raids page)
+      const raidNames = ['The Voidspire', "March on Quel'Danas", 'The Dreamrift', 'Nerub-ar Palace', 'Liberation of Undermine', 'Manaforge Omega'];
+      if (raidNames.some(r => event.name === r)) {
+        return;
+      }
+
       if (!event.occurrences || event.occurrences.length === 0) {
         return;
       }
