@@ -126,15 +126,15 @@ class RaidCard {
         <div class="raid-card-roles">
           <div class="raid-role">
             <span class="raid-role-icon tank"><i class="las la-shield-alt"></i></span>
-            <span class="raid-role-count">${tankCount}/${raid.min_tanks}</span>
+            <span class="raid-role-count">${tankCount}/${raid.max_tanks}</span>
           </div>
           <div class="raid-role">
             <span class="raid-role-icon healer"><i class="las la-plus-circle"></i></span>
-            <span class="raid-role-count">${healerCount}/${raid.min_healers}</span>
+            <span class="raid-role-count">${healerCount}/${raid.max_healers}</span>
           </div>
           <div class="raid-role">
             <span class="raid-role-icon dps"><i class="las la-crosshairs"></i></span>
-            <span class="raid-role-count">${dpsCount}/${raid.min_dps}</span>
+            <span class="raid-role-count">${dpsCount}/${raid.max_dps}</span>
           </div>
         </div>
 

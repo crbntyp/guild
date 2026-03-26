@@ -11,7 +11,7 @@ $user = verifyBnetToken();
  */
 function shouldBeReserve($db, $raidId, $role) {
     // Get raid limits
-    $stmt = $db->prepare("SELECT max_players, min_tanks, min_healers, min_dps FROM raids WHERE id = :id");
+    $stmt = $db->prepare("SELECT max_players, max_tanks, max_healers, max_dps FROM raids WHERE id = :id");
     $stmt->execute([':id' => $raidId]);
     $raid = $stmt->fetch();
     if (!$raid) return false;
@@ -36,9 +36,9 @@ function shouldBeReserve($db, $raidId, $role) {
         'dps' => (int)$counts['dps']
     ];
     $roleLimits = [
-        'tank' => (int)$raid['min_tanks'],
-        'healer' => (int)$raid['min_healers'],
-        'dps' => (int)$raid['min_dps']
+        'tank' => (int)$raid['max_tanks'],
+        'healer' => (int)$raid['max_healers'],
+        'dps' => (int)$raid['max_dps']
     ];
 
     // Reserve if raid is full OR role slots are full

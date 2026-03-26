@@ -33,9 +33,9 @@ if (!$raid) {
 // Cast numeric fields
 $raid['id'] = (int)$raid['id'];
 $raid['max_players'] = (int)$raid['max_players'];
-$raid['min_tanks'] = (int)$raid['min_tanks'];
-$raid['min_healers'] = (int)$raid['min_healers'];
-$raid['min_dps'] = (int)$raid['min_dps'];
+$raid['max_tanks'] = (int)$raid['max_tanks'];
+$raid['max_healers'] = (int)$raid['max_healers'];
+$raid['max_dps'] = (int)$raid['max_dps'];
 
 // Fetch signups
 $stmt = $db->prepare("

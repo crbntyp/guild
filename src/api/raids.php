@@ -49,9 +49,9 @@ if ($method === 'GET') {
     foreach ($raids as &$raid) {
         $raid['id'] = (int)$raid['id'];
         $raid['max_players'] = (int)$raid['max_players'];
-        $raid['min_tanks'] = (int)$raid['min_tanks'];
-        $raid['min_healers'] = (int)$raid['min_healers'];
-        $raid['min_dps'] = (int)$raid['min_dps'];
+        $raid['max_tanks'] = (int)$raid['max_tanks'];
+        $raid['max_healers'] = (int)$raid['max_healers'];
+        $raid['max_dps'] = (int)$raid['max_dps'];
         $raid['signup_count'] = (int)$raid['signup_count'];
         $raid['tank_count'] = (int)$raid['tank_count'];
         $raid['healer_count'] = (int)$raid['healer_count'];
@@ -76,8 +76,8 @@ if ($method === 'GET') {
     }
 
     $stmt = $db->prepare("
-        INSERT INTO raids (title, description, raid_date, max_players, min_tanks, min_healers, min_dps, difficulty, created_by_battletag)
-        VALUES (:title, :description, :raid_date, :max_players, :min_tanks, :min_healers, :min_dps, :difficulty, :battletag)
+        INSERT INTO raids (title, description, raid_date, max_players, max_tanks, max_healers, max_dps, difficulty, created_by_battletag)
+        VALUES (:title, :description, :raid_date, :max_players, :max_tanks, :max_healers, :max_dps, :difficulty, :battletag)
     ");
 
     $stmt->execute([
@@ -85,9 +85,9 @@ if ($method === 'GET') {
         ':description' => $data['description'] ?? null,
         ':raid_date' => $data['raid_date'],
         ':max_players' => $data['max_players'] ?? 20,
-        ':min_tanks' => $data['min_tanks'] ?? 2,
-        ':min_healers' => $data['min_healers'] ?? 4,
-        ':min_dps' => $data['min_dps'] ?? 14,
+        ':max_tanks' => $data['max_tanks'] ?? 2,
+        ':max_healers' => $data['max_healers'] ?? 4,
+        ':max_dps' => $data['max_dps'] ?? 14,
         ':difficulty' => $data['difficulty'] ?? 'heroic',
         ':battletag' => $user['battletag']
     ]);
