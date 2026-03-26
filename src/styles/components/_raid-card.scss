@@ -5,14 +5,12 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   overflow: hidden;
-  transition: border-color 0.2s ease, opacity 0.2s ease;
+  transition: border-color 0.2s ease;
   display: flex;
   flex-direction: column;
-  opacity: 0.6;
 
   &:hover {
     border-color: rgba(255, 255, 255, 0.2);
-    opacity: 1;
   }
 
   // Banner area (image + header + progress)
