@@ -67,18 +67,17 @@
           }
 
           .event-icon {
-            width: 64px;
-            height: 64px;
-            background: rgba(225, 46, 44, 0.15);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            overflow: hidden;
             flex-shrink: 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
 
-            i {
-              font-size: 32px;
-              color: #e12e2c;
+            .event-icon-img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
             }
           }
 
