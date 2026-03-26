@@ -12,9 +12,7 @@ let db;
 const RAID_IMAGES = {
   'The Voidspire': 'https://render.worldofwarcraft.com/us/zones/the-voidspire-large.jpg',
   "March on Quel'Danas": 'https://render.worldofwarcraft.com/us/zones/march-on-queldanas-large.jpg',
-  'The Dreamrift': 'https://render.worldofwarcraft.com/us/zones/the-dreamrift-large.jpg',
-  'Nerub-ar Palace': 'https://render.worldofwarcraft.com/us/zones/nerubar-palace-small.jpg',
-  'Liberation of Undermine': 'https://render.worldofwarcraft.com/us/zones/liberation-of-undermine-small.jpg'
+  'The Dreamrift': 'https://render.worldofwarcraft.com/us/zones/the-dreamrift-large.jpg'
 };
 
 async function getDb() {

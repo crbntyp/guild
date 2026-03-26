@@ -75,7 +75,7 @@ class RaidManager {
         <div class="no-raids">
           <i class="las la-dungeon la-3x"></i>
           <p>No upcoming raids</p>
-          <p class="no-raids-sub">Create one to get started</p>
+          <p class="no-raids-sub">Create one via your discord bot, ask your GM!</p>
         </div>
       `;
       return;

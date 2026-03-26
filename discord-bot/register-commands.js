@@ -12,9 +12,7 @@ const commands = [
         .addChoices(
           { name: 'The Voidspire', value: 'The Voidspire' },
           { name: "March on Quel'Danas", value: "March on Quel'Danas" },
-          { name: 'The Dreamrift', value: 'The Dreamrift' },
-          { name: 'Nerub-ar Palace', value: 'Nerub-ar Palace' },
-          { name: 'Liberation of Undermine', value: 'Liberation of Undermine' }
+          { name: 'The Dreamrift', value: 'The Dreamrift' }
         ))
     .addStringOption(option =>
       option.setName('date')
