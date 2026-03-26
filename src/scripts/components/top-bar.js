@@ -120,7 +120,7 @@ class TopBar {
     };
 
     // Check if any account page is active for dropdown active state
-    const isAccountPageActive = ['my-characters.html', 'my-todos.html', 'my-youtube.html', 'my-mounts.html', 'raids.html'].includes(currentPage);
+    const isAccountPageActive = ['my-characters.html', 'my-todos.html', 'my-youtube.html', 'my-mounts.html'].includes(currentPage);
 
     this.leftContainer.innerHTML = `
       <a href="index.html" class="top-bar-logo">
@@ -160,12 +160,12 @@ class TopBar {
                 <i class="las la-horse"></i>
                 <span>My Mounts</span>
               </a>
-              <a href="raids.html" class="nav-dropdown-item${getActiveClass('raids.html')}">
-                <i class="las la-dungeon"></i>
-                <span>Raids</span>
-              </a>
             </div>
           </div>
+          <a href="raids.html" class="nav-link${getActiveClass('raids.html')}">
+            <i class="las la-dungeon"></i>
+            <span>Raids</span>
+          </a>
         ` : ''}
         <a href="mythic-plus.html" class="nav-link${getActiveClass('mythic-plus.html')}">
           <i class="las la-trophy"></i>
@@ -204,11 +204,11 @@ class TopBar {
               <i class="las la-horse"></i>
               <span>My Mounts</span>
             </a>
-            <a href="raids.html" class="mobile-nav-link mobile-nav-link-indent${getActiveClass('raids.html')}">
-              <i class="las la-dungeon"></i>
-              <span>Raids</span>
-            </a>
           </div>
+          <a href="raids.html" class="mobile-nav-link${getActiveClass('raids.html')}">
+            <i class="las la-dungeon"></i>
+            <span>Raids</span>
+          </a>
         ` : ''}
         <a href="mythic-plus.html" class="mobile-nav-link${getActiveClass('mythic-plus.html')}">
           <i class="las la-trophy"></i>
