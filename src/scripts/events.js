@@ -408,7 +408,40 @@ class EventsPage {
     if (name.includes('draenor dungeon')) return `${cdn}/hellfire-citadel-small.jpg`;
     if (name.includes('timewalking') || name.includes('dungeon event')) return `${cdn}/ulduar-small.jpg`;
 
-    // No banner for other events
+    // PvP — use thematic zone art
+    if (name.includes('pvp brawl') || name.includes('battleground') || name.includes('arena skirmish')) return `${cdn}/vault-of-archavon-small.jpg`;
+
+    // Darkmoon Faire — use Karazhan (closest thematic match)
+    if (name.includes('darkmoon')) return `${cdn}/karazhan-small.jpg`;
+
+    // Holidays
+    if (name.includes('winter veil') || name.includes('feast of winter')) return `${cdn}/naxxramas-small.jpg`;
+    if (name.includes('hallow')) return `${cdn}/castle-nathria-small.jpg`;
+    if (name.includes('brewfest')) return `${cdn}/blackrock-foundry-small.jpg`;
+    if (name.includes('noblegarden')) return `${cdn}/the-emerald-nightmare-small.jpg`;
+    if (name.includes('midsummer') || name.includes('fire festival')) return `${cdn}/firelands-small.jpg`;
+    if (name.includes('lunar festival')) return `${cdn}/mogushan-vaults-small.jpg`;
+    if (name.includes('love is in the air')) return `${cdn}/sunwell-plateau-small.jpg`;
+
+    // Bonus events
+    if (name.includes('pet battle')) return `${cdn}/darkheart-thicket-small.jpg`;
+    if (name.includes('world quest')) return `${cdn}/the-battle-for-mount-hyjal-small.jpg`;
+    if (name.includes('delves')) return `${cdn}/neltharions-lair-small.jpg`;
+
+    // Anniversary
+    if (/wow'?s?\s+(\d+\w{2}\s+)?anniversary/i.test(eventName)) return `${cdn}/molten-core-small.jpg`;
+
+    // Remix
+    if (name.includes('remix')) return `${cdn}/the-eye-small.jpg`;
+
+    // Racing cups
+    if (name.includes('cup')) return `${cdn}/vault-of-the-incarnates-small.jpg`;
+
+    // Special events
+    if (name.includes('trial of style')) return `${cdn}/the-ruby-sanctum-small.jpg`;
+    if (name.includes('secrets of azeroth')) return `${cdn}/temple-of-ahnqiraj-small.jpg`;
+
+    // No banner for unmatched events
     return null;
   }
 
