@@ -343,9 +343,22 @@ class EventsPage {
     if (name.includes('delves bonus')) return `${cdn}/ui_delves.jpg`;
     if (name.includes('apexis bonus')) return `${cdn}/inv_misc_rune_01.jpg`;
 
-    // Timewalking / Dungeon events
-    if (name.includes('timewalking') || name.includes('dungeon event')) return `${cdn}/spell_mage_altertime.jpg`;
+    // Timewalking / Dungeon events — expansion-specific icons
+    if (name.includes('burning crusade') && name.includes('timewalking')) return `${cdn}/expansionicon_burningcrusade.jpg`;
+    if (name.includes('wrath') && name.includes('timewalking')) return `${cdn}/expansionicon_wrathofthelichking.jpg`;
+    if (name.includes('cataclysm') && name.includes('timewalking')) return `${cdn}/expansionicon_cataclysm.jpg`;
+    if (name.includes('mists of pandaria') && name.includes('timewalking')) return `${cdn}/expansionicon_mistsofpandaria.jpg`;
+    if (name.includes('legion') && name.includes('timewalking')) return `${cdn}/inv_sword_2h_artifactashbringer_d_01.jpg`;
+    // Dungeon events — expansion-specific
     if (name.includes('midnight dungeon')) return `${cdn}/spell_shadow_twilight.jpg`;
+    if (name.includes('war within dungeon')) return `${cdn}/achievement_dungeon_theatreofpain.jpg`;
+    if (name.includes('dragonflight dungeon')) return `${cdn}/inv_misc_head_dragon_black.jpg`;
+    if (name.includes('shadowlands dungeon')) return `${cdn}/spell_shadow_demonicempathy.jpg`;
+    if (name.includes('battle for azeroth dungeon')) return `${cdn}/achievement_dungeon_freehold.jpg`;
+    if (name.includes('legion dungeon')) return `${cdn}/achievement_dungeon_hallsofvalor.jpg`;
+    if (name.includes('draenor dungeon')) return `${cdn}/achievement_dungeon_auchindoun.jpg`;
+    // Generic timewalking/dungeon fallback
+    if (name.includes('timewalking') || name.includes('dungeon event')) return `${cdn}/achievement_dungeon_gundrak_heroic.jpg`;
 
     // Remix
     if (name.includes('remix')) return `${cdn}/spell_arcane_teleportstormwind.jpg`;
