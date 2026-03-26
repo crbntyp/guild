@@ -18,6 +18,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     backgrounds: raidBackgrounds,
     backgroundInterval: 10000,
     onInit: async () => {
+      // Reload page on auth state change (login/logout)
+      window.addEventListener('auth-state-changed', () => {
+        window.location.reload();
+      });
+
       if (authService.isAuthenticated()) {
         const raidManager = new RaidManager('raids-container', authService);
         await raidManager.init();
