@@ -418,7 +418,7 @@ class EventsPage {
     if (name.includes('winter veil') || name.includes('feast of winter')) return `${cdn}/naxxramas-small.jpg`;
     if (name.includes('hallow')) return `${cdn}/castle-nathria-small.jpg`;
     if (name.includes('brewfest')) return `${cdn}/blackrock-foundry-small.jpg`;
-    if (name.includes('noblegarden')) return `${cdn}/the-emerald-nightmare-small.jpg`;
+    if (name.includes('noblegarden')) return 'https://wow.zamimg.com/optimized/guide-header-revamp/images/content/tall-headers/retail/categories/world-events-holidays.jpg';
     if (name.includes('midsummer') || name.includes('fire festival')) return `${cdn}/firelands-small.jpg`;
     if (name.includes('lunar festival')) return `${cdn}/mogushan-vaults-small.jpg`;
     if (name.includes('love is in the air')) return `${cdn}/sunwell-plateau-small.jpg`;
