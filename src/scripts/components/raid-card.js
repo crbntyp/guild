@@ -141,7 +141,7 @@ class RaidCard {
             </div>
           </div>
 
-          ${signupListHTML}
+          <div class="raid-roster-scroll">${signupListHTML}</div>
           ${actionHTML}
         </div>
       </div>
