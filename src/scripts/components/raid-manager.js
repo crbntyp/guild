@@ -107,8 +107,10 @@ class RaidManager {
         if (mediaData?.assets) {
           const tileAsset = mediaData.assets.find(asset => asset.key === 'tile');
           if (tileAsset?.value) {
-            card.style.backgroundImage = `url('${tileAsset.value}')`;
-            card.classList.add('has-background');
+            const banner = card.querySelector('.raid-card-banner');
+            if (banner) {
+              banner.style.backgroundImage = `url('${tileAsset.value}')`;
+            }
           }
         }
       } catch (error) {

@@ -4,39 +4,50 @@
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
-  padding: 0;
-  transition: border-color 0.2s ease;
-  position: relative;
   overflow: hidden;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  transition: border-color 0.2s ease;
+  display: flex;
+  flex-direction: column;
 
   &:hover {
     border-color: rgba(255, 255, 255, 0.2);
   }
 
-  .raid-card-bg-overlay {
+  // Banner area (image + header + progress)
+  .raid-card-banner {
+    position: relative;
+    padding: 14px 16px;
+    background: rgba(0, 0, 0, 0.3);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .raid-card-banner-overlay {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.88) 0%, rgba(0, 0, 0, 0.7) 100%);
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.8) 100%);
     z-index: 1;
   }
 
-  &.has-background .raid-card-bg-overlay {
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.6) 50%, rgba(0, 0, 0, 0.75) 100%);
-  }
-
-  .raid-card-inner {
+  .raid-card-banner-content {
     position: relative;
     z-index: 2;
-    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  // Body area (roles, signups, actions)
+  .raid-card-body {
+    padding: 12px 16px 16px;
     display: flex;
     flex-direction: column;
-    min-height: 100%;
+    flex: 1;
   }
 
   &.status-full {
@@ -123,18 +134,22 @@
   }
 
   .raid-card-description {
+    position: relative;
+    z-index: 2;
     font-size: 12px;
     color: rgba(255, 255, 255, 0.5);
-    margin: 0 0 12px 0;
+    margin: 8px 0 0 0;
     line-height: 1.4;
   }
 
   // Progress bar
   .raid-card-progress {
+    position: relative;
+    z-index: 2;
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 12px;
+    margin-top: 10px;
   }
 
   .raid-progress-bar {

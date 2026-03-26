@@ -100,47 +100,47 @@ class RaidCard {
 
     return `
       <div class="raid-card ${statusClass}" data-raid-id="${raid.id}" data-instance-id="${instanceId || ''}">
-        <div class="raid-card-bg-overlay"></div>
-        <div class="raid-card-inner">
-        <div class="raid-card-header">
-          <div class="raid-card-title">
-            <h3>${raid.title}</h3>
-            <span class="raid-difficulty-badge ${difficultyClass}">${raid.difficulty}</span>
+        <div class="raid-card-banner">
+          <div class="raid-card-banner-overlay"></div>
+          <div class="raid-card-banner-content">
+            <div class="raid-card-title">
+              <h3>${raid.title}</h3>
+              <span class="raid-difficulty-badge ${difficultyClass}">${raid.difficulty}</span>
+            </div>
+            <div class="raid-card-date">
+              <span class="raid-date">${dateStr}</span>
+              <span class="raid-time">${timeStr}</span>
+              ${countdownStr ? `<span class="raid-countdown">${countdownStr}</span>` : ''}
+            </div>
           </div>
-          <div class="raid-card-date">
-            <span class="raid-date">${dateStr}</span>
-            <span class="raid-time">${timeStr}</span>
-            ${countdownStr ? `<span class="raid-countdown">${countdownStr}</span>` : ''}
-          </div>
-        </div>
-
-        ${raid.description ? `<p class="raid-card-description">${raid.description}</p>` : ''}
-
-        <div class="raid-card-progress">
-          <div class="raid-progress-bar">
-            <div class="raid-progress-fill" style="width: ${progressPercent}%"></div>
-          </div>
+          ${raid.description ? `<p class="raid-card-description">${raid.description}</p>` : ''}
+          <div class="raid-card-progress">
+            <div class="raid-progress-bar">
+              <div class="raid-progress-fill" style="width: ${progressPercent}%"></div>
+            </div>
           <span class="raid-progress-text">${signupCount}/${raid.max_players}${reserveCount > 0 ? ` +${reserveCount} reserve${reserveCount !== 1 ? 's' : ''}` : ''}</span>
-        </div>
-
-        <div class="raid-card-roles">
-          <div class="raid-role">
-            <span class="raid-role-icon tank"><i class="las la-shield-alt"></i></span>
-            <span class="raid-role-count">${tankCount}/${raid.max_tanks}</span>
-          </div>
-          <div class="raid-role">
-            <span class="raid-role-icon healer"><i class="las la-plus-circle"></i></span>
-            <span class="raid-role-count">${healerCount}/${raid.max_healers}</span>
-          </div>
-          <div class="raid-role">
-            <span class="raid-role-icon dps"><i class="las la-crosshairs"></i></span>
-            <span class="raid-role-count">${dpsCount}/${raid.max_dps}</span>
           </div>
         </div>
 
-        ${signupListHTML}
-        ${actionHTML}
-      </div>
+        <div class="raid-card-body">
+          <div class="raid-card-roles">
+            <div class="raid-role">
+              <span class="raid-role-icon tank"><i class="las la-shield-alt"></i></span>
+              <span class="raid-role-count">${tankCount}/${raid.max_tanks}</span>
+            </div>
+            <div class="raid-role">
+              <span class="raid-role-icon healer"><i class="las la-plus-circle"></i></span>
+              <span class="raid-role-count">${healerCount}/${raid.max_healers}</span>
+            </div>
+            <div class="raid-role">
+              <span class="raid-role-icon dps"><i class="las la-crosshairs"></i></span>
+              <span class="raid-role-count">${dpsCount}/${raid.max_dps}</span>
+            </div>
+          </div>
+
+          ${signupListHTML}
+          ${actionHTML}
+        </div>
       </div>
     `;
   }
