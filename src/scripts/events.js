@@ -189,17 +189,23 @@ class EventsPage {
 
     const categoryClass = this.getCategoryClass(event.categoryName, event.name);
     const iconUrl = this.getEventIconUrl(event.name, event.categoryName);
+    const bannerUrl = this.getEventBannerUrl(event.name);
+    const bannerStyle = bannerUrl ? `style="background-image: url('${bannerUrl}')"` : '';
+    const hasBanner = bannerUrl ? 'has-banner' : '';
 
     return `
-      <div class="event-card ${categoryClass}" data-event-id="${event.id}">
-        <div class="event-icon">
-          <img src="${iconUrl}" alt="" class="event-icon-img" />
-        </div>
-        <div class="event-info">
-          <h3 class="event-name">${event.name}</h3>
-          <div class="event-category">${displayCategory}</div>
-          <div class="event-countdown" data-end="${event.activeOccurrence.end}" data-start="${event.activeOccurrence.start}" data-type="${type}">
-            ${this.formatCountdown(event.activeOccurrence, isActive)}
+      <div class="event-card ${categoryClass} ${hasBanner}" data-event-id="${event.id}" ${bannerStyle}>
+        <div class="event-card-overlay"></div>
+        <div class="event-card-content">
+          <div class="event-icon">
+            <img src="${iconUrl}" alt="" class="event-icon-img" />
+          </div>
+          <div class="event-info">
+            <h3 class="event-name">${event.name}</h3>
+            <div class="event-category">${displayCategory}</div>
+            <div class="event-countdown" data-end="${event.activeOccurrence.end}" data-start="${event.activeOccurrence.start}" data-type="${type}">
+              ${this.formatCountdown(event.activeOccurrence, isActive)}
+            </div>
           </div>
         </div>
       </div>
@@ -379,6 +385,31 @@ class EventsPage {
 
     // Default
     return `${cdn}/inv_misc_rune_01.jpg`;
+  }
+
+  getEventBannerUrl(eventName) {
+    const cdn = 'https://render.worldofwarcraft.com/us/zones';
+    const name = (eventName || '').toLowerCase();
+
+    // Timewalking — iconic raid from each expansion
+    if (name.includes('burning crusade') && name.includes('timewalking')) return `${cdn}/black-temple-small.jpg`;
+    if (name.includes('wrath') && name.includes('timewalking')) return `${cdn}/icecrown-citadel-small.jpg`;
+    if (name.includes('cataclysm') && name.includes('timewalking')) return `${cdn}/firelands-small.jpg`;
+    if (name.includes('mists of pandaria') && name.includes('timewalking')) return `${cdn}/siege-of-orgrimmar-small.jpg`;
+    if (name.includes('legion') && name.includes('timewalking')) return `${cdn}/antorus-the-burning-throne-small.jpg`;
+
+    // Dungeon events
+    if (name.includes('midnight dungeon')) return `${cdn}/the-voidspire-small.jpg`;
+    if (name.includes('war within dungeon')) return `${cdn}/nerubar-palace-small.jpg`;
+    if (name.includes('dragonflight dungeon')) return `${cdn}/aberrus-the-shadowed-crucible-small.jpg`;
+    if (name.includes('shadowlands dungeon')) return `${cdn}/sanctum-of-domination-small.jpg`;
+    if (name.includes('battle for azeroth dungeon')) return `${cdn}/battle-of-dazaralor-small.jpg`;
+    if (name.includes('legion dungeon')) return `${cdn}/tomb-of-sargeras-small.jpg`;
+    if (name.includes('draenor dungeon')) return `${cdn}/hellfire-citadel-small.jpg`;
+    if (name.includes('timewalking') || name.includes('dungeon event')) return `${cdn}/ulduar-small.jpg`;
+
+    // No banner for other events
+    return null;
   }
 
   formatCountdown(occurrence, isActive) {
