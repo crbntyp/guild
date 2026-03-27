@@ -1,7 +1,7 @@
 // Gallery page - displays background images with location names
 import BackgroundRotator from './components/background-rotator.js';
 import PageInitializer from './utils/page-initializer.js';
-import backgrounds from './data/backgrounds.js';
+import { galleryBackgrounds as backgrounds } from './data/backgrounds.js';
 import { getRaceName } from './utils/wow-constants.js';
 
 console.log('⚡ Gallery initialized');
