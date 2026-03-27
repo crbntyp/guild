@@ -20,19 +20,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       const guildSearch = new GuildSearch('guild-search-container');
       await guildSearch.render();
 
-      // Load current affixes from Raider.IO
-      try {
-        const affixRes = await fetch('https://raider.io/api/v1/mythic-plus/affixes?region=eu&locale=en');
-        const affixData = await affixRes.json();
-        const strip = document.getElementById('wow-info-strip');
-        if (strip && affixData.affix_details) {
-          strip.innerHTML = affixData.affix_details.map(a =>
-            `<span class="affix-item"><img src="https://wow.zamimg.com/images/wow/icons/small/${a.icon}.jpg" class="affix-icon" />${a.name}</span>`
-          ).join('<span class="affix-sep">·</span>');
-        }
-      } catch (e) {
-        // Affixes not available
-      }
 
   // Create guild roster instance (initially hidden)
   const guildRoster = new GuildRoster('guild-roster-container');
