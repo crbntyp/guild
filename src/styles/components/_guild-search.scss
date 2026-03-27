@@ -403,6 +403,22 @@
   text-decoration: none;
   display: block;
   color: inherit;
+  position: relative;
+
+  .home-feature-chip {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    background: rgba(0, 174, 255, 0.15);
+    border: 1px solid rgba(0, 174, 255, 0.3);
+    color: #00AEFF;
+  }
 
   &:hover {
     border-color: rgba(163, 53, 238, 0.25);

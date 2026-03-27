@@ -199,6 +199,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <p>Live leaderboards, meta composition analysis, and spec distribution across the top runs.</p>
           </a>
           <a href="my-mounts.html" class="home-feature">
+            <span class="home-feature-chip">BNet Login</span>
             <div class="home-feature-icon"><i class="las la-horse"></i></div>
             <h3>Mount Collection</h3>
             <p>Browse your mounts by expansion with Wowhead tooltips. Track what you own and what's farmable.</p>
@@ -209,6 +210,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <p>Live WoW event calendar with countdowns, auto-refreshed daily from Wowhead data.</p>
           </a>
           <a href="my-youtube.html" class="home-feature">
+            <span class="home-feature-chip">BNet Login</span>
             <div class="home-feature-icon"><i class="lab la-youtube"></i></div>
             <h3>YouTube</h3>
             <p>Curate your favourite WoW creators with tag-based filtering and in-app video playback.</p>
