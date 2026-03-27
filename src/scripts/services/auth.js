@@ -122,74 +122,18 @@ class AuthService {
   }
 
   /**
-   * Initiate Battle.net OAuth login flow (popup window on desktop, redirect on mobile)
+   * Initiate Battle.net OAuth login flow (full page redirect)
    */
   login() {
     const authUrl = `${config.getOAuthUrl()}/authorize`;
     const params = new URLSearchParams({
       client_id: config.battlenet.clientId,
       redirect_uri: config.battlenet.redirectUri,
-      response_type: 'code', // Authorization code flow
+      response_type: 'code',
       scope: 'wow.profile'
     });
 
-    // On mobile, use full page redirect instead of popup
-    if (this.isMobileDevice()) {
-
-      window.location.href = `${authUrl}?${params.toString()}`;
-      return;
-    }
-
-    // Desktop: Open popup window
-    const width = 500;
-    const height = 700;
-    const left = window.screen.width / 2 - width / 2;
-    const top = window.screen.height / 2 - height / 2;
-
-    const fullAuthUrl = `${authUrl}?${params.toString()}`;
-
-    // Open blank popup first to avoid issues
-    const popup = window.open(
-      'about:blank',
-      '_blank',
-      `width=${width},height=${height},left=${left},top=${top},toolbar=0,location=0,menubar=0,scrollbars=1,resizable=1`
-    );
-
-    if (!popup) {
-      alert('Popup blocked! Please allow popups for this site.');
-      return;
-    }
-
-    // Navigate popup to auth URL
-    popup.location.href = fullAuthUrl;
-
-    // Listen for message from popup
-    const messageHandler = (event) => {
-      if (event.origin !== window.location.origin) return;
-      if (event.data?.type === 'bnet-auth-success') {
-
-        window.removeEventListener('message', messageHandler);
-        // Dispatch custom event instead of reloading page
-        window.dispatchEvent(new CustomEvent('auth-state-changed'));
-      }
-    };
-    window.addEventListener('message', messageHandler);
-
-    // Poll for popup close
-    const pollTimer = setInterval(() => {
-      try {
-        if (popup.closed) {
-          clearInterval(pollTimer);
-          window.removeEventListener('message', messageHandler);
-          // Check if auth completed and dispatch event
-          if (this.isAuthenticated()) {
-            window.dispatchEvent(new CustomEvent('auth-state-changed'));
-          }
-        }
-      } catch (e) {
-        // Cross-origin error is expected
-      }
-    }, 500);
+    window.location.href = `${authUrl}?${params.toString()}`;
   }
 
   /**
