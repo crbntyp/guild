@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div class="raids-landing">
               <div class="raids-landing-hero">
                 <div class="raids-landing-badge">gld__ raids</div>
-                <h1>Welcome${savedName ? `, ${savedName}` : ''}</h1>
+                <h1>Arriving from ${savedName ? `, ${savedName}` : ''} eh?</h1>
                 <p class="raids-landing-subtitle">We can see you've arrived from ${savedName ? `the <strong>${savedName}</strong> Discord server` : 'a Discord server'}. Log in with your Battle.net account to view and sign up for your guild's raids.</p>
               </div>
 
