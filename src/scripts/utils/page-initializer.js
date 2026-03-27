@@ -97,11 +97,13 @@ class PageInitializer {
       Promise.all(realmIds.map(id =>
         client.request(`/data/wow/connected-realm/${id}`, {
           params: { namespace: 'dynamic-eu' }
-        }).then(d => ({
-          name: d.realms?.[0]?.name || '?',
-          status: d.status?.type || '?',
-          population: d.population?.type || '?'
-        })).catch(() => null)
+        }).then(d => {
+          // Find the primary realm name (match against known names)
+          const knownNames = ['Tarren Mill', 'Silvermoon', 'Frostmane', 'Ravencrest', 'Kazzak', 'Ragnaros'];
+          const allNames = (d.realms || []).map(r => r.name);
+          const name = allNames.find(n => knownNames.includes(n)) || allNames[0] || '?';
+          return { name, status: d.status?.type || '?', population: d.population?.type || '?' };
+        }).catch(() => null)
       )).then(results => {
         realmData = results.filter(r => r);
         if (realmData.length > 0) {
