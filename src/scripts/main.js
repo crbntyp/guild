@@ -36,6 +36,61 @@ document.addEventListener('DOMContentLoaded', async () => {
           <p class="home-search-hint"><i class="las la-arrow-up"></i> Search any guild above to get started</p>
         </div>
 
+        <div class="home-demo-section">
+          <div class="home-demo-carousel">
+            <div class="home-demo-track">
+              <div class="member-card demo-card-char" style="min-width: 180px; max-width: 180px; pointer-events: none;">
+                <div class="member-level">80<span class="member-ilvl">618</span></div>
+                <div class="character-avatar-placeholder" style="background: url('https://render.worldofwarcraft.com/eu/character/tarren-mill/avatar.jpg') center/cover; height: 120px;"></div>
+                <div class="member-header"><div class="member-name" style="color: #40C7EB">Frostbolt</div><div class="member-hero-talent" style="font-size:9px; color: rgba(255,255,255,0.4)">Spellslinger</div></div>
+                <div class="member-details">
+                  <div class="member-detail-row"><div class="member-icon"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_mage.jpg" style="width:20px;height:20px;border-radius:3px" /></div></div>
+                </div>
+              </div>
+              <div class="member-card demo-card-char" style="min-width: 180px; max-width: 180px; pointer-events: none;">
+                <div class="member-level">80<span class="member-ilvl">615</span></div>
+                <div class="character-avatar-placeholder" style="background: rgba(255,255,255,0.05); height: 120px; display:flex; align-items:center; justify-content:center;"><i class="las la-user" style="font-size:40px; color:rgba(255,255,255,0.15)"></i></div>
+                <div class="member-header"><div class="member-name" style="color: #C79C6E">Shieldwall</div><div class="member-hero-talent" style="font-size:9px; color: rgba(255,255,255,0.4)">Mountain Thane</div></div>
+                <div class="member-details">
+                  <div class="member-detail-row"><div class="member-icon"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_warrior.jpg" style="width:20px;height:20px;border-radius:3px" /></div></div>
+                </div>
+              </div>
+              <div class="member-card demo-card-char" style="min-width: 180px; max-width: 180px; pointer-events: none;">
+                <div class="member-level">80<span class="member-ilvl">612</span></div>
+                <div class="character-avatar-placeholder" style="background: rgba(255,255,255,0.05); height: 120px; display:flex; align-items:center; justify-content:center;"><i class="las la-user" style="font-size:40px; color:rgba(255,255,255,0.15)"></i></div>
+                <div class="member-header"><div class="member-name" style="color: #F58CBA">Lightbringer</div><div class="member-hero-talent" style="font-size:9px; color: rgba(255,255,255,0.4)">Herald of the Sun</div></div>
+                <div class="member-details">
+                  <div class="member-detail-row"><div class="member-icon"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_paladin.jpg" style="width:20px;height:20px;border-radius:3px" /></div></div>
+                </div>
+              </div>
+              <div class="member-card demo-card-char" style="min-width: 180px; max-width: 180px; pointer-events: none;">
+                <div class="member-level">80<span class="member-ilvl">617</span></div>
+                <div class="character-avatar-placeholder" style="background: rgba(255,255,255,0.05); height: 120px; display:flex; align-items:center; justify-content:center;"><i class="las la-user" style="font-size:40px; color:rgba(255,255,255,0.15)"></i></div>
+                <div class="member-header"><div class="member-name" style="color: #A330C9">Chaosblde</div><div class="member-hero-talent" style="font-size:9px; color: rgba(255,255,255,0.4)">Aldrachi Reaver</div></div>
+                <div class="member-details">
+                  <div class="member-detail-row"><div class="member-icon"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_demonhunter.jpg" style="width:20px;height:20px;border-radius:3px" /></div></div>
+                </div>
+              </div>
+              <div class="member-card demo-card-char" style="min-width: 180px; max-width: 180px; pointer-events: none;">
+                <div class="member-level">80<span class="member-ilvl">610</span></div>
+                <div class="character-avatar-placeholder" style="background: rgba(255,255,255,0.05); height: 120px; display:flex; align-items:center; justify-content:center;"><i class="las la-user" style="font-size:40px; color:rgba(255,255,255,0.15)"></i></div>
+                <div class="member-header"><div class="member-name" style="color: #0070DE">Tidecaller</div><div class="member-hero-talent" style="font-size:9px; color: rgba(255,255,255,0.4)">Farseer</div></div>
+                <div class="member-details">
+                  <div class="member-detail-row"><div class="member-icon"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_shaman.jpg" style="width:20px;height:20px;border-radius:3px" /></div></div>
+                </div>
+              </div>
+              <div class="member-card demo-card-char" style="min-width: 180px; max-width: 180px; pointer-events: none;">
+                <div class="member-level">80<span class="member-ilvl">606</span></div>
+                <div class="character-avatar-placeholder" style="background: rgba(255,255,255,0.05); height: 120px; display:flex; align-items:center; justify-content:center;"><i class="las la-user" style="font-size:40px; color:rgba(255,255,255,0.15)"></i></div>
+                <div class="member-header"><div class="member-name" style="color: #8787ED">Felfire</div><div class="member-hero-talent" style="font-size:9px; color: rgba(255,255,255,0.4)">Diabolist</div></div>
+                <div class="member-details">
+                  <div class="member-detail-row"><div class="member-icon"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_warlock.jpg" style="width:20px;height:20px;border-radius:3px" /></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="home-features">
           <a href="index.html" class="home-feature">
             <div class="home-feature-icon"><i class="las la-users"></i></div>
