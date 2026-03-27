@@ -72,8 +72,8 @@ class PageInitializer {
     const ticker = document.createElement('div');
     ticker.className = 'ticker-widget';
     ticker.innerHTML = `
-      <div id="ticker-token" class="ticker-token"></div>
       <div id="ticker-realm" class="ticker-realm"></div>
+      <div id="ticker-token" class="ticker-token"></div>
     `;
     document.body.appendChild(ticker);
 
