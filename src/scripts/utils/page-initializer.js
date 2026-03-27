@@ -9,6 +9,7 @@ import BackgroundRotator from '../components/background-rotator.js';
 import FireEffect from '../components/fire-effect.js';
 import authService from '../services/auth.js';
 import backgrounds from '../data/backgrounds.js';
+import wowApi from '../api/wow-api.js';
 
 class PageInitializer {
   /**
@@ -34,6 +35,9 @@ class PageInitializer {
       backgroundRotatorClass = BackgroundRotator,
       onInit = null
     } = options;
+
+    // Initialize token ticker bar
+    PageInitializer.initTickerBar();
 
     // Initialize top bar (login)
     const topBar = new TopBar();
@@ -62,6 +66,24 @@ class PageInitializer {
     }
 
     return { topBar, footer, bgRotator, authService };
+  }
+
+  static initTickerBar() {
+    const ticker = document.createElement('div');
+    ticker.className = 'ticker-bar';
+    ticker.innerHTML = '<span class="ticker-content" id="ticker-content"></span>';
+    document.body.insertBefore(ticker, document.body.firstChild);
+
+    // Fetch token price
+    wowApi.getWoWTokenPrice().then(tokenData => {
+      const gold = (tokenData.price / 10000).toLocaleString('en-US', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
+      document.getElementById('ticker-content').textContent = `WoW Token: ${gold}g`;
+    }).catch(() => {
+      document.getElementById('ticker-content').textContent = '';
+    });
   }
 }
 

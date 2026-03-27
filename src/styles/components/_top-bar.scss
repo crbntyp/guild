@@ -1,3 +1,21 @@
+// Ticker Bar
+.ticker-bar {
+  height: 24px;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 9999;
+
+  .ticker-content {
+    font-size: 11px;
+    font-weight: 600;
+    color: #fed202;
+    letter-spacing: 0.5px;
+  }
+}
+
 // Top Bar
 .top-bar {
   height: 50px;
@@ -200,7 +218,7 @@
   .mobile-nav {
     display: none;
     position: fixed;
-    top: 50px;
+    top: 74px; // 24px ticker + 50px top-bar
     left: 0;
     width: 100%;
     background: rgba(10, 10, 10, 0.98);
