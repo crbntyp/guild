@@ -162,11 +162,11 @@ class TopBar {
               </a>
             </div>
           </div>
-          <a href="raids.html" class="nav-link${getActiveClass('raids.html')}">
-            <i class="las la-dungeon"></i>
-            <span>Raids</span>
-          </a>
         ` : ''}
+        <a href="raids.html" class="nav-link${getActiveClass('raids.html')}">
+          <i class="las la-dungeon"></i>
+          <span>Raids</span>
+        </a>
         <a href="mythic-plus.html" class="nav-link${getActiveClass('mythic-plus.html')}">
           <i class="las la-trophy"></i>
           <span>Mythic+</span>
@@ -205,11 +205,11 @@ class TopBar {
               <span>My Mounts</span>
             </a>
           </div>
-          <a href="raids.html" class="mobile-nav-link${getActiveClass('raids.html')}">
-            <i class="las la-dungeon"></i>
-            <span>Raids</span>
-          </a>
         ` : ''}
+        <a href="raids.html" class="mobile-nav-link${getActiveClass('raids.html')}">
+          <i class="las la-dungeon"></i>
+          <span>Raids</span>
+        </a>
         <a href="mythic-plus.html" class="mobile-nav-link${getActiveClass('mythic-plus.html')}">
           <i class="las la-trophy"></i>
           <span>Mythic+</span>

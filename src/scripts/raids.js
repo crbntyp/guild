@@ -29,14 +29,81 @@ document.addEventListener('DOMContentLoaded', async () => {
       } else {
         const container = document.getElementById('raids-container');
         container.innerHTML = `
-          <div class="raids-login-prompt">
-            <i class="las la-dungeon la-4x"></i>
-            <h2>Raid Signups</h2>
-            <p>Log in with your Battle.net account to view and sign up for upcoming raids.</p>
-            <button class="btn-login-raids" id="btn-login-raids">
-              <i class="las la-user"></i>
-              Login with Battle.net
-            </button>
+          <div class="raids-landing">
+            <div class="raids-landing-hero">
+              <div class="raids-landing-badge">gld__ raids</div>
+              <h1>Organise Your Raid Night</h1>
+              <p class="raids-landing-subtitle">A streamlined raid signup system powered by Discord. Your GM creates raids with a simple command, your guild signs up through the app.</p>
+            </div>
+
+            <div class="raids-landing-features">
+              <div class="raids-landing-feature">
+                <div class="raids-landing-feature-icon">
+                  <i class="lab la-discord"></i>
+                </div>
+                <h3>Discord Powered</h3>
+                <p>Raids are created directly from Discord using the <code>/raid</code> command. Pick the raid, set the time, and it's live.</p>
+              </div>
+
+              <div class="raids-landing-feature">
+                <div class="raids-landing-feature-icon">
+                  <i class="las la-users"></i>
+                </div>
+                <h3>Smart Roster</h3>
+                <p>Role-based signups with tank, healer, and DPS caps. When spots fill up, extra signups automatically become reserves.</p>
+              </div>
+
+              <div class="raids-landing-feature">
+                <div class="raids-landing-feature-icon">
+                  <i class="las la-exchange-alt"></i>
+                </div>
+                <h3>Auto Reserve</h3>
+                <p>If someone drops out, the first reserve in the same role gets promoted automatically. No manual reshuffling.</p>
+              </div>
+
+              <div class="raids-landing-feature">
+                <div class="raids-landing-feature-icon">
+                  <i class="las la-bell"></i>
+                </div>
+                <h3>Discord Notifications</h3>
+                <p>Every signup, withdrawal, and full roster triggers a message back to your Discord channel in real time.</p>
+              </div>
+            </div>
+
+            <div class="raids-landing-how">
+              <h2>How It Works</h2>
+              <div class="raids-landing-steps">
+                <div class="raids-landing-step">
+                  <span class="step-number">1</span>
+                  <div>
+                    <h4>GM creates a raid in Discord</h4>
+                    <p><code>/raid title:The Voidspire difficulty:heroic date:2026-04-10 20:00</code></p>
+                  </div>
+                </div>
+                <div class="raids-landing-step">
+                  <span class="step-number">2</span>
+                  <div>
+                    <h4>Raid posted with signup link</h4>
+                    <p>An embed with the raid details and a signup link is posted to your channel.</p>
+                  </div>
+                </div>
+                <div class="raids-landing-step">
+                  <span class="step-number">3</span>
+                  <div>
+                    <h4>Players sign up with their character</h4>
+                    <p>Log in with Battle.net, pick your character, choose your role, and confirm.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="raids-landing-cta">
+              <button class="btn-login-raids" id="btn-login-raids">
+                <i class="las la-user"></i>
+                Login with Battle.net to Sign Up
+              </button>
+              <p class="raids-landing-cta-sub">Already have a raid link from Discord? Log in to view your guild's raids.</p>
+            </div>
           </div>
         `;
         document.getElementById('btn-login-raids').addEventListener('click', () => {
