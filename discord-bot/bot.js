@@ -63,7 +63,7 @@ async function postRaidEmbed(raid, title, description) {
       { name: 'Date', value: `<t:${timestamp}:F>`, inline: true },
       { name: 'Countdown', value: `<t:${timestamp}:R>`, inline: true },
       { name: 'Roster', value: `0/${raid.max_players} — 🛡️ ${raid.max_tanks} 💚 ${raid.max_healers} ⚔️ ${raid.max_dps}`, inline: false },
-      { name: '\u200b', value: `**[SIGN UP!](${config.appUrl}/raids.html?server=${raid.discord_guild_id || ''})**`, inline: false }
+      { name: '\u200b', value: `**[SIGN UP!](${config.appUrl}/raids.html?server=${raid.discord_guild_id || ''}&name=${encodeURIComponent(raid.discord_guild_name || '')})**`, inline: false }
     )
     .setFooter({ text: 'gld__ Raid Signup' })
     .setTimestamp();
@@ -186,11 +186,12 @@ client.on('interactionCreate', async (interaction) => {
       const utcDate = raidDate.toISOString().slice(0, 19).replace('T', ' ');
 
       const guildId = interaction.guildId;
+      const guildName = interaction.guild?.name || '';
 
       const [result] = await pool.execute(
-        `INSERT INTO raids (title, description, raid_date, max_players, max_tanks, max_healers, max_dps, difficulty, status, created_by_battletag, discord_guild_id)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'open', ?, ?)`,
-        [title, description, utcDate, maxPlayers, tanks, healers, dps, difficulty, `Discord:${interaction.user.tag}`, guildId]
+        `INSERT INTO raids (title, description, raid_date, max_players, max_tanks, max_healers, max_dps, difficulty, status, created_by_battletag, discord_guild_id, discord_guild_name)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'open', ?, ?, ?)`,
+        [title, description, utcDate, maxPlayers, tanks, healers, dps, difficulty, `Discord:${interaction.user.tag}`, guildId, guildName]
       );
 
       const raidId = result.insertId;

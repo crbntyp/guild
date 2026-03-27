@@ -11,14 +11,21 @@ class RaidManager {
     this.raids = [];
     this.signupModal = null;
 
-    // Read server (guild) ID from URL param or localStorage
+    // Read server (guild) ID and name from URL param or localStorage
     const urlParams = new URLSearchParams(window.location.search);
     const serverParam = urlParams.get('server');
+    const nameParam = urlParams.get('name');
     if (serverParam) {
       localStorage.setItem('gld_raid_server', serverParam);
       this.guildId = serverParam;
     } else {
       this.guildId = localStorage.getItem('gld_raid_server') || null;
+    }
+    if (nameParam) {
+      localStorage.setItem('gld_raid_server_name', nameParam);
+      this.guildName = nameParam;
+    } else {
+      this.guildName = localStorage.getItem('gld_raid_server_name') || null;
     }
   }
 
