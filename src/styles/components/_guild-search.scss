@@ -313,6 +313,15 @@
 // Demo carousel
 .home-demo-section {
   margin-bottom: 40px;
+
+  .home-demo-desc {
+    text-align: center;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.4);
+    margin: -12px auto 20px;
+    max-width: 560px;
+    line-height: 1.5;
+  }
 }
 
 .home-demo-carousel {

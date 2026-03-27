@@ -37,6 +37,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>
 
         <div class="home-demo-section">
+          <div class="raids-landing-section-title">Guild Roster</div>
+          <p class="home-demo-desc">Browse any guild's roster with class colours, item levels, specs, and detailed character modals with gear inspection and raid progression.</p>
           <div class="home-demo-carousel">
             <div class="home-demo-track">
 
@@ -75,12 +77,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
               <div class="member-card demo-card-char" style="pointer-events: none;">
                 <div class="member-level">90<span class="member-ilvl">245</span></div>
-                <div class="character-avatar-placeholder" style="height: 120px;"><img src="https://render.worldofwarcraft.com/eu/character/tarren-mill/11/171317515-inset.jpg" style="width:100%;height:100%;object-fit:cover;object-position:top" /></div>
-                <div class="member-header"><div class="member-name" style="color: #FFFFFF">Dmthyltryp</div><div class="member-hero-talent" style="font-size:9px; color: rgba(255,255,255,0.4)">Voidweaver</div></div>
+                <div class="character-avatar-placeholder" style="height: 120px;"><img src="https://render.worldofwarcraft.com/eu/character/tarren-mill/242/171303154-inset.jpg" style="width:100%;height:100%;object-fit:cover;object-position:top" /></div>
+                <div class="member-header"><div class="member-name" style="color: #ABD473">Corpsehöund</div><div class="member-hero-talent" style="font-size:9px; color: rgba(255,255,255,0.4)">Pack Leader</div></div>
                 <div class="member-details">
-                  <div class="member-detail-row"><div class="member-icon"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_priest.jpg" class="demo-icon" /></div></div>
-                  <div class="member-detail-row"><div class="member-icon"><img src="https://static.wikia.nocookie.net/wowpedia/images/a/a1/IconSmall_Nightborne_Male.gif" class="demo-icon" /></div></div>
-                  <div class="member-detail-row"><div class="member-icon"><img src="https://wow.zamimg.com/images/wow/icons/large/spell_shadow_shadowwordpain.jpg" class="demo-icon" /></div></div>
+                  <div class="member-detail-row"><div class="member-icon"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_hunter.jpg" class="demo-icon" /></div></div>
+                  <div class="member-detail-row"><div class="member-icon"><img src="https://static.wikia.nocookie.net/wowpedia/images/8/83/IconSmall_Undead_Female.gif" class="demo-icon" /></div></div>
+                  <div class="member-detail-row"><div class="member-icon"><img src="https://wow.zamimg.com/images/wow/icons/large/ability_hunter_bestialdiscipline.jpg" class="demo-icon" /></div></div>
                 </div>
               </div>
 
@@ -100,11 +102,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>
 
         <div class="home-features">
-          <a href="index.html" class="home-feature">
-            <div class="home-feature-icon"><i class="las la-users"></i></div>
-            <h3>Guild Roster</h3>
-            <p>Browse any guild's roster with class colours, item levels, specs, and detailed character modals.</p>
-          </a>
           <a href="my-characters.html" class="home-feature">
             <div class="home-feature-icon"><i class="las la-user"></i></div>
             <h3>My Characters</h3>
