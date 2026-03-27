@@ -14,21 +14,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.location.reload();
       });
 
+      // Save Discord server context from URL params (before auth check)
+      const urlParams = new URLSearchParams(window.location.search);
+      const serverParam = urlParams.get('server');
+      const nameParam = urlParams.get('name');
+      if (serverParam) {
+        localStorage.setItem('gld_raid_server', serverParam);
+        if (nameParam) localStorage.setItem('gld_raid_server_name', nameParam);
+      }
+
       if (authService.isAuthenticated()) {
         const raidManager = new RaidManager('raids-container', authService);
         await raidManager.init();
       } else {
         const container = document.getElementById('raids-container');
-
-        // Check localStorage for Discord server context
-        const urlParams = new URLSearchParams(window.location.search);
-        const serverParam = urlParams.get('server');
-        const nameParam = urlParams.get('name');
-
-        if (serverParam) {
-          localStorage.setItem('gld_raid_server', serverParam);
-          if (nameParam) localStorage.setItem('gld_raid_server_name', nameParam);
-        }
 
         const savedServer = serverParam || localStorage.getItem('gld_raid_server');
         const savedName = nameParam || localStorage.getItem('gld_raid_server_name');
