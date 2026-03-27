@@ -417,6 +417,61 @@ WoW class colors are centralized in `src/scripts/utils/wow-constants.js` using o
 
 ## 📋 Changelog
 
+### 2026-03-27 — Visual Rebrand & Raid Signup System
+
+- **Raid Signup System** ⚔️
+  - MySQL database with raids and raid_signups tables
+  - PHP API with BNet OAuth token verification
+  - Discord bot with `/raid` slash command for raid creation
+  - Raid cards with zone imagery, difficulty badges, countdowns, progress bars
+  - Role-based signups with tank/healer/DPS caps
+  - Reserve/overflow system — auto-promotes first reserve of same role on withdrawal
+  - Discord notifications on signup, withdrawal, and raid full
+  - Server-scoped raids via Discord guild ID
+  - Smart landing page: detects Discord context, shows personalised welcome
+  - Marketing landing page with demo raid cards for unauthenticated visitors
+  - Admin raid deletion (server-side auth check)
+  - Bot invite link for adding to Discord servers
+
+- **Home Page Redesign** 🏠
+  - Full marketing landing with hero section, feature showcase
+  - Demo character cards with real Blizzard renders, class/race/spec icons
+  - Demo raid cards carousel
+  - 4-column "Other Features" grid with BNet login chips
+  - Full-width guild search form
+  - Removed old logo/info panel
+  - Renamed Guild Finder to Home in navigation
+
+- **Visual Identity Overhaul** 🎨
+  - Midnight raid zone art as default backgrounds site-wide (except gallery)
+  - Global dark background filter (brightness 0.3) for readability
+  - Purple void accent (#a335ee) replacing red throughout
+  - Battle.net blue (#00AEFF) for login/logout buttons
+  - White glass style for search and action buttons
+  - Modernised header: white active links, frosted glass buttons
+  - Modernised todos, YouTube, and page header styles
+  - Fixed bottom-right widget with token price and rotating realm statuses
+
+- **Events Page Overhaul** 📅
+  - WoW-themed icons from Wowhead CDN for all event types
+  - Zone art banners on event cards (PvP, Darkmoon, timewalking, holidays)
+  - Expansion-specific icons for timewalking events (BC, WotLK, Cata, MoP, Legion)
+  - Filtered raid instances from events (handled on raids page)
+  - Daily auto-refresh cron job at 6am UK time on VPS
+  - Fixed Wowhead occurrence format change
+
+- **Midnight Mounts** 🐎
+  - Added 97 new Midnight expansion mounts (1578 total)
+  - Expansion 11 (Midnight) ID range and tab
+  - Incremental mount fetch (only new mounts, merged with existing)
+  - Spell ID mappings for Wowhead tooltip integration
+
+- **Auth-Required Pages** 🔐
+  - Unified "Authentication Required" view across all protected pages
+  - Battle.net blue login button instead of redirect
+  - Pages reload on auth state change
+  - No headers or content exposed when unauthenticated
+
 ### 2026-03-25 — Midnight Expansion Update
 - **New Race: Haranir** 🦌
   - Added Haranir race support (IDs 86, 91) with male and female icons
