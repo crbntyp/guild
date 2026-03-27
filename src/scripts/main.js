@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>
 
         <div class="home-demo-section">
-          <div class="raids-landing-section-title">Guild Roster</div>
+          <h2 class="home-section-title">Guild Roster</h2>
           <p class="home-demo-desc">Browse any guild's roster with class colours, item levels, specs, and detailed character modals with gear inspection and raid progression.</p>
           <div class="home-demo-carousel">
             <div class="home-demo-track">
