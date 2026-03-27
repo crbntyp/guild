@@ -22,7 +22,7 @@ class RaidCard {
     return null;
   }
 
-  static render(raid, userSignup = null) {
+  static render(raid, userSignup = null, isAdmin = false) {
     const raidDate = new Date(raid.raid_date);
     const now = new Date();
     const isPast = raidDate < now;
@@ -103,6 +103,7 @@ class RaidCard {
 
     return `
       <div class="raid-card ${statusClass}" data-raid-id="${raid.id}" data-instance-id="${instanceId || ''}">
+        ${isAdmin ? `<button class="btn-raid-delete" data-raid-id="${raid.id}" title="Delete raid"><i class="las la-times"></i></button>` : ''}
         <div class="raid-card-banner">
           <div class="raid-card-banner-overlay"></div>
           <div class="raid-card-banner-content">

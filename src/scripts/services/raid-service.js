@@ -74,6 +74,31 @@ class RaidService {
     return response.json();
   }
 
+  async checkAdmin() {
+    try {
+      const response = await fetch(`${this.baseUrl}/admin-check.php`, {
+        headers: this.getHeaders()
+      });
+      if (!response.ok) return false;
+      const data = await response.json();
+      return data.isAdmin === true;
+    } catch {
+      return false;
+    }
+  }
+
+  async deleteRaid(raidId) {
+    const response = await fetch(`${this.baseUrl}/raids.php?id=${raidId}`, {
+      method: 'DELETE',
+      headers: this.getHeaders()
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error || 'Failed to delete raid');
+    }
+    return response.json();
+  }
+
   async withdraw(raidId) {
     const response = await fetch(`${this.baseUrl}/signup.php?raid_id=${raidId}`, {
       method: 'DELETE',

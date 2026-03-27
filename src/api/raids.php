@@ -104,6 +104,29 @@ if ($method === 'GET') {
 
     echo json_encode(['success' => true, 'raid_id' => $raidId]);
 
+} elseif ($method === 'DELETE') {
+    // Delete a raid (admin only)
+    $user = verifyBnetToken();
+    $adminTags = ['crbntyp#2543'];
+
+    if (!in_array($user['battletag'], $adminTags)) {
+        http_response_code(403);
+        echo json_encode(['error' => 'Not authorized']);
+        exit;
+    }
+
+    $raidId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+    if (!$raidId) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Missing raid id']);
+        exit;
+    }
+
+    $stmt = $db->prepare("DELETE FROM raids WHERE id = :id");
+    $stmt->execute([':id' => $raidId]);
+
+    echo json_encode(['success' => true]);
+
 } else {
     http_response_code(405);
     echo json_encode(['error' => 'Method not allowed']);

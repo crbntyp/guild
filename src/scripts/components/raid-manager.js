@@ -10,6 +10,7 @@ class RaidManager {
     this.authService = authService;
     this.raids = [];
     this.signupModal = null;
+    this.isAdmin = false;
 
     // Read server (guild) ID and name from URL param or localStorage
     const urlParams = new URLSearchParams(window.location.search);
@@ -30,6 +31,7 @@ class RaidManager {
   }
 
   async init() {
+    this.isAdmin = await raidService.checkAdmin();
     this.render();
     await this.loadRaids();
   }
@@ -105,7 +107,7 @@ class RaidManager {
       const userSignup = userId
         ? signups.find(s => s.bnet_user_id === userId)
         : null;
-      return RaidCard.render(raid, userSignup);
+      return RaidCard.render(raid, userSignup, this.isAdmin);
     }).join('');
 
     content.innerHTML = `<div class="raids-grid">${raidsHTML}</div>`;
@@ -145,6 +147,23 @@ class RaidManager {
         const raidId = parseInt(e.target.dataset.raidId);
         const raid = this.raids.find(r => r.id === raidId);
         if (raid) this.signupModal.open(raid);
+      });
+    });
+
+    // Admin delete buttons
+    this.container.querySelectorAll('.btn-raid-delete').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const raidId = parseInt(e.currentTarget.dataset.raidId);
+        if (confirm('Delete this raid? This cannot be undone.')) {
+          try {
+            await raidService.deleteRaid(raidId);
+            await this.loadRaids();
+          } catch (error) {
+            console.error('Failed to delete raid:', error);
+            alert('Failed to delete: ' + error.message);
+          }
+        }
       });
     });
 
