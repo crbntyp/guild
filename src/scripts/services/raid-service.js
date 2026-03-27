@@ -79,10 +79,15 @@ class RaidService {
       const response = await fetch(`${this.baseUrl}/admin-check.php`, {
         headers: this.getHeaders()
       });
-      if (!response.ok) return false;
+      if (!response.ok) {
+        console.log('Admin check failed:', response.status);
+        return false;
+      }
       const data = await response.json();
+      console.log('Admin check result:', data);
       return data.isAdmin === true;
-    } catch {
+    } catch (error) {
+      console.log('Admin check error:', error);
       return false;
     }
   }
