@@ -569,9 +569,8 @@ class MountsPage {
 
     this.container.innerHTML = `
       <div class="auth-required-view">
-        <i class="las la-horse la-3x"></i>
-        <h2>Mount Collection</h2>
-        <p>Log in with your Battle.net account to browse your mount collection by expansion.</p>
+        <h2>Authentication Required</h2>
+        <p>Log in with your Battle.net account to view this page.</p>
         <button class="btn-login-auth" id="btn-login-mounts">
           <i class="las la-user"></i>
           Login with Battle.net

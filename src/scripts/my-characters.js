@@ -61,9 +61,8 @@ function showNotAuthenticated() {
   const container = document.getElementById('my-characters-container');
   container.innerHTML = `
     <div class="auth-required-view">
-      <i class="las la-user la-3x"></i>
-      <h2>My Characters</h2>
-      <p>Log in with your Battle.net account to view all your characters across realms.</p>
+      <h2>Authentication Required</h2>
+      <p>Log in with your Battle.net account to view this page.</p>
       <button class="btn-login-auth" id="btn-login-chars">
         <i class="las la-user"></i>
         Login with Battle.net

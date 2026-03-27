@@ -17,9 +17,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       } else {
         document.getElementById('todos-container').innerHTML = `
           <div class="auth-required-view">
-            <i class="las la-tasks la-3x"></i>
-            <h2>My Todos</h2>
-            <p>Log in with your Battle.net account to manage your personal WoW task list.</p>
+            <h2>Authentication Required</h2>
+            <p>Log in with your Battle.net account to view this page.</p>
             <button class="btn-login-auth" id="btn-login-todos">
               <i class="las la-user"></i>
               Login with Battle.net
