@@ -67,14 +67,14 @@
     user-select: none;
 
     &:hover {
-      border-color: #e12e2c;
+      border-color: rgba(255, 255, 255, 0.3);
     }
 
     input[type="radio"] {
       appearance: none;
       width: 16px;
       height: 16px;
-      border: 2px solid #e12e2c;
+      border: 2px solid rgba(255, 255, 255, 0.3);
       border-radius: 50%;
       background: rgba(0, 0, 0, 0.5);
       cursor: pointer;
@@ -82,10 +82,10 @@
       position: relative;
 
       &:checked {
-        border-color: #e12e2c;
-        background: #e12e2c;
-        &:hover{
-          border-color: #e12e2c;
+        border-color: #fff;
+        background: #fff;
+        &:hover {
+          border-color: #fff;
         }
 
         &::after {
@@ -118,8 +118,8 @@
     gap: 6px;
     height: 40px;
     padding: 0 20px;
-    background: #172329;
-    border: 1px solid #172329;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: var(--border-radius);
     color: white;
     font-family: 'Muli', sans-serif;
@@ -131,15 +131,15 @@
     white-space: nowrap;
 
     i {
-      color: #e12e2c;
+      color: rgba(255, 255, 255, 0.7);
       font-size: 18px;
       transition: var(--transition);
     }
 
     &:hover {
-      background: #e12e2c;
-      border-color: #e12e2c;
-      i{
+      background: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.35);
+      i {
         color: white;
       }
     }
@@ -150,7 +150,7 @@
   }
 
   .clear-results-link {
-    color: #e12e2c;
+    color: rgba(255, 255, 255, 0.5);
     font-family: 'Muli', sans-serif;
     font-size: 12px;
     text-decoration: none;
@@ -306,7 +306,7 @@
     margin-top: 20px;
     margin-bottom: 0;
     padding: 12px 20px;
-    background: rgba(#e12e2c, 0.5);
+    background: rgba(255, 255, 255, 0.1);
     border-radius: var(--border-radius);
     color: var(--color-primary);
     font-size: 13px;
