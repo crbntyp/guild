@@ -121,7 +121,7 @@ class PageInitializer {
 
     el.style.opacity = '0';
     setTimeout(() => {
-      el.innerHTML = `<span style="color: ${statusColor}">${statusDot}</span> ${realm.name} <span class="ticker-pop">${realm.population.toLowerCase()}</span>`;
+      el.innerHTML = `<span style="color: ${statusColor}">${statusDot}</span> ${realm.name}`;
       el.style.opacity = '1';
     }, 300);
 
