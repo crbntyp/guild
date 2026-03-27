@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         <div class="home-features home-features-row">
           <a href="mythic-plus.html" class="home-feature">
             <div class="home-feature-icon"><i class="las la-trophy"></i></div>
-            <h3>Mythic+</h3>
+            <h3>Mythic+ Leaderboards</h3>
             <p>Live leaderboards, meta composition analysis, and spec distribution across the top runs.</p>
           </a>
           <a href="my-mounts.html" class="home-feature">
