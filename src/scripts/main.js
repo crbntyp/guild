@@ -23,15 +23,51 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Create guild roster instance (initially hidden)
   const guildRoster = new GuildRoster('guild-roster-container');
 
-  // Show empty state initially (before any search)
+  // Show landing page initially (before any search)
   function showInfoPanel() {
     const rosterContainer = document.getElementById('guild-roster-container');
 
     rosterContainer.innerHTML = `
-      <div class="guild-search-empty">
-        <i class="las la-search"></i>
-        <p>Search for a guild to view their roster</p>
-        <p class="guild-search-empty-sub">Enter a guild name and realm above</p>
+      <div class="home-landing">
+        <div class="home-hero">
+          <div class="home-badge">gld__</div>
+          <h1>Your World of Warcraft Companion</h1>
+          <p class="home-subtitle">Guild roster viewer, raid signups, Mythic+ leaderboards, mount collections, event tracking, and more — all powered by the Battle.net API.</p>
+          <p class="home-search-hint"><i class="las la-arrow-up"></i> Search any guild above to get started</p>
+        </div>
+
+        <div class="home-features">
+          <div class="home-feature">
+            <div class="home-feature-icon"><i class="las la-users"></i></div>
+            <h3>Guild Roster</h3>
+            <p>Browse any guild's roster with class colours, item levels, specs, and detailed character modals.</p>
+          </div>
+          <div class="home-feature">
+            <div class="home-feature-icon"><i class="las la-dungeon"></i></div>
+            <h3>Raid Signups</h3>
+            <p>Discord-powered raid creation with role-based signups, reserves, and real-time notifications.</p>
+          </div>
+          <div class="home-feature">
+            <div class="home-feature-icon"><i class="las la-trophy"></i></div>
+            <h3>Mythic+</h3>
+            <p>Live leaderboards, meta composition analysis, and spec distribution across the top runs.</p>
+          </div>
+          <div class="home-feature">
+            <div class="home-feature-icon"><i class="las la-horse"></i></div>
+            <h3>Mount Collection</h3>
+            <p>Browse your mounts by expansion with Wowhead tooltips. Track what you own and what's farmable.</p>
+          </div>
+          <div class="home-feature">
+            <div class="home-feature-icon"><i class="las la-calendar"></i></div>
+            <h3>Events</h3>
+            <p>Live WoW event calendar with countdowns, auto-refreshed daily from Wowhead data.</p>
+          </div>
+          <div class="home-feature">
+            <div class="home-feature-icon"><i class="lab la-youtube"></i></div>
+            <h3>YouTube</h3>
+            <p>Curate your favourite WoW creators with tag-based filtering and in-app video playback.</p>
+          </div>
+        </div>
       </div>
     `;
   }
