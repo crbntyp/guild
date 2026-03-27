@@ -2,17 +2,38 @@
 .ticker-bar {
   height: 24px;
   background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   position: relative;
   z-index: 9999;
 
-  .ticker-content {
-    font-size: 11px;
+  .ticker-inner {
+    max-width: 1290px;
+    margin: 0 auto;
+    height: 100%;
+    padding: 0 var(--spacing-md);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .ticker-left {
+    font-size: 10px;
     font-weight: 600;
     color: #fed202;
     letter-spacing: 0.5px;
+  }
+
+  .ticker-right {
+    font-size: 10px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.3px;
+    transition: opacity 0.3s ease;
+
+    .ticker-pop {
+      font-size: 9px;
+      color: rgba(255, 255, 255, 0.3);
+      text-transform: capitalize;
+    }
   }
 }
 

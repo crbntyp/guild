@@ -71,7 +71,12 @@ class PageInitializer {
   static initTickerBar() {
     const ticker = document.createElement('div');
     ticker.className = 'ticker-bar';
-    ticker.innerHTML = '<span class="ticker-content" id="ticker-content"></span>';
+    ticker.innerHTML = `
+      <div class="ticker-inner">
+        <span class="ticker-left" id="ticker-token"></span>
+        <span class="ticker-right" id="ticker-realm"></span>
+      </div>
+    `;
     document.body.insertBefore(ticker, document.body.firstChild);
 
     // Fetch token price
@@ -80,10 +85,51 @@ class PageInitializer {
         minimumFractionDigits: 0,
         maximumFractionDigits: 0
       });
-      document.getElementById('ticker-content').textContent = `WoW Token: ${gold}g`;
-    }).catch(() => {
-      document.getElementById('ticker-content').textContent = '';
+      document.getElementById('ticker-token').textContent = `WoW Token: ${gold}g`;
+    }).catch(() => {});
+
+    // Rotate realm statuses
+    const realmIds = [1084, 1305, 1379, 1390, 1301, 1303, 1596, 1597, 1302];
+    let realmData = [];
+    let realmIndex = 0;
+
+    // Fetch all realm statuses
+    import('../api/battlenet-client.js').then(module => {
+      const client = module.default;
+      Promise.all(realmIds.map(id =>
+        client.request(`/data/wow/connected-realm/${id}`, {
+          params: { namespace: 'dynamic-eu' }
+        }).then(d => ({
+          name: d.realms?.[0]?.name || '?',
+          status: d.status?.type || '?',
+          population: d.population?.type || '?'
+        })).catch(() => null)
+      )).then(results => {
+        realmData = results.filter(r => r);
+        if (realmData.length > 0) {
+          PageInitializer.showNextRealm(realmData, 0);
+        }
+      });
     });
+  }
+
+  static showNextRealm(realmData, index) {
+    const el = document.getElementById('ticker-realm');
+    if (!el || realmData.length === 0) return;
+
+    const realm = realmData[index % realmData.length];
+    const statusDot = realm.status === 'UP' ? '●' : '○';
+    const statusColor = realm.status === 'UP' ? '#10b981' : '#ef4444';
+
+    el.style.opacity = '0';
+    setTimeout(() => {
+      el.innerHTML = `<span style="color: ${statusColor}">${statusDot}</span> ${realm.name} <span class="ticker-pop">${realm.population.toLowerCase()}</span>`;
+      el.style.opacity = '1';
+    }, 300);
+
+    setTimeout(() => {
+      PageInitializer.showNextRealm(realmData, index + 1);
+    }, 5000);
   }
 }
 
