@@ -75,12 +75,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
               <div class="member-card demo-card-char" style="pointer-events: none;">
                 <div class="member-level">90<span class="member-ilvl">245</span></div>
-                <div class="character-avatar-placeholder" style="height: 120px;"><img src="https://render.worldofwarcraft.com/eu/character/tarren-mill/139/174922379-inset.jpg" style="width:100%;height:100%;object-fit:cover;object-position:top" /></div>
-                <div class="member-header"><div class="member-name" style="color: #C79C6E">Avöid</div><div class="member-hero-talent" style="font-size:9px; color: rgba(255,255,255,0.4)">Colossus</div></div>
+                <div class="character-avatar-placeholder" style="height: 120px;"><img src="https://render.worldofwarcraft.com/eu/character/tarren-mill/11/171317515-inset.jpg" style="width:100%;height:100%;object-fit:cover;object-position:top" /></div>
+                <div class="member-header"><div class="member-name" style="color: #FFFFFF">Dmthyltryp</div><div class="member-hero-talent" style="font-size:9px; color: rgba(255,255,255,0.4)">Voidweaver</div></div>
                 <div class="member-details">
-                  <div class="member-detail-row"><div class="member-icon"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_warrior.jpg" class="demo-icon" /></div></div>
-                  <div class="member-detail-row"><div class="member-icon"><img src="https://static.wikia.nocookie.net/wowpedia/images/e/e8/IconSmall_VoidElf_Male.gif" class="demo-icon" /></div></div>
-                  <div class="member-detail-row"><div class="member-icon"><img src="https://wow.zamimg.com/images/wow/icons/large/ability_warrior_savageblow.jpg" class="demo-icon" /></div></div>
+                  <div class="member-detail-row"><div class="member-icon"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_priest.jpg" class="demo-icon" /></div></div>
+                  <div class="member-detail-row"><div class="member-icon"><img src="https://static.wikia.nocookie.net/wowpedia/images/a/a1/IconSmall_Nightborne_Male.gif" class="demo-icon" /></div></div>
+                  <div class="member-detail-row"><div class="member-icon"><img src="https://wow.zamimg.com/images/wow/icons/large/spell_shadow_shadowwordpain.jpg" class="demo-icon" /></div></div>
                 </div>
               </div>
 
