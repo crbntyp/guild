@@ -39,54 +39,62 @@ document.addEventListener('DOMContentLoaded', async () => {
         <div class="home-demo-section">
           <div class="home-demo-carousel">
             <div class="home-demo-track">
+
               <div class="member-card demo-card-char" style="min-width: 180px; max-width: 180px; pointer-events: none;">
-                <div class="member-level">80<span class="member-ilvl">618</span></div>
-                <div class="character-avatar-placeholder" style="background: url('https://render.worldofwarcraft.com/eu/character/tarren-mill/avatar.jpg') center/cover; height: 120px;"></div>
-                <div class="member-header"><div class="member-name" style="color: #40C7EB">Frostbolt</div><div class="member-hero-talent" style="font-size:9px; color: rgba(255,255,255,0.4)">Spellslinger</div></div>
+                <div class="member-level">90<span class="member-ilvl">263</span></div>
+                <div class="character-avatar-placeholder" style="height: 120px;"><img src="https://render.worldofwarcraft.com/eu/character/tarren-mill/249/186044665-inset.jpg" style="width:100%;height:100%;object-fit:cover;object-position:top" /></div>
+                <div class="member-header"><div class="member-name" style="color: #0070DE">Thundathighs</div><div class="member-hero-talent" style="font-size:9px; color: rgba(255,255,255,0.4)">Farseer</div></div>
                 <div class="member-details">
-                  <div class="member-detail-row"><div class="member-icon"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_mage.jpg" style="width:20px;height:20px;border-radius:3px" /></div></div>
+                  <div class="member-detail-row"><div class="member-icon"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_shaman.jpg" class="demo-icon" /></div></div>
+                  <div class="member-detail-row"><div class="member-icon"><img src="https://static.wikia.nocookie.net/wowpedia/images/0/03/IconSmall_Dwarf_Female.gif" class="demo-icon" /></div></div>
+                  <div class="member-detail-row"><div class="member-icon"><img src="https://wow.zamimg.com/images/wow/icons/large/spell_nature_magicimmunity.jpg" class="demo-icon" /></div></div>
                 </div>
               </div>
+
               <div class="member-card demo-card-char" style="min-width: 180px; max-width: 180px; pointer-events: none;">
-                <div class="member-level">80<span class="member-ilvl">615</span></div>
-                <div class="character-avatar-placeholder" style="background: rgba(255,255,255,0.05); height: 120px; display:flex; align-items:center; justify-content:center;"><i class="las la-user" style="font-size:40px; color:rgba(255,255,255,0.15)"></i></div>
-                <div class="member-header"><div class="member-name" style="color: #C79C6E">Shieldwall</div><div class="member-hero-talent" style="font-size:9px; color: rgba(255,255,255,0.4)">Mountain Thane</div></div>
+                <div class="member-level">90<span class="member-ilvl">258</span></div>
+                <div class="character-avatar-placeholder" style="height: 120px;"><img src="https://render.worldofwarcraft.com/eu/character/tarren-mill/20/187909908-inset.jpg" style="width:100%;height:100%;object-fit:cover;object-position:top" /></div>
+                <div class="member-header"><div class="member-name" style="color: #FF7D0A">Gaibe</div><div class="member-hero-talent" style="font-size:9px; color: rgba(255,255,255,0.4)">Druid of the Claw</div></div>
                 <div class="member-details">
-                  <div class="member-detail-row"><div class="member-icon"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_warrior.jpg" style="width:20px;height:20px;border-radius:3px" /></div></div>
+                  <div class="member-detail-row"><div class="member-icon"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_druid.jpg" class="demo-icon" /></div></div>
+                  <div class="member-detail-row"><div class="member-icon"><img src="https://static.wikia.nocookie.net/wowpedia/images/4/41/IconSmall_Tauren_Male.gif" class="demo-icon" /></div></div>
+                  <div class="member-detail-row"><div class="member-icon"><img src="https://wow.zamimg.com/images/wow/icons/large/ability_druid_maul.jpg" class="demo-icon" /></div></div>
                 </div>
               </div>
+
               <div class="member-card demo-card-char" style="min-width: 180px; max-width: 180px; pointer-events: none;">
-                <div class="member-level">80<span class="member-ilvl">612</span></div>
-                <div class="character-avatar-placeholder" style="background: rgba(255,255,255,0.05); height: 120px; display:flex; align-items:center; justify-content:center;"><i class="las la-user" style="font-size:40px; color:rgba(255,255,255,0.15)"></i></div>
-                <div class="member-header"><div class="member-name" style="color: #F58CBA">Lightbringer</div><div class="member-hero-talent" style="font-size:9px; color: rgba(255,255,255,0.4)">Herald of the Sun</div></div>
+                <div class="member-level">90<span class="member-ilvl">269</span></div>
+                <div class="character-avatar-placeholder" style="height: 120px;"><img src="https://render.worldofwarcraft.com/eu/character/tarren-mill/58/170575674-inset.jpg" style="width:100%;height:100%;object-fit:cover;object-position:top" /></div>
+                <div class="member-header"><div class="member-name" style="color: #A330C9">Felbladë</div><div class="member-hero-talent" style="font-size:9px; color: rgba(255,255,255,0.4)">Fel-Scarred</div></div>
                 <div class="member-details">
-                  <div class="member-detail-row"><div class="member-icon"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_paladin.jpg" style="width:20px;height:20px;border-radius:3px" /></div></div>
+                  <div class="member-detail-row"><div class="member-icon"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_demonhunter.jpg" class="demo-icon" /></div></div>
+                  <div class="member-detail-row"><div class="member-icon"><img src="https://static.wikia.nocookie.net/wowpedia/images/7/72/IconSmall_BloodElf_Female.png" class="demo-icon" /></div></div>
+                  <div class="member-detail-row"><div class="member-icon"><img src="https://wow.zamimg.com/images/wow/icons/large/ability_demonhunter_spectank.jpg" class="demo-icon" /></div></div>
                 </div>
               </div>
+
               <div class="member-card demo-card-char" style="min-width: 180px; max-width: 180px; pointer-events: none;">
-                <div class="member-level">80<span class="member-ilvl">617</span></div>
-                <div class="character-avatar-placeholder" style="background: rgba(255,255,255,0.05); height: 120px; display:flex; align-items:center; justify-content:center;"><i class="las la-user" style="font-size:40px; color:rgba(255,255,255,0.15)"></i></div>
-                <div class="member-header"><div class="member-name" style="color: #A330C9">Chaosblde</div><div class="member-hero-talent" style="font-size:9px; color: rgba(255,255,255,0.4)">Aldrachi Reaver</div></div>
+                <div class="member-level">90<span class="member-ilvl">245</span></div>
+                <div class="character-avatar-placeholder" style="height: 120px;"><img src="https://render.worldofwarcraft.com/eu/character/tarren-mill/139/174922379-inset.jpg" style="width:100%;height:100%;object-fit:cover;object-position:top" /></div>
+                <div class="member-header"><div class="member-name" style="color: #C79C6E">Avöid</div><div class="member-hero-talent" style="font-size:9px; color: rgba(255,255,255,0.4)">Colossus</div></div>
                 <div class="member-details">
-                  <div class="member-detail-row"><div class="member-icon"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_demonhunter.jpg" style="width:20px;height:20px;border-radius:3px" /></div></div>
+                  <div class="member-detail-row"><div class="member-icon"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_warrior.jpg" class="demo-icon" /></div></div>
+                  <div class="member-detail-row"><div class="member-icon"><img src="https://static.wikia.nocookie.net/wowpedia/images/e/e8/IconSmall_VoidElf_Male.gif" class="demo-icon" /></div></div>
+                  <div class="member-detail-row"><div class="member-icon"><img src="https://wow.zamimg.com/images/wow/icons/large/ability_warrior_savageblow.jpg" class="demo-icon" /></div></div>
                 </div>
               </div>
+
               <div class="member-card demo-card-char" style="min-width: 180px; max-width: 180px; pointer-events: none;">
-                <div class="member-level">80<span class="member-ilvl">610</span></div>
-                <div class="character-avatar-placeholder" style="background: rgba(255,255,255,0.05); height: 120px; display:flex; align-items:center; justify-content:center;"><i class="las la-user" style="font-size:40px; color:rgba(255,255,255,0.15)"></i></div>
-                <div class="member-header"><div class="member-name" style="color: #0070DE">Tidecaller</div><div class="member-hero-talent" style="font-size:9px; color: rgba(255,255,255,0.4)">Farseer</div></div>
+                <div class="member-level">90<span class="member-ilvl">251</span></div>
+                <div class="character-avatar-placeholder" style="height: 120px;"><img src="https://render.worldofwarcraft.com/eu/character/tarren-mill/41/171269673-inset.jpg" style="width:100%;height:100%;object-fit:cover;object-position:top" /></div>
+                <div class="member-header"><div class="member-name" style="color: #8787ED">Blighthöund</div><div class="member-hero-talent" style="font-size:9px; color: rgba(255,255,255,0.4)">Diabolist</div></div>
                 <div class="member-details">
-                  <div class="member-detail-row"><div class="member-icon"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_shaman.jpg" style="width:20px;height:20px;border-radius:3px" /></div></div>
+                  <div class="member-detail-row"><div class="member-icon"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_warlock.jpg" class="demo-icon" /></div></div>
+                  <div class="member-detail-row"><div class="member-icon"><img src="https://static.wikia.nocookie.net/wowpedia/images/8/83/IconSmall_Undead_Female.gif" class="demo-icon" /></div></div>
+                  <div class="member-detail-row"><div class="member-icon"><img src="https://wow.zamimg.com/images/wow/icons/large/spell_shadow_metamorphosis.jpg" class="demo-icon" /></div></div>
                 </div>
               </div>
-              <div class="member-card demo-card-char" style="min-width: 180px; max-width: 180px; pointer-events: none;">
-                <div class="member-level">80<span class="member-ilvl">606</span></div>
-                <div class="character-avatar-placeholder" style="background: rgba(255,255,255,0.05); height: 120px; display:flex; align-items:center; justify-content:center;"><i class="las la-user" style="font-size:40px; color:rgba(255,255,255,0.15)"></i></div>
-                <div class="member-header"><div class="member-name" style="color: #8787ED">Felfire</div><div class="member-hero-talent" style="font-size:9px; color: rgba(255,255,255,0.4)">Diabolist</div></div>
-                <div class="member-details">
-                  <div class="member-detail-row"><div class="member-icon"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_warlock.jpg" style="width:20px;height:20px;border-radius:3px" /></div></div>
-                </div>
-              </div>
+
             </div>
           </div>
         </div>
