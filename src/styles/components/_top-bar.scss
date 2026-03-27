@@ -1,37 +1,29 @@
-// Ticker Bar
-.ticker-bar {
-  height: 24px;
-  background: rgba(0, 0, 0, 0.6);
-  position: relative;
-  z-index: 9999;
+// Fixed bottom-right info widget
+.ticker-widget {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  z-index: 9998;
+  text-align: right;
 
-  .ticker-inner {
-    max-width: 1290px;
-    margin: 0 auto;
-    height: 100%;
-    padding: 0 var(--spacing-md);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .ticker-left {
+  .ticker-token {
     font-size: 10px;
     font-weight: 600;
     color: #fed202;
     letter-spacing: 0.5px;
+    margin-bottom: 2px;
   }
 
-  .ticker-right {
+  .ticker-realm {
     font-size: 10px;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.4);
     letter-spacing: 0.3px;
     transition: opacity 0.3s ease;
 
     .ticker-pop {
       font-size: 9px;
-      color: rgba(255, 255, 255, 0.3);
+      color: rgba(255, 255, 255, 0.25);
       text-transform: capitalize;
     }
   }
@@ -239,7 +231,7 @@
   .mobile-nav {
     display: none;
     position: fixed;
-    top: 74px; // 24px ticker + 50px top-bar
+    top: 50px;
     left: 0;
     width: 100%;
     background: rgba(10, 10, 10, 0.98);

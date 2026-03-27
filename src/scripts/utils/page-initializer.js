@@ -70,14 +70,12 @@ class PageInitializer {
 
   static initTickerBar() {
     const ticker = document.createElement('div');
-    ticker.className = 'ticker-bar';
+    ticker.className = 'ticker-widget';
     ticker.innerHTML = `
-      <div class="ticker-inner">
-        <span class="ticker-left" id="ticker-token"></span>
-        <span class="ticker-right" id="ticker-realm"></span>
-      </div>
+      <div id="ticker-token" class="ticker-token"></div>
+      <div id="ticker-realm" class="ticker-realm"></div>
     `;
-    document.body.insertBefore(ticker, document.body.firstChild);
+    document.body.appendChild(ticker);
 
     // Fetch token price
     wowApi.getWoWTokenPrice().then(tokenData => {
