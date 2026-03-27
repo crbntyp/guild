@@ -90,12 +90,15 @@ class RaidManager {
     const userId = user?.id;
 
     if (this.raids.length === 0) {
+      // Hide the page header when no raids
+      const header = this.container.querySelector('.page-header-panel');
+      if (header) header.style.display = 'none';
+
       const message = this.guildId
         ? '<p>No upcoming raids</p><p class="no-raids-sub">Create one via your Discord bot, ask your GM!</p>'
         : '<p>No raids found</p><p class="no-raids-sub">Click a raid signup link from your Discord server to get started</p>';
       content.innerHTML = `
         <div class="no-raids">
-          <i class="las la-dungeon la-3x"></i>
           ${message}
         </div>
       `;
