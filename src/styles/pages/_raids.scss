@@ -1,4 +1,7 @@
-// Raids page styles
+// Raids page - darken background rotator for readability
+body:has(#raids-container) .bg-rotator-container .bg-layer {
+  filter: brightness(0.3);
+}
 
 #raids-container {
   max-width: 1290px;
