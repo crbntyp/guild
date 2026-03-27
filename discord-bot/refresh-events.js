@@ -54,7 +54,13 @@ async function generateEvents() {
       const occurrences = [];
       if (event.occurrences && Array.isArray(event.occurrences)) {
         for (const occ of event.occurrences) {
-          if (occ.timestamp && occ.end) {
+          // Handle both formats: {start, end} as date strings or {timestamp, end} as unix
+          if (occ.start && occ.end) {
+            occurrences.push({
+              start: new Date(occ.start.replace(/\//g, '-')).toISOString(),
+              end: new Date(occ.end.replace(/\//g, '-')).toISOString()
+            });
+          } else if (occ.timestamp && occ.end) {
             occurrences.push({
               start: new Date(occ.timestamp * 1000).toISOString(),
               end: new Date(occ.end * 1000).toISOString()
