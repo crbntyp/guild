@@ -52,7 +52,7 @@ body:has(#raids-container) .bg-rotator-container .bg-layer {
 
   .raids-landing-hero {
     text-align: center;
-    padding: 40px 20px 50px;
+    padding: 40px 20px 30px;
 
     .raids-landing-badge {
       display: inline-block;
@@ -87,6 +87,53 @@ body:has(#raids-container) .bg-rotator-container .bg-layer {
       line-height: 1.6;
       color: rgba(255, 255, 255, 0.5);
     }
+  }
+
+  // Demo carousel
+  .raids-demo-carousel {
+    overflow-x: auto;
+    margin: 0 -20px 40px;
+    padding: 0 20px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .raids-demo-track {
+    display: flex;
+    gap: 16px;
+    padding-bottom: 8px;
+    justify-content: center;
+
+    @media (max-width: 1000px) {
+      justify-content: flex-start;
+    }
+  }
+
+  .demo-card {
+    opacity: 0.85;
+    pointer-events: none;
+    flex-shrink: 0;
+
+    .raid-roster-scroll {
+      max-height: 150px;
+    }
+
+    @media (max-width: 768px) {
+      min-width: 280px !important;
+      max-width: 280px !important;
+    }
+  }
+
+  .raids-landing-section-title {
+    text-align: center;
+    font-size: 22px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 20px;
   }
 
   // Features grid
@@ -222,13 +269,14 @@ body:has(#raids-container) .bg-rotator-container .bg-layer {
   // CTA
   .raids-landing-cta {
     text-align: center;
-    padding: 30px 20px;
+    padding: 20px 20px;
 
     .btn-login-raids {
       display: inline-flex;
       align-items: center;
       gap: 8px;
       padding: 12px 28px;
+      margin-bottom: 40px;
       background: rgba(163, 53, 238, 0.3);
       border: 1px solid rgba(163, 53, 238, 0.5);
       border-radius: 8px;

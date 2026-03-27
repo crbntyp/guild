@@ -59,6 +59,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </button>
               </div>
 
+              <div class="raids-landing-section-title">Get the bot for your Discord server</div>
               <div class="raids-landing-features">
                 <div class="raids-landing-feature">
                   <div class="raids-landing-feature-icon">
@@ -138,9 +139,96 @@ document.addEventListener('DOMContentLoaded', async () => {
               <div class="raids-landing-hero">
                 <div class="raids-landing-badge">gld__ raids</div>
                 <h1>Organise Your Raid Night</h1>
-                <p class="raids-landing-subtitle">A streamlined raid signup system powered by Discord. Your GM creates raids with a simple command, your guild signs up through the app.</p>
+                <p class="raids-landing-subtitle">A streamlined raid signup system powered by Discord. Discord raid creation with Battle.net character choice raid signup!</p>
               </div>
 
+              <div class="raids-demo-carousel">
+                <div class="raids-demo-track">
+                  <div class="raid-card status-open demo-card" style="min-width: 300px; max-width: 300px;">
+                    <div class="raid-card-banner" style="background-image: url('https://render.worldofwarcraft.com/us/zones/the-voidspire-small.jpg')">
+                      <div class="raid-card-banner-overlay"></div>
+                      <div class="raid-card-banner-content">
+                        <div class="raid-card-title"><h3>The Voidspire</h3><span class="raid-difficulty-badge difficulty-heroic">heroic</span></div>
+                        <div class="raid-card-date"><span class="raid-date">Wed, 2 Apr</span><span class="raid-time">20:00</span><span class="raid-countdown">6d 12h</span></div>
+                      </div>
+                      <p class="raid-card-description">Wednesday reclear - all welcome</p>
+                      <div class="raid-card-progress"><div class="raid-progress-bar"><div class="raid-progress-fill" style="width: 65%"></div></div><span class="raid-progress-text">13/20</span></div>
+                    </div>
+                    <div class="raid-card-body">
+                      <div class="raid-card-roles">
+                        <div class="raid-role"><span class="raid-role-icon tank"><i class="las la-shield-alt"></i></span><span class="raid-role-count">2/2</span></div>
+                        <div class="raid-role"><span class="raid-role-icon healer"><i class="las la-plus-circle"></i></span><span class="raid-role-count">3/4</span></div>
+                        <div class="raid-role"><span class="raid-role-icon dps"><i class="las la-crosshairs"></i></span><span class="raid-role-count">8/14</span></div>
+                      </div>
+                      <div class="raid-roster-scroll">
+                        <div class="raid-signups-list">
+                          <div class="raid-signup-group"><span class="raid-signup-role-label tank">Tanks</span><div class="raid-signup-member"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_warrior.jpg" class="raid-signup-icon" /><span class="raid-signup-name" style="color: #C79C6E">Shieldwall</span></div><div class="raid-signup-member"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_deathknight.jpg" class="raid-signup-icon" /><span class="raid-signup-name" style="color: #C41F3B">Darkguard</span></div></div>
+                          <div class="raid-signup-group"><span class="raid-signup-role-label healer">Healers</span><div class="raid-signup-member"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_paladin.jpg" class="raid-signup-icon" /><span class="raid-signup-name" style="color: #F58CBA">Lightbringer</span></div><div class="raid-signup-member"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_druid.jpg" class="raid-signup-icon" /><span class="raid-signup-name" style="color: #FF7D0A">Treeform</span></div><div class="raid-signup-member"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_shaman.jpg" class="raid-signup-icon" /><span class="raid-signup-name" style="color: #0070DE">Tidecaller</span></div></div>
+                          <div class="raid-signup-group"><span class="raid-signup-role-label dps">DPS</span><div class="raid-signup-member"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_mage.jpg" class="raid-signup-icon" /><span class="raid-signup-name" style="color: #40C7EB">Frostbolt</span></div><div class="raid-signup-member"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_rogue.jpg" class="raid-signup-icon" /><span class="raid-signup-name" style="color: #FFF569">Shadowstep</span></div><div class="raid-signup-member"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_druid.jpg" class="raid-signup-icon" /><span class="raid-signup-name" style="color: #FF7D0A">Starfall</span></div><div class="raid-signup-member"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_demonhunter.jpg" class="raid-signup-icon" /><span class="raid-signup-name" style="color: #A330C9">Chaosblde</span></div><div class="raid-signup-member"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_monk.jpg" class="raid-signup-icon" /><span class="raid-signup-name" style="color: #00FF96">Windwalkin</span></div><div class="raid-signup-member"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_hunter.jpg" class="raid-signup-icon" /><span class="raid-signup-name" style="color: #ABD473">Aimshot</span></div><div class="raid-signup-member"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_warlock.jpg" class="raid-signup-icon" /><span class="raid-signup-name" style="color: #8787ED">Felfire</span></div><div class="raid-signup-member"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_paladin.jpg" class="raid-signup-icon" /><span class="raid-signup-name" style="color: #F58CBA">Retbull</span></div></div>
+                        </div>
+                      </div>
+                      <div class="raid-card-actions"><button class="btn-raid-signup" disabled>Sign Up</button></div>
+                    </div>
+                  </div>
+
+                  <div class="raid-card status-full demo-card" style="min-width: 300px; max-width: 300px;">
+                    <div class="raid-card-banner" style="background-image: url('https://render.worldofwarcraft.com/us/zones/march-on-queldanas-small.jpg')">
+                      <div class="raid-card-banner-overlay"></div>
+                      <div class="raid-card-banner-content">
+                        <div class="raid-card-title"><h3>March on Quel'Danas</h3><span class="raid-difficulty-badge difficulty-mythic">mythic</span></div>
+                        <div class="raid-card-date"><span class="raid-date">Thu, 3 Apr</span><span class="raid-time">21:00</span><span class="raid-countdown">Tomorrow</span></div>
+                      </div>
+                      <p class="raid-card-description">Mythic prog - CE push</p>
+                      <div class="raid-card-progress"><div class="raid-progress-bar"><div class="raid-progress-fill" style="width: 100%"></div></div><span class="raid-progress-text">10/10 +2 reserves</span></div>
+                    </div>
+                    <div class="raid-card-body">
+                      <div class="raid-card-roles">
+                        <div class="raid-role"><span class="raid-role-icon tank"><i class="las la-shield-alt"></i></span><span class="raid-role-count">1/1</span></div>
+                        <div class="raid-role"><span class="raid-role-icon healer"><i class="las la-plus-circle"></i></span><span class="raid-role-count">2/2</span></div>
+                        <div class="raid-role"><span class="raid-role-icon dps"><i class="las la-crosshairs"></i></span><span class="raid-role-count">7/7</span></div>
+                      </div>
+                      <div class="raid-roster-scroll">
+                        <div class="raid-signups-list">
+                          <div class="raid-signup-group"><span class="raid-signup-role-label tank">Tanks</span><div class="raid-signup-member"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_deathknight.jpg" class="raid-signup-icon" /><span class="raid-signup-name" style="color: #C41F3B">Boneshield</span></div></div>
+                          <div class="raid-signup-group"><span class="raid-signup-role-label healer">Healers</span><div class="raid-signup-member"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_priest.jpg" class="raid-signup-icon" /><span class="raid-signup-name" style="color: #FFFFFF">Mending</span></div><div class="raid-signup-member"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_shaman.jpg" class="raid-signup-icon" /><span class="raid-signup-name" style="color: #0070DE">Riptide</span></div></div>
+                          <div class="raid-signup-group"><span class="raid-signup-role-label dps">DPS</span><div class="raid-signup-member"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_mage.jpg" class="raid-signup-icon" /><span class="raid-signup-name" style="color: #40C7EB">Pyroblast</span></div><div class="raid-signup-member"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_warrior.jpg" class="raid-signup-icon" /><span class="raid-signup-name" style="color: #C79C6E">Furyblade</span></div><div class="raid-signup-member"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_hunter.jpg" class="raid-signup-icon" /><span class="raid-signup-name" style="color: #ABD473">Deadeye</span></div><div class="raid-signup-member"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_warlock.jpg" class="raid-signup-icon" /><span class="raid-signup-name" style="color: #8787ED">Doomcall</span></div><div class="raid-signup-member"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_rogue.jpg" class="raid-signup-icon" /><span class="raid-signup-name" style="color: #FFF569">Ambush</span></div><div class="raid-signup-member"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_demonhunter.jpg" class="raid-signup-icon" /><span class="raid-signup-name" style="color: #A330C9">Voidrush</span></div><div class="raid-signup-member"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_monk.jpg" class="raid-signup-icon" /><span class="raid-signup-name" style="color: #00FF96">Tigerstrike</span></div></div>
+                        </div>
+                        <div class="raid-reserves-section"><span class="raid-reserves-label">Reserves (2)</span><div class="raid-signups-list"><div class="raid-signup-group"><span class="raid-signup-role-label dps">DPS</span><div class="raid-signup-member"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_druid.jpg" class="raid-signup-icon" /><span class="raid-signup-name" style="color: #FF7D0A">Moonfire</span></div><div class="raid-signup-member"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_mage.jpg" class="raid-signup-icon" /><span class="raid-signup-name" style="color: #40C7EB">Icelance</span></div></div></div></div>
+                      </div>
+                      <div class="raid-card-actions"><button class="btn-raid-signup" disabled>Sign Up as Reserve</button></div>
+                    </div>
+                  </div>
+
+                  <div class="raid-card status-open demo-card" style="min-width: 300px; max-width: 300px;">
+                    <div class="raid-card-banner" style="background-image: url('https://render.worldofwarcraft.com/us/zones/the-dreamrift-small.jpg')">
+                      <div class="raid-card-banner-overlay"></div>
+                      <div class="raid-card-banner-content">
+                        <div class="raid-card-title"><h3>The Dreamrift</h3><span class="raid-difficulty-badge difficulty-normal">normal</span></div>
+                        <div class="raid-card-date"><span class="raid-date">Sat, 5 Apr</span><span class="raid-time">18:00</span><span class="raid-countdown">9d 4h</span></div>
+                      </div>
+                      <p class="raid-card-description">World boss - all welcome</p>
+                      <div class="raid-card-progress"><div class="raid-progress-bar"><div class="raid-progress-fill" style="width: 13%"></div></div><span class="raid-progress-text">4/30</span></div>
+                    </div>
+                    <div class="raid-card-body">
+                      <div class="raid-card-roles">
+                        <div class="raid-role"><span class="raid-role-icon tank"><i class="las la-shield-alt"></i></span><span class="raid-role-count">1/3</span></div>
+                        <div class="raid-role"><span class="raid-role-icon healer"><i class="las la-plus-circle"></i></span><span class="raid-role-count">1/5</span></div>
+                        <div class="raid-role"><span class="raid-role-icon dps"><i class="las la-crosshairs"></i></span><span class="raid-role-count">2/22</span></div>
+                      </div>
+                      <div class="raid-roster-scroll">
+                        <div class="raid-signups-list">
+                          <div class="raid-signup-group"><span class="raid-signup-role-label tank">Tanks</span><div class="raid-signup-member"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_warrior.jpg" class="raid-signup-icon" /><span class="raid-signup-name" style="color: #C79C6E">Ironhide</span></div></div>
+                          <div class="raid-signup-group"><span class="raid-signup-role-label healer">Healers</span><div class="raid-signup-member"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_druid.jpg" class="raid-signup-icon" /><span class="raid-signup-name" style="color: #FF7D0A">Rejuvenate</span></div></div>
+                          <div class="raid-signup-group"><span class="raid-signup-role-label dps">DPS</span><div class="raid-signup-member"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_shaman.jpg" class="raid-signup-icon" /><span class="raid-signup-name" style="color: #0070DE">Thunderbolt</span></div><div class="raid-signup-member"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_hunter.jpg" class="raid-signup-icon" /><span class="raid-signup-name" style="color: #ABD473">Snipeshot</span></div></div>
+                        </div>
+                      </div>
+                      <div class="raid-card-actions"><span class="raid-signed-up">Signed up as Thunderbolt</span><button class="btn-raid-withdraw" disabled>Withdraw</button></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="raids-landing-section-title">Get the bot for your Discord server</div>
               <div class="raids-landing-features">
                 <div class="raids-landing-feature">
                   <div class="raids-landing-feature-icon">
