@@ -1,8 +1,8 @@
 // Top Bar
 .top-bar {
   height: 50px;
-  background: rgba(26, 26, 26, 0.95) url(../img/header.png);
-  border-bottom: 4px solid rgba(white, 0.06);
+  background: rgba(10, 10, 10, 0.95);
+  border-bottom: 1px solid rgba(white, 0.06);
   backdrop-filter: blur(10px);
   position: relative;
   z-index: 9999;
@@ -38,7 +38,7 @@
 
     i {
       font-size: 32px;
-      color: var(--color-primary);
+      color: rgba(255, 255, 255, 0.7);
       transition: var(--transition);
     }
 
@@ -65,7 +65,7 @@
     span {
       width: 24px;
       height: 2px;
-      background: var(--color-text);
+      background: rgba(255, 255, 255, 0.6);
       border-radius: 2px;
       transition: all 0.3s ease;
       transform-origin: center;
@@ -96,7 +96,7 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      color: var(--color-text-light);
+      color: rgba(255, 255, 255, 0.45);
       font-size: 10px;
       font-weight: 600;
       text-decoration: none;
@@ -112,11 +112,12 @@
       }
 
       &:hover {
-        color: var(--color-primary);
+        color: rgba(255, 255, 255, 0.8);
       }
 
       &.active {
-        color: #e12e2c;
+        color: #fff;
+        font-weight: 700;
       }
     }
 
@@ -133,7 +134,7 @@
 
       &.open {
         .nav-dropdown-toggle {
-          color: var(--color-primary);
+          color: #fff;
 
           .dropdown-arrow {
             transform: rotate(180deg);
@@ -152,17 +153,17 @@
         top: calc(100% + 12px);
         left: 0;
         min-width: 200px;
-        background: rgba(26, 26, 26, 0.98);
-        border: 1px solid var(--color-border);
-        border-radius: var(--border-radius);
+        background: rgba(10, 10, 10, 0.98);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 6px;
         backdrop-filter: blur(10px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
         opacity: 0;
         visibility: hidden;
         transform: translateY(-10px);
         transition: all 0.2s ease;
         z-index: 10000;
-        padding: 8px 0;
+        padding: 6px 0;
       }
 
       .nav-dropdown-item {
@@ -170,7 +171,7 @@
         align-items: center;
         gap: 8px;
         padding: 10px 16px;
-        color: var(--color-text-light);
+        color: rgba(255, 255, 255, 0.45);
         font-size: 11px;
         font-weight: 600;
         text-decoration: none;
@@ -183,13 +184,13 @@
         }
 
         &:hover {
-          color: var(--color-primary);
+          color: #fff;
           background: rgba(255, 255, 255, 0.05);
         }
 
         &.active {
-          color: #e12e2c;
-          background: rgba(225, 46, 44, 0.1);
+          color: #a335ee;
+          background: rgba(163, 53, 238, 0.08);
         }
       }
     }
@@ -202,9 +203,9 @@
     top: 50px;
     left: 0;
     width: 100%;
-    background: rgba(26, 26, 26, 0.98);
+    background: rgba(10, 10, 10, 0.98);
     backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     flex-direction: column;
     padding: 8px 0;
     z-index: 9998;
@@ -223,7 +224,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      color: var(--color-text-light);
+      color: rgba(255, 255, 255, 0.45);
       font-size: 12px;
       font-weight: 600;
       text-decoration: none;
@@ -237,15 +238,16 @@
       }
 
       &:hover {
-        color: var(--color-primary);
+        color: #fff;
         background: rgba(255, 255, 255, 0.03);
-        border-left-color: var(--color-primary);
+        border-left-color: rgba(255, 255, 255, 0.3);
       }
 
       &.active {
-        color: #e12e2c;
-        background: rgba(225, 46, 44, 0.1);
-        border-left-color: #e12e2c;
+        color: #fff;
+        font-weight: 700;
+        background: rgba(255, 255, 255, 0.05);
+        border-left-color: #a335ee;
       }
 
       &.mobile-nav-link-indent {
@@ -257,7 +259,7 @@
     .mobile-nav-group {
       .mobile-nav-group-header {
         padding: 12px 16px 8px;
-        color: rgba(255, 255, 255, 0.5);
+        color: rgba(255, 255, 255, 0.35);
         font-size: 10px;
         font-weight: 700;
         text-transform: uppercase;
@@ -278,9 +280,9 @@
     align-items: center;
     gap: 4px;
     padding: 5px 12px;
-    background: #e12e2c;
-    border: 1px solid #e12e2c;
-    border-radius: var(--border-radius);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
     color: white;
     font-family: 'Muli', sans-serif;
     font-size: 12px;
@@ -291,8 +293,8 @@
     z-index: 10001;
 
     &:hover {
-      background: #c82826;
-      border-color: #c82826;
+      background: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.35);
     }
 
     i {
@@ -318,8 +320,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(255, 255, 255, 0.1);
-      border: 2px solid var(--color-border);
+      background: rgba(255, 255, 255, 0.08);
+      border: 2px solid rgba(255, 255, 255, 0.1);
 
       .user-avatar {
         width: 100%;
@@ -329,19 +331,19 @@
 
       i {
         font-size: 16px;
-        color: var(--color-text-light);
+        color: rgba(255, 255, 255, 0.5);
       }
     }
 
     .user-battletag {
-      color: var(--color-text);
+      color: rgba(255, 255, 255, 0.8);
       font-size: 12px;
       font-weight: 600;
       text-decoration: none;
       transition: var(--transition);
 
       &:hover {
-        color: var(--color-primary);
+        color: #fff;
       }
     }
 
@@ -350,10 +352,10 @@
       align-items: center;
       gap: 4px;
       padding: 5px 12px;
-      background: #e12e2c;
-      border: 1px solid #e12e2c;
-      border-radius: var(--border-radius);
-      color: white;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 4px;
+      color: rgba(255, 255, 255, 0.6);
       font-family: 'Muli', sans-serif;
       font-size: 12px;
       cursor: pointer;
@@ -363,8 +365,8 @@
       z-index: 10001;
 
       &:hover {
-        background: #c82826;
-        border-color: #c82826;
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
       }
 
       i {
