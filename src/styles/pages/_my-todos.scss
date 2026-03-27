@@ -1,10 +1,5 @@
 // My Todos page styles
 
-// Darken backgrounds for readability
-body:has(#todos-container) .bg-rotator-container .bg-layer {
-  filter: brightness(0.3);
-}
-
 #todos-container {
   max-width: 1290px;
   width: 100%;

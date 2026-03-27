@@ -17,6 +17,11 @@ body {
   position: relative;
 }
 
+// Darken backgrounds globally for readability (except gallery)
+body:not(:has(#gallery-container)) .bg-rotator-container .bg-layer {
+  filter: brightness(0.3);
+}
+
 button,
 input,
 textarea,

@@ -1,10 +1,5 @@
 // My YouTube page styles
 
-// Darken backgrounds for readability
-body:has(#my-youtube-container) .bg-rotator-container .bg-layer {
-  filter: brightness(0.3);
-}
-
 #my-youtube-container {
   max-width: 1290px;
   width: 100%;
