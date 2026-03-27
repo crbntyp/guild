@@ -89,7 +89,7 @@ class PageInitializer {
     }).catch(() => {});
 
     // Rotate realm statuses
-    const realmIds = [1084, 1305, 1379, 1390, 1301, 1303, 1596, 1597, 1302];
+    const realmIds = [1084, 3391, 1303, 1329, 1305, 3682]; // Tarren Mill, Silvermoon, Frostmane, Ravencrest, Kazzak, Ragnaros
     let realmData = [];
     let realmIndex = 0;
 
