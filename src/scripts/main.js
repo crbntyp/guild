@@ -37,36 +37,41 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>
 
         <div class="home-features">
-          <div class="home-feature">
+          <a href="index.html" class="home-feature">
             <div class="home-feature-icon"><i class="las la-users"></i></div>
             <h3>Guild Roster</h3>
             <p>Browse any guild's roster with class colours, item levels, specs, and detailed character modals.</p>
-          </div>
-          <div class="home-feature">
+          </a>
+          <a href="my-characters.html" class="home-feature">
+            <div class="home-feature-icon"><i class="las la-user"></i></div>
+            <h3>My Characters</h3>
+            <p>View all your characters across realms. Inspect gear, raid progression, Mythic+ stats, and full equipment with Wowhead tooltips.</p>
+          </a>
+          <a href="raids.html" class="home-feature">
             <div class="home-feature-icon"><i class="las la-dungeon"></i></div>
             <h3>Raid Signups</h3>
             <p>Discord-powered raid creation with role-based signups, reserves, and real-time notifications.</p>
-          </div>
-          <div class="home-feature">
+          </a>
+          <a href="mythic-plus.html" class="home-feature">
             <div class="home-feature-icon"><i class="las la-trophy"></i></div>
             <h3>Mythic+</h3>
             <p>Live leaderboards, meta composition analysis, and spec distribution across the top runs.</p>
-          </div>
-          <div class="home-feature">
+          </a>
+          <a href="my-mounts.html" class="home-feature">
             <div class="home-feature-icon"><i class="las la-horse"></i></div>
             <h3>Mount Collection</h3>
             <p>Browse your mounts by expansion with Wowhead tooltips. Track what you own and what's farmable.</p>
-          </div>
-          <div class="home-feature">
+          </a>
+          <a href="events.html" class="home-feature">
             <div class="home-feature-icon"><i class="las la-calendar"></i></div>
             <h3>Events</h3>
             <p>Live WoW event calendar with countdowns, auto-refreshed daily from Wowhead data.</p>
-          </div>
-          <div class="home-feature">
+          </a>
+          <a href="my-youtube.html" class="home-feature">
             <div class="home-feature-icon"><i class="lab la-youtube"></i></div>
             <h3>YouTube</h3>
             <p>Curate your favourite WoW creators with tag-based filtering and in-app video playback.</p>
-          </div>
+          </a>
         </div>
       </div>
     `;

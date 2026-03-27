@@ -330,10 +330,14 @@
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 8px;
   padding: 20px;
-  transition: border-color 0.2s ease;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: block;
+  color: inherit;
 
   &:hover {
     border-color: rgba(163, 53, 238, 0.25);
+    transform: translateY(-2px);
   }
 
   .home-feature-icon {
