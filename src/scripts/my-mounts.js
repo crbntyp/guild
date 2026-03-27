@@ -568,13 +568,17 @@ class MountsPage {
     if (!this.container) return;
 
     this.container.innerHTML = `
-      <div class="empty-state">
-        <i class="las la-user-lock"></i>
-        <h2>Authentication Required</h2>
-        <p>Please log in with your Battle.net account to view your mount collection.</p>
-        <a href="index.html" class="btn-primary">Go to Home</a>
+      <div class="auth-required-view">
+        <i class="las la-horse la-3x"></i>
+        <h2>Mount Collection</h2>
+        <p>Log in with your Battle.net account to browse your mount collection by expansion.</p>
+        <button class="btn-login-auth" id="btn-login-mounts">
+          <i class="las la-user"></i>
+          Login with Battle.net
+        </button>
       </div>
     `;
+    document.getElementById('btn-login-mounts')?.addEventListener('click', () => AuthService.login());
   }
 
   renderNoCharacter() {

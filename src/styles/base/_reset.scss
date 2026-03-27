@@ -22,6 +22,56 @@ body:not(:has(#gallery-container)) .bg-rotator-container .bg-layer {
   filter: brightness(0.3);
 }
 
+// Shared auth-required view
+.auth-required-view {
+  text-align: center;
+  padding: 80px 20px;
+  color: rgba(255, 255, 255, 0.7);
+
+  i {
+    color: rgba(255, 255, 255, 0.2);
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  h2 {
+    margin: 0 0 10px 0;
+    font-size: 22px;
+    color: #fff;
+  }
+
+  p {
+    margin: 0 0 24px 0;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.4);
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 24px;
+  }
+
+  .btn-login-auth {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    background: rgba(0, 174, 255, 0.2);
+    border: 1px solid rgba(0, 174, 255, 0.4);
+    border-radius: 6px;
+    color: #00AEFF;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(0, 174, 255, 0.35);
+      border-color: rgba(0, 174, 255, 0.6);
+      color: #fff;
+    }
+  }
+}
+
 button,
 input,
 textarea,

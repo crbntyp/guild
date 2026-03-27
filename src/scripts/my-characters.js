@@ -60,13 +60,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 function showNotAuthenticated() {
   const container = document.getElementById('my-characters-container');
   container.innerHTML = `
-    <div class="guild-header">
-      <h2 style="color: var(--color-text);">My Characters</h2>
-      <p style="color: var(--color-text-light); margin-top: var(--spacing-md);">
-        Please log in with Battle.net to view your characters.
-      </p>
+    <div class="auth-required-view">
+      <i class="las la-user la-3x"></i>
+      <h2>My Characters</h2>
+      <p>Log in with your Battle.net account to view all your characters across realms.</p>
+      <button class="btn-login-auth" id="btn-login-chars">
+        <i class="las la-user"></i>
+        Login with Battle.net
+      </button>
     </div>
   `;
+  document.getElementById('btn-login-chars')?.addEventListener('click', () => authService.login());
+  window.addEventListener('auth-state-changed', () => window.location.reload());
 }
 
 async function loadMyCharacters() {
