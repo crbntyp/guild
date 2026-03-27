@@ -132,6 +132,7 @@ class GalleryBackgroundRotator extends BackgroundRotator {
 // Initialize everything when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
   await PageInitializer.init({
+    backgrounds: backgrounds,
     backgroundRotatorClass: GalleryBackgroundRotator
   });
 });
