@@ -1,25 +1,28 @@
 // My Todos page styles
 
+// Darken backgrounds for readability
+body:has(#todos-container) .bg-rotator-container .bg-layer {
+  filter: brightness(0.3);
+}
+
 #todos-container {
   max-width: 1290px;
   width: 100%;
   margin: 0 auto;
   min-height: calc(100vh - 317px);
 
-
   // Masonry Grid
   .todos-grid {
     .todo-card {
-      background: rgba(26, 26, 26, 0.3);
-      backdrop-filter: blur(5px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
       overflow: hidden;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
       cursor: pointer;
       position: relative;
       width: calc(20% - 19.2px);
-      margin-bottom: 24px;
+      margin-bottom: 16px;
 
       @media (max-width: 1130px) {
         width: calc(25% - 18px);
@@ -38,48 +41,48 @@
       }
 
       &:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        transform: translateY(-2px);
         border-color: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
       }
 
       img.todo-image {
         width: 100%;
         height: auto;
         display: block;
-        background: rgba(255, 255, 255, 0.05);
+        background: rgba(255, 255, 255, 0.03);
       }
 
       div.todo-image {
         width: 100%;
-        height: 150px;
-        background: rgba(255, 255, 255, 0.05);
+        height: 120px;
+        background: rgba(255, 255, 255, 0.03);
         display: flex;
         align-items: center;
         justify-content: center;
-        color: rgba(255, 255, 255, 0.3);
-        font-size: 48px;
+        color: rgba(255, 255, 255, 0.15);
+        font-size: 40px;
       }
 
       .todo-content {
-        padding: 16px;
+        padding: 14px;
 
         .todo-date {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          margin-bottom: 10px;
+          margin-bottom: 8px;
 
           .todo-date-left {
             display: flex;
             align-items: center;
             gap: 4px;
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.4);
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.35);
             text-transform: uppercase;
 
             i {
-              font-size: 12px;
+              font-size: 11px;
             }
           }
 
@@ -91,17 +94,17 @@
         }
 
         .todo-title {
-          font-size: 16px;
-          font-weight: 700;
+          font-size: 14px;
+          font-weight: 600;
           color: #fff;
-          margin-bottom: 8px;
+          margin-bottom: 6px;
           line-height: 1.4;
           word-wrap: break-word;
         }
 
         .todo-description {
-          font-size: 13px;
-          color: rgba(255, 255, 255, 0.6);
+          font-size: 12px;
+          color: rgba(255, 255, 255, 0.45);
           line-height: 1.5;
           white-space: pre-wrap;
           word-wrap: break-word;
@@ -111,18 +114,18 @@
           display: flex;
           align-items: center;
           gap: 6px;
-          margin-top: 12px;
-          font-size: 12px;
-          color: #e12e2c;
+          margin-top: 10px;
+          font-size: 11px;
+          color: #a335ee;
           text-decoration: none;
-          transition: color 0.3s ease;
+          transition: color 0.2s ease;
 
           i {
-            font-size: 14px;
+            font-size: 13px;
           }
 
           &:hover {
-            color: #c82826;
+            color: #c56af0;
           }
         }
       }
@@ -131,8 +134,8 @@
       .todo-complete {
         background: none;
         border: none;
-        color: #e12e2c;
-        font-size: 16px;
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 14px;
         cursor: pointer;
         padding: 0;
         display: flex;
@@ -141,7 +144,7 @@
         transition: all 0.2s ease;
 
         &:hover {
-          color: #c82826;
+          color: #a335ee;
           transform: scale(1.1);
         }
       }
@@ -154,14 +157,14 @@
     color: rgba(255, 255, 255, 0.5);
 
     i {
-      font-size: 64px;
-      margin-bottom: 20px;
+      font-size: 48px;
+      margin-bottom: 16px;
+      color: rgba(255, 255, 255, 0.2);
     }
 
     p {
-      font-size: 16px;
+      font-size: 14px;
       line-height: 1.6;
     }
   }
 }
-
