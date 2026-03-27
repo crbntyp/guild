@@ -98,17 +98,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             </div>
 
             <div class="raids-landing-cta">
-              <button class="btn-login-raids" id="btn-login-raids">
-                <i class="las la-user"></i>
-                Login with Battle.net to Sign Up
-              </button>
-              <p class="raids-landing-cta-sub">Already have a raid link from Discord? Log in to view your guild's raids.</p>
+              <p class="raids-landing-cta-text">Click a raid signup link from your Discord server to get started.</p>
+              <p class="raids-landing-cta-sub">Your GM creates raids via the <code>/raid</code> command in Discord, which posts a signup link to your channel.</p>
             </div>
           </div>
         `;
-        document.getElementById('btn-login-raids').addEventListener('click', () => {
-          authService.login();
-        });
       }
     }
   });
