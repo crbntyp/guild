@@ -254,6 +254,39 @@
   }
 }
 
+// Affix info strip
+.wow-info-strip {
+  max-width: 1290px;
+  margin: 0 auto;
+  padding: 6px var(--spacing-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  min-height: 24px;
+
+  .affix-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 0.3px;
+  }
+
+  .affix-icon {
+    width: 14px;
+    height: 14px;
+    border-radius: 2px;
+  }
+
+  .affix-sep {
+    color: rgba(255, 255, 255, 0.15);
+    font-size: 10px;
+  }
+}
+
 // Home Landing
 .home-landing {
   max-width: 1290px;
