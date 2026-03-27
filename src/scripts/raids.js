@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               <div class="raids-landing-hero">
                 <div class="raids-landing-badge">gld__ raids</div>
                 <h1>Organise Your Raid Night</h1>
-                <p class="raids-landing-subtitle">A streamlined raid signup system powered by Discord. Discord raid creation with Battle.net character choice raid signup!</p>
+                <p class="raids-landing-subtitle">A streamlined raid signup system powered by Discord. Discord raid creation with Battle.net character and role raid signup!</p>
               </div>
 
               <div class="raids-demo-carousel">
