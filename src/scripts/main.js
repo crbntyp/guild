@@ -4,7 +4,7 @@ import GuildSearch from './components/guild-search.js';
 import PageInitializer from './utils/page-initializer.js';
 import characterModal from './components/character-modal.js';
 import config from './config.js';
-import { slugToFriendly } from './utils/helpers.js';
+
 import { updateRegionConfig, updateGuildConfig, clearRosterState } from './utils/config-utils.js';
 
 console.log('⚡ Guild Site initialized');
@@ -37,8 +37,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>
 
         <div class="home-demo-section">
-          <h2 class="home-section-title">Guild Roster</h2>
-          <p class="home-demo-desc">Browse any guild's roster with class colours, item levels, specs, and detailed character modals with gear inspection and raid progression.</p>
+          <h2 class="home-section-title">Guild Roster & Your Characters</h2>
+          <p class="home-demo-desc">Browse any guild's roster, including your entire character list. View item levels, specs, and detailed character modals with gear inspection and raid/mythic progression.</p>
           <div class="home-demo-carousel">
             <div class="home-demo-track">
 
@@ -102,11 +102,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>
 
         <div class="home-features">
-          <a href="my-characters.html" class="home-feature">
-            <div class="home-feature-icon"><i class="las la-user"></i></div>
-            <h3>My Characters</h3>
-            <p>View all your characters across realms. Inspect gear, raid progression, Mythic+ stats, and full equipment with Wowhead tooltips.</p>
-          </a>
           <a href="raids.html" class="home-feature">
             <div class="home-feature-icon"><i class="las la-dungeon"></i></div>
             <h3>Raid Signups</h3>
