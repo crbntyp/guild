@@ -133,8 +133,7 @@ class TopBar {
       </button>
       <nav class="top-bar-nav">
         <a href="index.html" class="nav-link${getActiveClass('index.html')}">
-          <i class="las la-search"></i>
-          <span>Guild Finder</span>
+          <span>Home</span>
         </a>
         ${isAuthenticated ? `
           <div class="nav-dropdown">

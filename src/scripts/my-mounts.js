@@ -139,6 +139,23 @@ class MountsPage {
   async render() {
     if (!this.container) return;
 
+    // Add page header dynamically (only when authenticated)
+    const mountsContainer = document.getElementById('mounts-container');
+    if (mountsContainer && !mountsContainer.querySelector('.page-header-panel')) {
+      mountsContainer.insertAdjacentHTML('afterbegin', `
+        <div class="mounts-header page-header-panel">
+          <div class="page-header-content">
+            <div class="page-header-text">
+              <h1>Mounts <span id="mount-count" class="mount-count"></span></h1>
+              <p class="page-header-desc">Track your mount collection across all expansions.</p>
+            </div>
+          </div>
+          <div class="page-header-border"></div>
+        </div>
+      `);
+      this.countElement = document.getElementById('mount-count');
+    }
+
     this.groupedMounts = await this.groupMountsByExpansion();
 
     // Get expansion IDs (reverse order - newest first)

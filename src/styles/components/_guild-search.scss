@@ -117,8 +117,8 @@
     gap: 6px;
     height: 40px;
     padding: 0 20px;
-    background: rgba(163, 53, 238, 0.3);
-    border: 1px solid rgba(163, 53, 238, 0.5);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: var(--border-radius);
     color: white;
     font-family: 'Muli', sans-serif;
@@ -130,14 +130,14 @@
     white-space: nowrap;
 
     i {
-      color: rgba(255, 255, 255, 0.8);
+      color: rgba(255, 255, 255, 0.7);
       font-size: 18px;
       transition: var(--transition);
     }
 
     &:hover {
-      background: rgba(163, 53, 238, 0.5);
-      border-color: rgba(163, 53, 238, 0.7);
+      background: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.35);
       i {
         color: white;
       }
