@@ -244,6 +244,32 @@ body:has(#raids-container) .bg-rotator-container .bg-layer {
       }
     }
 
+    .btn-add-bot {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      background: rgba(88, 101, 242, 0.2);
+      border: 1px solid rgba(88, 101, 242, 0.4);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      margin-top: 16px;
+
+      i {
+        font-size: 18px;
+        color: #5865F2;
+      }
+
+      &:hover {
+        background: rgba(88, 101, 242, 0.35);
+        transform: translateY(-1px);
+      }
+    }
+
     .raids-landing-cta-text {
       margin: 0 0 10px 0;
       font-size: 16px;

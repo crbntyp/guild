@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const savedName = nameParam || localStorage.getItem('gld_raid_server_name');
 
         if (savedServer) {
-          // Has Discord context — prompt to log in
+          // Has Discord context — prompt to log in + show features
           container.innerHTML = `
             <div class="raids-landing">
               <div class="raids-landing-hero">
@@ -57,6 +57,74 @@ document.addEventListener('DOMContentLoaded', async () => {
                   <i class="las la-user"></i>
                   Login with Battle.net
                 </button>
+              </div>
+
+              <div class="raids-landing-features">
+                <div class="raids-landing-feature">
+                  <div class="raids-landing-feature-icon">
+                    <i class="lab la-discord"></i>
+                  </div>
+                  <h3>Discord Powered</h3>
+                  <p>Raids are created directly from Discord using the <code>/raid</code> command. Pick the raid, set the time, and it's live.</p>
+                </div>
+
+                <div class="raids-landing-feature">
+                  <div class="raids-landing-feature-icon">
+                    <i class="las la-users"></i>
+                  </div>
+                  <h3>Smart Roster</h3>
+                  <p>Role-based signups with tank, healer, and DPS caps. When spots fill up, extra signups automatically become reserves.</p>
+                </div>
+
+                <div class="raids-landing-feature">
+                  <div class="raids-landing-feature-icon">
+                    <i class="las la-exchange-alt"></i>
+                  </div>
+                  <h3>Auto Reserve</h3>
+                  <p>If someone drops out, the first reserve in the same role gets promoted automatically. No manual reshuffling.</p>
+                </div>
+
+                <div class="raids-landing-feature">
+                  <div class="raids-landing-feature-icon">
+                    <i class="las la-bell"></i>
+                  </div>
+                  <h3>Discord Notifications</h3>
+                  <p>Every signup, withdrawal, and full roster triggers a message back to your Discord channel in real time.</p>
+                </div>
+              </div>
+
+              <div class="raids-landing-how">
+                <h2>How It Works</h2>
+                <div class="raids-landing-steps">
+                  <div class="raids-landing-step">
+                    <span class="step-number">1</span>
+                    <div>
+                      <h4>GM creates a raid in Discord</h4>
+                      <p><code>/raid title:The Voidspire difficulty:heroic date:2026-04-10 20:00</code></p>
+                    </div>
+                  </div>
+                  <div class="raids-landing-step">
+                    <span class="step-number">2</span>
+                    <div>
+                      <h4>Raid posted with signup link</h4>
+                      <p>An embed with the raid details and a signup link is posted to your channel.</p>
+                    </div>
+                  </div>
+                  <div class="raids-landing-step">
+                    <span class="step-number">3</span>
+                    <div>
+                      <h4>Players sign up with their character</h4>
+                      <p>Log in with Battle.net, pick your character, choose your role, and confirm.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="raids-landing-cta">
+                <a href="https://discord.com/oauth2/authorize?client_id=1486760650138193990&permissions=18432&scope=bot+applications.commands" target="_blank" class="btn-add-bot">
+                  <i class="lab la-discord"></i>
+                  Add gld__ Raid Bot to your Discord
+                </a>
               </div>
             </div>
           `;
@@ -137,6 +205,10 @@ document.addEventListener('DOMContentLoaded', async () => {
               <div class="raids-landing-cta">
                 <p class="raids-landing-cta-text">Click a raid signup link from your Discord server to get started.</p>
                 <p class="raids-landing-cta-sub">Your GM creates raids via the <code>/raid</code> command in Discord, which posts a signup link to your channel.</p>
+                <a href="https://discord.com/oauth2/authorize?client_id=1486760650138193990&permissions=18432&scope=bot+applications.commands" target="_blank" class="btn-add-bot">
+                  <i class="lab la-discord"></i>
+                  Add gld__ Raid Bot to your Discord
+                </a>
               </div>
             </div>
           `;
