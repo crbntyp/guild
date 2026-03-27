@@ -311,10 +311,10 @@
     align-items: center;
     gap: 4px;
     padding: 5px 12px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 174, 255, 0.2);
+    border: 1px solid rgba(0, 174, 255, 0.4);
     border-radius: 4px;
-    color: white;
+    color: #00AEFF;
     font-family: 'Muli', sans-serif;
     font-size: 12px;
     cursor: pointer;
@@ -324,8 +324,9 @@
     z-index: 10001;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.18);
-      border-color: rgba(255, 255, 255, 0.35);
+      background: rgba(0, 174, 255, 0.35);
+      border-color: rgba(0, 174, 255, 0.6);
+      color: #fff;
     }
 
     i {
