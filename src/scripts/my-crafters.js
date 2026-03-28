@@ -147,10 +147,10 @@ document.addEventListener('DOMContentLoaded', async () => {
               classId: char.classId,
               level: char.level,
               avatar: char.avatar,
-              latestTier: latestTier ? {
-                name: latestTier.tier?.name || '?',
-                skill: latestTier.skill_points || 0,
-                max: latestTier.max_skill_points || 0
+              latestTier: activeTiers[0] ? {
+                name: activeTiers[0].tier?.name || '?',
+                skill: activeTiers[0].skill_points || 0,
+                max: activeTiers[0].max_skill_points || 0
               } : null,
               allTiers: activeTiers.map(t => ({  // Filtered and sorted (newest first)
                 name: t.tier?.name || '?',
