@@ -81,28 +81,43 @@
   }
 }
 
-.crafter-skill-info {
+.crafter-tiers-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.crafter-tier-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  flex: 1;
   justify-content: flex-end;
 
+  &.maxed .crafter-skill-fill {
+    background: linear-gradient(90deg, #10b981, #34d399);
+  }
+
+  &.maxed .crafter-skill-text {
+    color: rgba(16, 185, 129, 0.7);
+  }
+
   .crafter-tier-name {
-    font-size: 10px;
-    color: rgba(255, 255, 255, 0.3);
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.25);
     white-space: nowrap;
     min-width: 100px;
     text-align: right;
 
     @media (max-width: 600px) {
-      display: none;
+      min-width: 60px;
+      font-size: 8px;
     }
   }
 
   .crafter-skill-bar {
     width: 80px;
-    height: 4px;
+    height: 3px;
     background: rgba(255, 255, 255, 0.08);
     border-radius: 2px;
     overflow: hidden;
@@ -112,13 +127,12 @@
       height: 100%;
       background: linear-gradient(90deg, #a335ee, #c56af0);
       border-radius: 2px;
-      transition: width 0.3s ease;
     }
   }
 
   .crafter-skill-text {
-    font-size: 11px;
-    color: rgba(255, 255, 255, 0.5);
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.4);
     font-variant-numeric: tabular-nums;
     min-width: 50px;
     text-align: right;

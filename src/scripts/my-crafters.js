@@ -186,8 +186,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 ${data.characters.map(c => {
                   const classColor = getClassColor(c.classId);
                   const classIconUrl = getClassIconUrl(c.classId);
-                  const tier = c.latestTier;
-                  const progress = tier ? Math.round((tier.skill / tier.max) * 100) : 0;
 
                   return `
                     <div class="crafter-char-row">
@@ -195,14 +193,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                         ${classIconUrl ? `<img src="${classIconUrl}" class="crafter-class-icon" />` : ''}
                         <span class="crafter-char-name" style="color: ${classColor}">${c.name}</span>
                       </div>
-                      <div class="crafter-skill-info">
-                        ${tier ? `
-                          <span class="crafter-tier-name">${tier.name}</span>
-                          <div class="crafter-skill-bar">
-                            <div class="crafter-skill-fill" style="width: ${progress}%"></div>
-                          </div>
-                          <span class="crafter-skill-text">${tier.skill}/${tier.max}</span>
-                        ` : '<span class="crafter-skill-text">—</span>'}
+                      <div class="crafter-tiers-list">
+                        ${c.allTiers.map(t => {
+                          const progress = Math.round((t.skill / t.max) * 100);
+                          const maxed = t.skill >= t.max;
+                          return `
+                            <div class="crafter-tier-row ${maxed ? 'maxed' : ''}">
+                              <span class="crafter-tier-name">${t.name}</span>
+                              <div class="crafter-skill-bar">
+                                <div class="crafter-skill-fill" style="width: ${progress}%"></div>
+                              </div>
+                              <span class="crafter-skill-text">${t.skill}/${t.max}</span>
+                            </div>
+                          `;
+                        }).join('')}
                       </div>
                     </div>
                   `;
