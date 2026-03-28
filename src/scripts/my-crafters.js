@@ -119,8 +119,15 @@ document.addEventListener('DOMContentLoaded', async () => {
               professionMap[profName] = { id: profId, characters: [] };
             }
 
-            // Get tiers in reverse order (newest expansion first)
-            const tiers = (prof.tiers || []).slice().reverse();
+            // Expansion tier priority (newest first)
+            const expansionOrder = ['Midnight', 'Khaz Algar', 'Dragon Isles', 'Shadowlands', 'Kul Tiran', 'Zandalari', 'Legion', 'Draenor', 'Pandaria', 'Cataclysm', 'Northrend', 'Outland', 'Classic'];
+            const tiers = (prof.tiers || []).slice().sort((a, b) => {
+              const nameA = a.tier?.name || '';
+              const nameB = b.tier?.name || '';
+              const idxA = expansionOrder.findIndex(e => nameA.includes(e));
+              const idxB = expansionOrder.findIndex(e => nameB.includes(e));
+              return (idxA === -1 ? 99 : idxA) - (idxB === -1 ? 99 : idxB);
+            });
             const latestTier = tiers.length > 0 ? tiers[0] : null;
 
             professionMap[profName].characters.push({
