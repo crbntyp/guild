@@ -85,16 +85,24 @@ document.addEventListener('DOMContentLoaded', async () => {
             const realmSlug = char.realm?.slug || '';
             const name = char.name.toLowerCase();
             try {
-              const data = await battlenetClient.request(
-                `/profile/wow/character/${realmSlug}/${encodeURIComponent(name)}/professions`,
-                { params: { namespace: config.api.namespace.profile } }
-              );
+              const [data, media] = await Promise.all([
+                battlenetClient.request(
+                  `/profile/wow/character/${realmSlug}/${encodeURIComponent(name)}/professions`,
+                  { params: { namespace: config.api.namespace.profile } }
+                ),
+                battlenetClient.request(
+                  `/profile/wow/character/${realmSlug}/${encodeURIComponent(name)}/character-media`,
+                  { params: { namespace: config.api.namespace.profile } }
+                ).catch(() => null)
+              ]);
+              const avatar = media?.assets?.find(a => a.key === 'avatar')?.value || '';
               return {
                 name: char.name,
                 realm: char.realm?.name || realmSlug,
                 realmSlug,
                 classId: char.playable_class?.id,
                 level: char.level,
+                avatar,
                 primaries: data.primaries || [],
                 secondaries: data.secondaries || []
               };
@@ -128,7 +136,9 @@ document.addEventListener('DOMContentLoaded', async () => {
               const idxB = expansionOrder.findIndex(e => nameB.includes(e));
               return (idxA === -1 ? 99 : idxA) - (idxB === -1 ? 99 : idxB);
             });
-            const latestTier = tiers.length > 0 ? tiers[0] : null;
+            // Filter out tiers with skill <= 1 (profession selected but never used)
+            const activeTiers = tiers.filter(t => (t.tier ? t.skill_points || 0 : 0) > 1 || (t.skill_points || 0) > 1);
+            if (activeTiers.length === 0) return; // Skip this profession entirely
 
             professionMap[profName].characters.push({
               name: char.name,
@@ -136,12 +146,13 @@ document.addEventListener('DOMContentLoaded', async () => {
               realmSlug: char.realmSlug,
               classId: char.classId,
               level: char.level,
+              avatar: char.avatar,
               latestTier: latestTier ? {
                 name: latestTier.tier?.name || '?',
                 skill: latestTier.skill_points || 0,
                 max: latestTier.max_skill_points || 0
               } : null,
-              allTiers: tiers.map(t => ({  // Already reversed (newest first)
+              allTiers: activeTiers.map(t => ({  // Filtered and sorted (newest first)
                 name: t.tier?.name || '?',
                 skill: t.skill_points || 0,
                 max: t.max_skill_points || 0
@@ -152,7 +163,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Sort characters within each profession by latest tier skill (descending)
         Object.values(professionMap).forEach(prof => {
-          prof.characters.sort((a, b) => (b.latestTier?.skill || 0) - (a.latestTier?.skill || 0));
+          prof.characters.sort((a, b) => (b.allTiers[0]?.skill || 0) - (a.allTiers[0]?.skill || 0));
         });
 
         // Render
@@ -188,12 +199,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                   const classColor = getClassColor(c.classId);
                   const classIconUrl = getClassIconUrl(c.classId);
 
-                  const avatarUrl = `https://render.worldofwarcraft.com/eu/character/${c.realmSlug}/${c.name.toLowerCase()}-avatar.jpg`;
-
                   return `
                     <div class="crafter-char-row">
                       <div class="crafter-char-info">
-                        <img src="${avatarUrl}" class="crafter-char-avatar" onerror="this.style.display='none'" />
+                        ${c.avatar ? `<img src="${c.avatar}" class="crafter-char-avatar" onerror="this.style.display='none'" />` : ''}
                         ${classIconUrl ? `<img src="${classIconUrl}" class="crafter-class-icon" />` : ''}
                         <span class="crafter-char-name" style="color: ${classColor}">${c.name}</span>
                       </div>
