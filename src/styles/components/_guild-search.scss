@@ -423,6 +423,146 @@
   }
 }
 
+// Crafters + Vault dual section
+.home-dual-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 40px;
+
+  @media (max-width: 700px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.home-dual-card {
+  position: relative;
+}
+
+.home-dual-link {
+  display: block;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 20px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s ease;
+  position: relative;
+  height: 100%;
+
+  .home-feature-chip {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    background: rgba(0, 174, 255, 0.15);
+    border: 1px solid rgba(0, 174, 255, 0.3);
+    color: #00AEFF;
+  }
+
+  &:hover {
+    border-color: rgba(163, 53, 238, 0.25);
+    transform: translateY(-2px);
+  }
+}
+
+.home-dual-title {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+
+  i {
+    color: #a335ee;
+    margin-right: 4px;
+  }
+}
+
+.home-dual-desc {
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0 0 14px;
+}
+
+.home-dual-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.demo-crafter {
+  pointer-events: none;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .crafter-char-info {
+    min-width: 120px;
+  }
+
+  .crafter-tier-row .crafter-tier-name {
+    min-width: 70px;
+    font-size: 8px;
+  }
+
+  .crafter-tier-row .crafter-skill-bar {
+    width: 60px;
+  }
+
+  .crafter-tier-row .crafter-skill-text {
+    font-size: 9px;
+    min-width: 40px;
+  }
+}
+
+.home-vault-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .crafter-char-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+}
+
+.home-vault-name {
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.home-preview-badges {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+
 .home-features {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

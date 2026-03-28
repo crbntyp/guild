@@ -192,6 +192,92 @@ document.addEventListener('DOMContentLoaded', async () => {
           </div>
         </div>
 
+        <div class="home-demo-section">
+          <h2 class="home-section-title">Stop Alt-Tabbing, Start Playing</h2>
+          <p class="home-demo-desc">Track professions and vault rewards across every character without logging in and out. One page, all your alts.</p>
+        </div>
+
+        <div class="home-dual-section">
+          <div class="home-dual-card">
+            <a href="my-crafters.html" class="home-dual-link">
+              <span class="home-feature-chip">BNet Login</span>
+              <h3 class="home-dual-title"><i class="las la-hammer"></i> Crafters</h3>
+              <p class="home-dual-desc">All your characters' professions in one view — skill levels, expansion tiers, and who can craft what.</p>
+              <div class="home-dual-preview">
+                <div class="crafter-char-row demo-crafter">
+                  <div class="crafter-char-info">
+                    <img src="https://render.worldofwarcraft.com/eu/character/tarren-mill/243/171270131-avatar.jpg" class="crafter-char-avatar" />
+                    <img src="https://wow.zamimg.com/images/wow/icons/large/classicon_paladin.jpg" class="crafter-class-icon" />
+                    <span class="crafter-char-name" style="color: #F58CBA">Bäsics</span>
+                  </div>
+                  <div class="crafter-tiers-list">
+                    <div class="crafter-tier-row maxed"><span class="crafter-tier-name">Midnight Mining</span><div class="crafter-skill-bar"><div class="crafter-skill-fill" style="width: 100%"></div></div><span class="crafter-skill-text">100/100</span></div>
+                    <div class="crafter-tier-row"><span class="crafter-tier-name">Midnight Blacksmithing</span><div class="crafter-skill-bar"><div class="crafter-skill-fill" style="width: 80%"></div></div><span class="crafter-skill-text">80/100</span></div>
+                  </div>
+                </div>
+                <div class="crafter-char-row demo-crafter">
+                  <div class="crafter-char-info">
+                    <img src="https://render.worldofwarcraft.com/eu/character/tarren-mill/115/171270003-avatar.jpg" class="crafter-char-avatar" />
+                    <img src="https://wow.zamimg.com/images/wow/icons/large/classicon_rogue.jpg" class="crafter-class-icon" />
+                    <span class="crafter-char-name" style="color: #FFF569">Fëlstriker</span>
+                  </div>
+                  <div class="crafter-tiers-list">
+                    <div class="crafter-tier-row maxed"><span class="crafter-tier-name">Midnight Herbalism</span><div class="crafter-skill-bar"><div class="crafter-skill-fill" style="width: 100%"></div></div><span class="crafter-skill-text">100/100</span></div>
+                    <div class="crafter-tier-row"><span class="crafter-tier-name">Midnight Alchemy</span><div class="crafter-skill-bar"><div class="crafter-skill-fill" style="width: 65%"></div></div><span class="crafter-skill-text">65/100</span></div>
+                  </div>
+                </div>
+                <div class="crafter-char-row demo-crafter">
+                  <div class="crafter-char-info">
+                    <img src="https://render.worldofwarcraft.com/eu/character/tarren-mill/58/170575674-avatar.jpg" class="crafter-char-avatar" />
+                    <img src="https://wow.zamimg.com/images/wow/icons/large/classicon_demonhunter.jpg" class="crafter-class-icon" />
+                    <span class="crafter-char-name" style="color: #A330C9">Felbladë</span>
+                  </div>
+                  <div class="crafter-tiers-list">
+                    <div class="crafter-tier-row maxed"><span class="crafter-tier-name">Midnight Enchanting</span><div class="crafter-skill-bar"><div class="crafter-skill-fill" style="width: 100%"></div></div><span class="crafter-skill-text">100/100</span></div>
+                    <div class="crafter-tier-row"><span class="crafter-tier-name">Midnight Tailoring</span><div class="crafter-skill-bar"><div class="crafter-skill-fill" style="width: 75%"></div></div><span class="crafter-skill-text">75/100</span></div>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+          <div class="home-dual-card">
+            <a href="my-vault.html" class="home-dual-link">
+              <span class="home-feature-chip">BNet Login</span>
+              <h3 class="home-dual-title"><i class="las la-gift"></i> Weekly Vault</h3>
+              <p class="home-dual-desc">See which characters have vault rewards ready from raids, M+ keys, and delves — no more logging each one.</p>
+              <div class="home-dual-preview">
+                <div class="home-vault-row">
+                  <img src="https://render.worldofwarcraft.com/eu/character/tarren-mill/243/171270131-avatar.jpg" class="crafter-char-avatar" />
+                  <span class="home-vault-name" style="color: #F58CBA">Bäsics</span>
+                  <div class="home-preview-badges">
+                    <span class="vault-badge vault-raids" style="font-size:9px;padding:2px 6px">Raids</span>
+                    <span class="vault-badge vault-mplus" style="font-size:9px;padding:2px 6px">M+ Keys +12</span>
+                    <span class="vault-badge vault-delves" style="font-size:9px;padding:2px 6px">Delves</span>
+                  </div>
+                </div>
+                <div class="home-vault-row">
+                  <img src="https://render.worldofwarcraft.com/eu/character/tarren-mill/41/171269673-avatar.jpg" class="crafter-char-avatar" />
+                  <span class="home-vault-name" style="color: #8787ED">Blighthöund</span>
+                  <div class="home-preview-badges">
+                    <span class="vault-badge vault-inactive" style="font-size:9px;padding:2px 6px">Raids</span>
+                    <span class="vault-badge vault-mplus" style="font-size:9px;padding:2px 6px">M+ Keys +8</span>
+                    <span class="vault-badge vault-inactive" style="font-size:9px;padding:2px 6px">Delves</span>
+                  </div>
+                </div>
+                <div class="home-vault-row">
+                  <img src="https://render.worldofwarcraft.com/eu/character/tarren-mill/58/170575674-avatar.jpg" class="crafter-char-avatar" />
+                  <span class="home-vault-name" style="color: #A330C9">Felbladë</span>
+                  <div class="home-preview-badges">
+                    <span class="vault-badge vault-raids" style="font-size:9px;padding:2px 6px">Raids</span>
+                    <span class="vault-badge vault-inactive" style="font-size:9px;padding:2px 6px">M+ Keys</span>
+                    <span class="vault-badge vault-delves" style="font-size:9px;padding:2px 6px">Delves</span>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+
         <h2 class="home-section-title">Other Features</h2>
         <div class="home-features home-features-row">
           <a href="mythic-plus.html" class="home-feature">

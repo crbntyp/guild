@@ -37,7 +37,7 @@ A modern World of Warcraft companion application featuring guild roster manageme
 ## ✨ Features
 
 ### 🔐 Battle.net Authentication
-- OAuth 2.0 integration with popup-based login
+- OAuth 2.0 integration with full-page redirect login
 - Secure token management with automatic refresh
 - Protected routes for personalized features
 
@@ -104,6 +104,23 @@ A modern World of Warcraft companion application featuring guild roster manageme
 - Organized by expansion (Classic through The War Within)
 - Only displays mounts you own (matched against database of 1,481 cataloged mounts)
 - Static database generation (no repeated API calls)
+
+### 🔨 Crafters (Auth Required)
+- Cross-character profession overview across all your alts
+- Expansion tier breakdown with skill progress bars
+- Priority sorting (Midnight professions first)
+- Character avatars with class-colored names
+- Filters out unused professions (skill <= 1)
+
+### 🎁 Weekly Vault (Auth Required)
+- Track vault reward progress across all characters without logging each one
+- Three vault categories: Raids (2/4/6 bosses), M+ Keys (1/4/8 runs), Delves (2/4/8)
+- Colour-coded badges: active (reward ready), inactive (grey), partial progress (coloured dot)
+- Progress bar showing total vault slots unlocked as percentage
+- Highest M+ key level displayed on dungeon badge
+- Snapshot-based tracking with MySQL — baselines saved at weekly reset (Wednesday 05:00 UTC)
+- Achievement statistics API for delve and raid boss timestamps
+- Sorted by most active characters first
 
 ### 🏆 Mythic+ Leaderboards
 - Real-time Mythic+ leaderboard data from Battle.net API
@@ -184,12 +201,13 @@ A modern World of Warcraft companion application featuring guild roster manageme
 - Open Graph Metadata API
 
 **Backend**
-- Node.js + Express (Railway-hosted)
-- OAuth proxy for secure authentication
-- Metadata fetching service (Open Graph, YouTube)
-- RESTful API for user data persistence
-- Per-user data storage (keyed by Battletag)
-- CORS-enabled for cross-origin requests
+- PHP API on Hostinger VPS (same-origin at `/gld/api/`)
+- MySQL 8.0 database (raids, raid_signups, vault_snapshots)
+- BNet OAuth token verification via `oauth.battle.net/userinfo`
+- Discord.js bot with `/raid` slash command (systemd service)
+- Internal webhook (port 3002) for PHP-to-Discord notifications
+- Node.js + Express OAuth proxy
+- Per-user data storage (keyed by BNet user ID)
 
 **Build Tools**
 - Sass compiler
@@ -210,7 +228,8 @@ src/
 │   │   ├── guild-service.js         # Guild data management
 │   │   ├── character-service.js     # Character data
 │   │   ├── account-service.js       # User account/characters
-│   │   └── icon-loader.js           # Icon loading with fallbacks
+│   │   ├── icon-loader.js           # Icon loading with fallbacks
+│   │   └── raid-service.js          # Raid signup API client
 │   ├── components/
 │   │   ├── top-bar.js               # Navigation
 │   │   ├── guild-roster.js          # Roster display
@@ -224,6 +243,9 @@ src/
 │   │   ├── custom-dropdown.js       # Dropdown UI component
 │   │   ├── page-header.js           # Reusable page headers
 │   │   ├── background-rotator.js    # Background rotation
+│   │   ├── raid-manager.js          # Raid list/management UI
+│   │   ├── raid-card.js             # Raid card renderer
+│   │   ├── signup-modal.js          # Raid signup modal
 │   │   └── footer.js                # Footer component
 │   ├── utils/
 │   │   ├── wow-constants.js         # WoW classes, races, colors
@@ -244,6 +266,9 @@ src/
 │   ├── my-characters.js             # My characters page
 │   ├── my-mounts.js                 # My mounts page
 │   ├── mythic-plus.js               # Mythic+ leaderboards page
+│   ├── my-crafters.js               # Crafters page
+│   ├── my-vault.js                  # Weekly vault page
+│   ├── raids.js                     # Raid signups page
 │   └── config.js                    # App configuration
 ├── styles/
 │   ├── _mixins.scss                 # Shared mixins
@@ -261,7 +286,22 @@ src/
 ├── my-youtube.html                  # YouTube
 ├── my-characters.html               # My characters
 ├── my-mounts.html                   # My mounts
+├── my-crafters.html                 # Crafters
+├── my-vault.html                    # Weekly vault
+├── raids.html                       # Raid signups
 └── mythic-plus.html                 # Mythic+ leaderboards
+
+src/api/
+├── config.php                       # DB connection, CORS, BNet token verification
+├── raids.php                        # List/create raids
+├── raid.php                         # Single raid with signups
+├── signup.php                       # Signup/update/withdraw
+├── vault.php                        # Vault snapshot get/save
+└── setup.sql                        # Database schema
+
+discord-bot/
+├── bot.js                           # Discord bot with /raid command
+└── config.js                        # Bot configuration
 
 data/
 ├── mounts-generated.json            # Generated mount database (1,481 mounts)
@@ -417,6 +457,34 @@ WoW class colors are centralized in `src/scripts/utils/wow-constants.js` using o
 
 ## 📋 Changelog
 
+### 2026-03-28 — Crafters & Weekly Vault
+
+- **Crafters Page** 🔨
+  - Cross-character profession overview showing all alts
+  - Expansion tier breakdown with purple/green skill progress bars
+  - Character avatars from character-media API
+  - Priority sorting: Midnight expansion tiers first
+  - Filters out unused professions (skill <= 1)
+
+- **Weekly Vault Page** 🎁
+  - Scans all level 90+ characters for vault activity
+  - Three categories: Raids (2/4/6), M+ Keys (1/4/8), Delves (2/4/8)
+  - Inset character renders from character-media API
+  - Colour-coded badges with active/inactive/partial progress states
+  - Coloured dot indicator for partial progress (e.g. 1/2 raid bosses)
+  - Progress bar with gradient showing total vault slots as percentage
+  - Highest M+ key level on dungeon badge
+  - MySQL snapshot system for weekly baseline tracking
+  - Wednesday 05:00 UTC reset cycle (EU servers)
+  - INSERT IGNORE preserves baseline — first load of week sets the benchmark
+  - Achievement statistics API for delve count and raid boss timestamps
+  - Sorted by most active characters first
+
+- **Homepage Updates** 🏠
+  - Added Crafters + Vault dual preview section
+  - "Stop Alt-Tabbing, Start Playing" heading with real crafter progress bars and vault badges
+  - Both cards link to respective pages with BNet Login chip
+
 ### 2026-03-27 — Visual Rebrand & Raid Signup System
 
 - **Raid Signup System** ⚔️
@@ -548,14 +616,13 @@ WoW class colors are centralized in `src/scripts/utils/wow-constants.js` using o
 
 ## 🔮 Future Enhancements
 
+- Discord bot webhook notifications (signup reminders, raid full alerts)
+- World activity tracking for vault (world bosses, world quests)
+- Migrate todos/YouTube to MySQL (90-day TTL for todos, 20 channel limit)
 - Guild achievements and progression tracking
-- Mythic+ scores (Raider.IO integration)
 - PvP ratings display
-- Guild calendar/events
 - Member activity tracking
 - Guild bank viewer
-- Raid composition planner
-- Member comparison tools
 
 ## 📝 License
 

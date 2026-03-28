@@ -10,16 +10,17 @@ if ($method === 'GET') {
     $user = verifyBnetToken();
     $userId = (int)$user['id'];
 
-    // Calculate current reset week (Monday for EU)
+    // Calculate current reset week (Wednesday 05:00 UTC for EU)
     $now = new DateTime('now', new DateTimeZone('UTC'));
-    $dayOfWeek = (int)$now->format('N'); // 1=Mon, 7=Sun
-    if ($dayOfWeek >= 1) {
-        $resetDate = clone $now;
-        $resetDate->modify('last monday');
-        if ($dayOfWeek === 1 && $now->format('H') < 7) {
-            $resetDate->modify('-7 days');
-        }
+    $resetDate = clone $now;
+    $resetDate->setTime(5, 0, 0);
+    // If today is before Wednesday 05:00, go back to last Wednesday
+    if ($now->format('N') < 3 || ($now->format('N') == 3 && (int)$now->format('H') < 5)) {
+        $resetDate->modify('last wednesday');
+    } elseif ($now->format('N') > 3) {
+        $resetDate->modify('last wednesday');
     }
+    // else it's Wednesday after 05:00, resetDate is today
     $resetWeek = $resetDate->format('Y-m-d');
 
     $stmt = $db->prepare("
@@ -47,23 +48,20 @@ if ($method === 'GET') {
         exit;
     }
 
-    // Calculate current reset week
+    // Calculate current reset week (Wednesday 05:00 UTC for EU)
     $now = new DateTime('now', new DateTimeZone('UTC'));
-    $dayOfWeek = (int)$now->format('N');
     $resetDate = clone $now;
-    $resetDate->modify('last monday');
-    if ($dayOfWeek === 1 && $now->format('H') < 7) {
-        $resetDate->modify('-7 days');
+    $resetDate->setTime(5, 0, 0);
+    if ($now->format('N') < 3 || ($now->format('N') == 3 && (int)$now->format('H') < 5)) {
+        $resetDate->modify('last wednesday');
+    } elseif ($now->format('N') > 3) {
+        $resetDate->modify('last wednesday');
     }
     $resetWeek = $resetDate->format('Y-m-d');
 
     $stmt = $db->prepare("
-        INSERT INTO vault_snapshots (bnet_user_id, character_name, realm_slug, delve_count, dungeon_count, raid_boss_count, reset_week)
+        INSERT IGNORE INTO vault_snapshots (bnet_user_id, character_name, realm_slug, delve_count, dungeon_count, raid_boss_count, reset_week)
         VALUES (:uid, :name, :realm, :delves, :dungeons, :raids, :week)
-        ON DUPLICATE KEY UPDATE
-            delve_count = VALUES(delve_count),
-            dungeon_count = VALUES(dungeon_count),
-            raid_boss_count = VALUES(raid_boss_count)
     ");
 
     foreach ($data['characters'] as $char) {

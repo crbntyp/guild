@@ -7,79 +7,70 @@
   min-height: calc(100vh - 317px);
 }
 
-.vault-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 12px;
-  padding-bottom: 40px;
-
-  @media (max-width: 600px) {
-    grid-template-columns: 1fr;
-  }
-}
-
-.vault-card {
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 8px;
-  padding: 14px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  transition: border-color 0.2s ease;
-
-  &:hover {
-    border-color: rgba(255, 255, 255, 0.15);
-  }
-}
-
-.vault-char-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  .vault-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    object-fit: cover;
-    flex-shrink: 0;
+// Vault uses roster-grid member-card layout
+.vault-roster {
+  @media (max-width: 650px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
   }
 
-  .vault-class-icon {
-    width: 18px;
-    height: 18px;
-    border-radius: 3px;
-    flex-shrink: 0;
+  @media (max-width: 440px) {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 0 4px;
   }
 
-  .vault-char-name {
-    font-size: 14px;
-    font-weight: 600;
+  .vault-member-card {
+    cursor: default;
+
+    &:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    @media (max-width: 440px) {
+      min-width: unset;
+
+      .character-avatar-placeholder {
+        height: 100px !important;
+      }
+
+      .member-header {
+        padding: 4px 6px;
+
+        .member-name {
+          font-size: 12px;
+        }
+      }
+    }
   }
 }
 
 .vault-rewards {
+  padding: 8px 10px 12px;
+
+  @media (max-width: 440px) {
+    padding: 6px 6px 10px;
+  }
+}
+
+.vault-badges {
   display: flex;
   align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
+  justify-content: center;
+  gap: 5px;
+  flex-wrap: wrap;
 }
 
 .vault-badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  position: relative;
   padding: 3px 8px;
   border-radius: 4px;
   font-size: 10px;
   font-weight: 600;
-
-  i {
-    font-size: 12px;
-  }
+  white-space: nowrap;
 
   &.vault-mplus {
     background: rgba(163, 53, 238, 0.15);
@@ -97,5 +88,71 @@
     background: rgba(255, 128, 0, 0.15);
     border: 1px solid rgba(255, 128, 0, 0.3);
     color: #ff8000;
+  }
+
+  &.vault-inactive {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.2);
+  }
+
+  @media (max-width: 440px) {
+    font-size: 9px;
+    padding: 2px 6px;
+  }
+}
+
+.vault-progress {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 0 2px;
+}
+
+.vault-progress-track {
+  flex: 1;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.vault-progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #a335ee, #00AEFF, #ff8000);
+  transition: width 0.3s ease;
+}
+
+.vault-progress-text {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.35);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.vault-dot {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+
+  &.vault-dot-raids {
+    background: #ff8000;
+    box-shadow: 0 0 4px rgba(255, 128, 0, 0.5);
+  }
+
+  &.vault-dot-mplus {
+    background: #a335ee;
+    box-shadow: 0 0 4px rgba(163, 53, 238, 0.5);
+  }
+
+  &.vault-dot-delves {
+    background: #00AEFF;
+    box-shadow: 0 0 4px rgba(0, 174, 255, 0.5);
   }
 }

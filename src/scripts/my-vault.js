@@ -5,9 +5,7 @@ import accountService from './services/account-service.js';
 import battlenetClient from './api/battlenet-client.js';
 import config from './config.js';
 import { getClassColor } from './utils/wow-constants.js';
-import { getClassIconUrl } from './utils/wow-icons.js';
 import PageHeader from './components/page-header.js';
-import raidService from './services/raid-service.js';
 
 console.log('⚡ Weekly Rewards Page initialized');
 
@@ -42,7 +40,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         ${PageHeader.render({
           className: 'vault',
           title: 'Weekly Rewards',
-          description: 'Characters with vault rewards available this week.'
+          description: 'Characters with vault rewards available this week. If you see a colored dot, this means you are close to a reward eg. 1/2 delves...'
         })}
         <div id="vault-content">
           <div class="loading-spinner">
@@ -99,16 +97,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                 ).catch(() => null)
               ]);
 
-              const avatar = mediaData?.assets?.find(a => a.key === 'avatar')?.value || '';
+              const avatar = mediaData?.assets?.find(a => a.key === 'inset')?.value || '';
 
               // M+ runs this week
               const weeklyRuns = mplusData?.current_period?.best_runs || [];
               const mplusCount = weeklyRuns.length;
+              const highestKey = weeklyRuns.reduce((max, r) => Math.max(max, r.keystone_level || 0), 0);
 
               // Parse achievement stats for delves and raids
               let currentDelveCount = 0;
               let delveTimestamp = 0;
               let raidTimestamp = 0;
+              let raidBossKills = 0;
 
               if (statsData?.categories) {
                 for (const cat of statsData.categories) {
@@ -121,14 +121,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                       }
                     }
                   }
-                  // Check raid boss kills (any recent timestamp)
+                  // Check raid boss kills (Midnight only)
                   if (cat.name === 'Dungeons & Raids') {
                     for (const sub of (cat.sub_categories || [])) {
-                      if (sub.name === 'Midnight' || sub.name === 'The War Within') {
+                      if (sub.name === 'Midnight') {
                         for (const stat of (sub.statistics || [])) {
-                          if ((stat.last_updated_timestamp || 0) > raidTimestamp) {
-                            raidTimestamp = stat.last_updated_timestamp || 0;
-                          }
+                          const ts = stat.last_updated_timestamp || 0;
+                          if (ts > raidTimestamp) raidTimestamp = ts;
                         }
                       }
                     }
@@ -152,27 +151,47 @@ document.addEventListener('DOMContentLoaded', async () => {
                 raid_boss_count: 0
               });
 
-              // Calculate weekly reset start (Monday 07:00 UTC for EU)
+              // Calculate weekly reset start (Wednesday 05:00 UTC for EU)
               const now = new Date();
               const dayOfWeek = now.getUTCDay(); // 0=Sun
-              const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+              // Wednesday = 3
+              let daysToWed = dayOfWeek - 3;
+              if (daysToWed < 0) daysToWed += 7;
               const resetStart = new Date(now);
-              resetStart.setUTCDate(now.getUTCDate() + mondayOffset);
-              resetStart.setUTCHours(7, 0, 0, 0);
+              resetStart.setUTCDate(now.getUTCDate() - daysToWed);
+              resetStart.setUTCHours(5, 0, 0, 0);
               if (resetStart > now) resetStart.setUTCDate(resetStart.getUTCDate() - 7);
               const resetMs = resetStart.getTime();
-
-              // Determine vault status
-              const hasMplus = mplusCount > 0;
 
               // Delves: compare with DB snapshot
               const prev = prevSnapshots[key];
               const prevDelveCount = prev ? parseInt(prev.delve_count) : 0;
               const delvesDoneThisWeek = currentDelveCount - prevDelveCount;
-              const hasDelves = delvesDoneThisWeek >= 2 || (delveTimestamp > resetMs && !prev);
 
-              // Raids: check if any current-expansion boss was killed this week
-              const hasRaids = raidTimestamp > resetMs;
+              // Raids: count bosses killed this week
+              if (raidTimestamp > resetMs && statsData?.categories) {
+                for (const cat of statsData.categories) {
+                  if (cat.name === 'Dungeons & Raids') {
+                    for (const sub of (cat.sub_categories || [])) {
+                      if (sub.name === 'Midnight') {
+                        for (const stat of (sub.statistics || [])) {
+                          if ((stat.last_updated_timestamp || 0) > resetMs) raidBossKills++;
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+
+              // Activity detection (any progress at all)
+              const hasMplus = mplusCount > 0;
+              const hasDelves = delvesDoneThisWeek >= 1 || (delveTimestamp > resetMs && !prev);
+              const hasRaids = raidBossKills > 0;
+
+              // Vault slot thresholds: Raids 2/4/6, M+ Keys 1/4/8, Delves 2/4/8
+              const mplusSlots = mplusCount >= 8 ? 3 : mplusCount >= 4 ? 2 : mplusCount >= 1 ? 1 : 0;
+              const delveSlots = delvesDoneThisWeek >= 8 ? 3 : delvesDoneThisWeek >= 4 ? 2 : delvesDoneThisWeek >= 2 ? 1 : 0;
+              const raidSlots = raidBossKills >= 6 ? 3 : raidBossKills >= 4 ? 2 : raidBossKills >= 2 ? 1 : 0;
 
               if (hasMplus || hasDelves || hasRaids) {
                 results.push({
@@ -182,8 +201,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                   level: char.level,
                   avatar,
                   mplus: hasMplus ? mplusCount : 0,
+                  highestKey,
                   delves: hasDelves,
-                  raids: hasRaids
+                  delveCount: delvesDoneThisWeek,
+                  raids: hasRaids,
+                  raidBossKills,
+                  mplusSlots,
+                  delveSlots,
+                  raidSlots,
+                  totalSlots: mplusSlots + delveSlots + raidSlots,
+                  activeCount: (hasMplus ? 1 : 0) + (hasDelves ? 1 : 0) + (hasRaids ? 1 : 0)
                 });
               }
             } catch (e) {
@@ -220,23 +247,36 @@ document.addEventListener('DOMContentLoaded', async () => {
           return;
         }
 
+        // Sort by total vault slots (most active first), then by level
+        results.sort((a, b) => b.totalSlots - a.totalSlots || b.level - a.level);
+
         content.innerHTML = `
-          <div class="vault-grid">
+          <div class="roster-grid vault-roster">
             ${results.map(c => {
               const classColor = getClassColor(c.classId);
-              const classIconUrl = getClassIconUrl(c.classId);
 
               return `
-                <div class="vault-card">
-                  <div class="vault-char-info">
-                    ${c.avatar ? `<img src="${c.avatar}" class="vault-avatar" />` : ''}
-                    ${classIconUrl ? `<img src="${classIconUrl}" class="vault-class-icon" />` : ''}
-                    <span class="vault-char-name" style="color: ${classColor}">${c.name}</span>
+                <div class="member-card vault-member-card">
+                  <div class="character-avatar-placeholder" style="height: 120px;">
+                    ${c.avatar ? `<img src="${c.avatar}" style="width:100%;height:100%;object-fit:cover;object-position:top" />` : ''}
                   </div>
+
+                  <div class="member-header">
+                    <div class="member-name" style="color: ${classColor}">${c.name}</div>
+                  </div>
+
                   <div class="vault-rewards">
-                    ${c.mplus ? `<span class="vault-badge vault-mplus" title="M+ dungeons completed this week"><i class="las la-key"></i> ${c.mplus}</span>` : ''}
-                    ${c.delves ? `<span class="vault-badge vault-delves" title="Delves completed this week"><i class="las la-dungeon"></i> Delves</span>` : ''}
-                    ${c.raids ? `<span class="vault-badge vault-raids" title="Raid boss killed this week"><i class="las la-skull-crossbones"></i> Raid</span>` : ''}
+                    <div class="vault-badges">
+                      <span class="vault-badge vault-raids${c.raidSlots > 0 ? '' : ' vault-inactive'}${c.raids && c.raidSlots === 0 ? ' vault-has-progress' : ''}">Raids${c.raids && c.raidSlots === 0 ? '<span class="vault-dot vault-dot-raids"></span>' : ''}</span>
+                      <span class="vault-badge vault-mplus${c.mplusSlots > 0 ? '' : ' vault-inactive'}${c.mplus && c.mplusSlots === 0 ? ' vault-has-progress' : ''}">${c.mplusSlots > 0 ? `M+ Keys ${c.highestKey ? `+${c.highestKey}` : c.mplus}` : 'M+ Keys'}${c.mplus && c.mplusSlots === 0 ? '<span class="vault-dot vault-dot-mplus"></span>' : ''}</span>
+                      <span class="vault-badge vault-delves${c.delveSlots > 0 ? '' : ' vault-inactive'}${c.delves && c.delveSlots === 0 ? ' vault-has-progress' : ''}">Delves${c.delves && c.delveSlots === 0 ? '<span class="vault-dot vault-dot-delves"></span>' : ''}</span>
+                    </div>
+                    <div class="vault-progress">
+                      <div class="vault-progress-track">
+                        <div class="vault-progress-fill" style="width: ${(c.totalSlots / 9) * 100}%"></div>
+                      </div>
+                      <span class="vault-progress-text">${Math.round((c.totalSlots / 9) * 100)}%</span>
+                    </div>
                   </div>
                 </div>
               `;
