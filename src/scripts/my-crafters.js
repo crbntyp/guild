@@ -133,6 +133,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             professionMap[profName].characters.push({
               name: char.name,
               realm: char.realm,
+              realmSlug: char.realmSlug,
               classId: char.classId,
               level: char.level,
               latestTier: latestTier ? {
@@ -187,9 +188,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                   const classColor = getClassColor(c.classId);
                   const classIconUrl = getClassIconUrl(c.classId);
 
+                  const avatarUrl = `https://render.worldofwarcraft.com/eu/character/${c.realmSlug}/${c.name.toLowerCase()}-avatar.jpg`;
+
                   return `
                     <div class="crafter-char-row">
                       <div class="crafter-char-info">
+                        <img src="${avatarUrl}" class="crafter-char-avatar" onerror="this.style.display='none'" />
                         ${classIconUrl ? `<img src="${classIconUrl}" class="crafter-class-icon" />` : ''}
                         <span class="crafter-char-name" style="color: ${classColor}">${c.name}</span>
                       </div>
