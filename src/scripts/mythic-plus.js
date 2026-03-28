@@ -103,17 +103,17 @@ document.addEventListener('DOMContentLoaded', async () => {
               <div class="affix-icons-strip" id="affix-icons-strip"></div>
             `;
 
-            // Load current affixes from Raider.IO (icons only with tooltip)
-            try {
-              const affixRes = await fetch('https://raider.io/api/v1/mythic-plus/affixes?region=eu&locale=en');
-              const affixData = await affixRes.json();
-              const strip = document.getElementById('affix-icons-strip');
-              if (strip && affixData.affix_details) {
-                strip.innerHTML = affixData.affix_details.map(a =>
-                  `<div class="affix-icon-wrapper"><img src="https://wow.zamimg.com/images/wow/icons/large/${a.icon}.jpg" class="affix-icon-circle" /><span class="affix-tooltip">${a.name}</span></div>`
-                ).join('');
-              }
-            } catch (e) {}
+            // Load current affixes from Raider.IO (non-blocking)
+            fetch('https://raider.io/api/v1/mythic-plus/affixes?region=eu&locale=en')
+              .then(r => r.json())
+              .then(affixData => {
+                const strip = document.getElementById('affix-icons-strip');
+                if (strip && affixData.affix_details) {
+                  strip.innerHTML = affixData.affix_details.map(a =>
+                    `<div class="affix-icon-wrapper"><img src="https://wow.zamimg.com/images/wow/icons/large/${a.icon}.jpg" class="affix-icon-circle" /><span class="affix-tooltip">${a.name}</span></div>`
+                  ).join('');
+                }
+              }).catch(() => {});
 
           }
 
@@ -148,51 +148,71 @@ document.addEventListener('DOMContentLoaded', async () => {
           // Augmentation Evoker is actually DPS
           specRoles[1473] = 'dps';
 
-          try {
-            // Common spec IDs
-            const commonSpecIds = [
-              250, 251, 252, // Death Knight
-              577, 581, 1480, // Demon Hunter
-              102, 103, 104, 105, // Druid
-              1467, 1468, 1473, // Evoker
-              253, 254, 255, // Hunter
-              62, 63, 64, // Mage
-              268, 270, 269, // Monk
-              65, 66, 70, // Paladin
-              256, 257, 258, // Priest
-              259, 260, 261, // Rogue
-              262, 263, 264, // Shaman
-              265, 266, 267, // Warlock
-              71, 72, 73 // Warrior
-            ];
+          // Static spec lookup — no API calls needed
+          const specData = {
+            // Death Knight
+            250: { name: 'Blood', className: 'Death Knight', classId: 6 },
+            251: { name: 'Frost', className: 'Death Knight', classId: 6 },
+            252: { name: 'Unholy', className: 'Death Knight', classId: 6 },
+            // Demon Hunter
+            577: { name: 'Havoc', className: 'Demon Hunter', classId: 12 },
+            581: { name: 'Vengeance', className: 'Demon Hunter', classId: 12 },
+            1480: { name: 'Devourer', className: 'Demon Hunter', classId: 12 },
+            // Druid
+            102: { name: 'Balance', className: 'Druid', classId: 11 },
+            103: { name: 'Feral', className: 'Druid', classId: 11 },
+            104: { name: 'Guardian', className: 'Druid', classId: 11 },
+            105: { name: 'Restoration', className: 'Druid', classId: 11 },
+            // Evoker
+            1467: { name: 'Devastation', className: 'Evoker', classId: 13 },
+            1468: { name: 'Preservation', className: 'Evoker', classId: 13 },
+            1473: { name: 'Augmentation', className: 'Evoker', classId: 13 },
+            // Hunter
+            253: { name: 'Beast Mastery', className: 'Hunter', classId: 3 },
+            254: { name: 'Marksmanship', className: 'Hunter', classId: 3 },
+            255: { name: 'Survival', className: 'Hunter', classId: 3 },
+            // Mage
+            62: { name: 'Arcane', className: 'Mage', classId: 8 },
+            63: { name: 'Fire', className: 'Mage', classId: 8 },
+            64: { name: 'Frost', className: 'Mage', classId: 8 },
+            // Monk
+            268: { name: 'Brewmaster', className: 'Monk', classId: 10 },
+            270: { name: 'Mistweaver', className: 'Monk', classId: 10 },
+            269: { name: 'Windwalker', className: 'Monk', classId: 10 },
+            // Paladin
+            65: { name: 'Holy', className: 'Paladin', classId: 2 },
+            66: { name: 'Protection', className: 'Paladin', classId: 2 },
+            70: { name: 'Retribution', className: 'Paladin', classId: 2 },
+            // Priest
+            256: { name: 'Discipline', className: 'Priest', classId: 5 },
+            257: { name: 'Holy', className: 'Priest', classId: 5 },
+            258: { name: 'Shadow', className: 'Priest', classId: 5 },
+            // Rogue
+            259: { name: 'Assassination', className: 'Rogue', classId: 4 },
+            260: { name: 'Outlaw', className: 'Rogue', classId: 4 },
+            261: { name: 'Subtlety', className: 'Rogue', classId: 4 },
+            // Shaman
+            262: { name: 'Elemental', className: 'Shaman', classId: 7 },
+            263: { name: 'Enhancement', className: 'Shaman', classId: 7 },
+            264: { name: 'Restoration', className: 'Shaman', classId: 7 },
+            // Warlock
+            265: { name: 'Affliction', className: 'Warlock', classId: 9 },
+            266: { name: 'Demonology', className: 'Warlock', classId: 9 },
+            267: { name: 'Destruction', className: 'Warlock', classId: 9 },
+            // Warrior
+            71: { name: 'Arms', className: 'Warrior', classId: 1 },
+            72: { name: 'Fury', className: 'Warrior', classId: 1 },
+            73: { name: 'Protection', className: 'Warrior', classId: 1 }
+          };
 
-            const specPromises = commonSpecIds.map(async (specId) => {
-              try {
-                const spec = await wowApi.getPlayableSpecialization(specId);
-                return {
-                  id: specId,
-                  name: spec.name,
-                  className: spec.playable_class?.name,
-                  classId: spec.playable_class?.id,
-                  role: specRoles[specId] || 'dps'
-                };
-              } catch (error) {
-                return null;
-              }
-            });
-
-            const specs = await Promise.all(specPromises);
-            specs.filter(s => s).forEach(spec => {
-              specLookup[spec.id] = {
-                name: spec.name,
-                className: spec.className,
-                classId: spec.classId,
-                role: spec.role
-              };
-            });
-          } catch (error) {
-            console.error('Failed to load spec data:', error);
-          }
+          Object.entries(specData).forEach(([id, data]) => {
+            specLookup[id] = {
+              name: data.name,
+              className: data.className,
+              classId: data.classId,
+              role: specRoles[id] || 'dps'
+            };
+          });
 
           // Helper function to sort members by role: tank, healer, dps
           function sortMembersByRole(members, specLookup) {
