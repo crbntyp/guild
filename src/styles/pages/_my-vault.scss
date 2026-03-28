@@ -1,0 +1,101 @@
+// Weekly Vault page styles
+
+#vault-container {
+  max-width: 1290px;
+  width: 100%;
+  margin: 0 auto;
+  min-height: calc(100vh - 317px);
+}
+
+.vault-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+  padding-bottom: 40px;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.vault-card {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  transition: border-color 0.2s ease;
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+}
+
+.vault-char-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .vault-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .vault-class-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  .vault-char-name {
+    font-size: 14px;
+    font-weight: 600;
+  }
+}
+
+.vault-rewards {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.vault-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+
+  i {
+    font-size: 12px;
+  }
+
+  &.vault-mplus {
+    background: rgba(163, 53, 238, 0.15);
+    border: 1px solid rgba(163, 53, 238, 0.3);
+    color: #a335ee;
+  }
+
+  &.vault-delves {
+    background: rgba(0, 174, 255, 0.15);
+    border: 1px solid rgba(0, 174, 255, 0.3);
+    color: #00AEFF;
+  }
+
+  &.vault-raids {
+    background: rgba(255, 128, 0, 0.15);
+    border: 1px solid rgba(255, 128, 0, 0.3);
+    color: #ff8000;
+  }
+}
