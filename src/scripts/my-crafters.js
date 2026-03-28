@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               return (idxA === -1 ? 99 : idxA) - (idxB === -1 ? 99 : idxB);
             });
             // Filter out tiers with skill <= 1 (profession selected but never used)
-            const activeTiers = tiers.filter(t => (t.tier ? t.skill_points || 0 : 0) > 1 || (t.skill_points || 0) > 1);
+            const activeTiers = tiers.filter(t => (t.skill_points || 0) > 1);
             if (activeTiers.length === 0) return; // Skip this profession entirely
 
             professionMap[profName].characters.push({
@@ -241,6 +241,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('crafters-content').innerHTML = `
           <div class="no-raids">
             <p>Failed to load profession data</p>
+            <p class="no-raids-sub">${error.message || 'Unknown error'}</p>
           </div>
         `;
       }
