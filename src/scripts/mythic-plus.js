@@ -95,8 +95,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             infoDescription.innerHTML = `
               <div class="season-status-wrapper">
                 <div style="display: flex; gap: 8px; align-items: center;">
-                  <span class="${statusClass}">Season ${seasonDetails.id} ${statusText}</span>
-                  <span class="season-date-inline">${startDate}</span>
+                  <span class="${statusClass}">Season ${seasonDetails.id} ${statusText} — ${startDate}</span>
                   ${historicalBadge}
                 </div>
               </div>
