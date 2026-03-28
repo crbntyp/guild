@@ -119,13 +119,9 @@ document.addEventListener('DOMContentLoaded', async () => {
               professionMap[profName] = { id: profId, characters: [] };
             }
 
-            // Get the latest expansion tier (highest skill)
-            const tiers = prof.tiers || [];
-            const latestTier = tiers.length > 0 ? tiers[tiers.length - 1] : null;
-            const bestTier = tiers.reduce((best, t) => {
-              if (!best || t.skill_points > best.skill_points) return t;
-              return best;
-            }, null);
+            // Get tiers in reverse order (newest expansion first)
+            const tiers = (prof.tiers || []).slice().reverse();
+            const latestTier = tiers.length > 0 ? tiers[0] : null;
 
             professionMap[profName].characters.push({
               name: char.name,
@@ -137,7 +133,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 skill: latestTier.skill_points || 0,
                 max: latestTier.max_skill_points || 0
               } : null,
-              allTiers: tiers.map(t => ({
+              allTiers: tiers.map(t => ({  // Already reversed (newest first)
                 name: t.tier?.name || '?',
                 skill: t.skill_points || 0,
                 max: t.max_skill_points || 0
