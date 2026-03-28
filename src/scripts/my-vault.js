@@ -17,8 +17,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   await PageInitializer.init({
     requireAuth: false,
     onInit: async () => {
-      window.addEventListener('auth-state-changed', () => window.location.reload());
-
       const container = document.getElementById('vault-container');
 
       if (!authService.isAuthenticated()) {
@@ -239,9 +237,10 @@ document.addEventListener('DOMContentLoaded', async () => {
           const header = container.querySelector('.page-header-panel');
           if (header) header.style.display = 'none';
           content.innerHTML = `
-            <div class="no-raids">
+            <div class="vault-empty">
+              <i class="las la-gift"></i>
               <p>No characters have vault rewards this week</p>
-              <p class="no-raids-sub">Run M+ dungeons, delves, or raid bosses to unlock vault slots</p>
+              <p class="vault-empty-sub">Run M+ dungeons, delves, or raid bosses to unlock vault slots</p>
             </div>
           `;
           return;
@@ -287,9 +286,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       } catch (error) {
         console.error('Error loading vault data:', error);
         document.getElementById('vault-content').innerHTML = `
-          <div class="no-raids">
+          <div class="vault-empty">
+            <i class="las la-exclamation-circle"></i>
             <p>Failed to load vault data</p>
-            <p class="no-raids-sub">${error.message || ''}</p>
+            <p class="vault-empty-sub">${error.message || ''}</p>
           </div>
         `;
       }
