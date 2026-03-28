@@ -1,0 +1,126 @@
+// My Crafters page styles
+
+#crafters-container {
+  max-width: 1290px;
+  width: 100%;
+  margin: 0 auto;
+  min-height: calc(100vh - 317px);
+}
+
+.crafters-grid {
+  padding: 0 0 40px;
+}
+
+.crafter-profession {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.crafter-prof-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+  .crafter-prof-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    flex: 1;
+  }
+
+  .crafter-prof-count {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.3);
+  }
+}
+
+.crafter-char-list {
+  padding: 6px 0;
+}
+
+.crafter-char-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 16px;
+  gap: 12px;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.03);
+  }
+}
+
+.crafter-char-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 140px;
+
+  .crafter-class-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 3px;
+  }
+
+  .crafter-char-name {
+    font-size: 13px;
+    font-weight: 500;
+  }
+}
+
+.crafter-skill-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  justify-content: flex-end;
+
+  .crafter-tier-name {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.3);
+    white-space: nowrap;
+    min-width: 100px;
+    text-align: right;
+
+    @media (max-width: 600px) {
+      display: none;
+    }
+  }
+
+  .crafter-skill-bar {
+    width: 80px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 2px;
+    overflow: hidden;
+    flex-shrink: 0;
+
+    .crafter-skill-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #a335ee, #c56af0);
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+  }
+
+  .crafter-skill-text {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    font-variant-numeric: tabular-nums;
+    min-width: 50px;
+    text-align: right;
+  }
+}
