@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       try {
         const characters = await accountService.getAccountCharacters();
-        const eligible = characters.filter(c => c.level >= 70).sort((a, b) => b.level - a.level);
+        const eligible = characters.filter(c => c.level >= 90).sort((a, b) => b.level - a.level);
 
         // Get previous snapshots from DB
         let prevSnapshots = {};
