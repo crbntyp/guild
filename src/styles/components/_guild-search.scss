@@ -254,36 +254,59 @@
   }
 }
 
-// Affix info strip
-.wow-info-strip {
-  max-width: 1290px;
-  margin: 0 auto;
-  padding: 14px var(--spacing-md) 6px;
+// Inline date next to season status
+.season-date-inline {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+// Affix icons strip (circular icons with tooltip)
+.affix-icons-strip {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
-  flex-wrap: wrap;
-  min-height: 24px;
+  justify-content: flex-start;
+  gap: 10px;
+  padding-top: 12px;
+}
 
-  .affix-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 10px;
-    color: rgba(255, 255, 255, 0.4);
-    letter-spacing: 0.3px;
+.affix-icon-wrapper {
+  position: relative;
+
+  .affix-icon-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    transition: all 0.2s ease;
   }
 
-  .affix-icon {
-    width: 20px;
-    height: 20px;
-    border-radius: 3px;
+  &:hover .affix-icon-circle {
+    border-color: rgba(163, 53, 238, 0.5);
+    transform: scale(1.1);
   }
 
-  .affix-sep {
-    color: rgba(255, 255, 255, 0.15);
-    font-size: 10px;
+  .affix-tooltip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 11px;
+    color: #fff;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.15s ease;
+    pointer-events: none;
+  }
+
+  &:hover .affix-tooltip {
+    opacity: 1;
+    visibility: visible;
   }
 }
 

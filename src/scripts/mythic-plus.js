@@ -95,26 +95,23 @@ document.addEventListener('DOMContentLoaded', async () => {
             infoDescription.innerHTML = `
               <div class="season-status-wrapper">
                 <div style="display: flex; gap: 8px; align-items: center;">
-                  <span class="${statusClass}">Season ${seasonDetails.id} is ${statusText}</span>
+                  <span class="${statusClass}">Season ${seasonDetails.id} ${statusText}</span>
+                  <span class="season-date-inline">${startDate}</span>
                   ${historicalBadge}
                 </div>
-                <div class="season-date">
-                  <i class="las la-fire"></i>
-                  ${startDate}
-                </div>
               </div>
-              <div class="wow-info-strip" id="wow-info-strip"></div>
+              <div class="affix-icons-strip" id="affix-icons-strip"></div>
             `;
 
-            // Load current affixes from Raider.IO
+            // Load current affixes from Raider.IO (icons only with tooltip)
             try {
               const affixRes = await fetch('https://raider.io/api/v1/mythic-plus/affixes?region=eu&locale=en');
               const affixData = await affixRes.json();
-              const strip = document.getElementById('wow-info-strip');
+              const strip = document.getElementById('affix-icons-strip');
               if (strip && affixData.affix_details) {
                 strip.innerHTML = affixData.affix_details.map(a =>
-                  `<span class="affix-item"><img src="https://wow.zamimg.com/images/wow/icons/small/${a.icon}.jpg" class="affix-icon" />${a.name}</span>`
-                ).join('<span class="affix-sep">·</span>');
+                  `<div class="affix-icon-wrapper"><img src="https://wow.zamimg.com/images/wow/icons/large/${a.icon}.jpg" class="affix-icon-circle" /><span class="affix-tooltip">${a.name}</span></div>`
+                ).join('');
               }
             } catch (e) {}
 
@@ -369,7 +366,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               console.warn(`⚠️ Only found ${allLeaderboards.length} dungeons with leaderboard data. Expected around 8 for a typical season.`);
               html += `
                 <div style="margin: 20px; padding: 15px; background: rgba(255,165,0,0.15); border-radius: 8px; border-left: 3px solid #FFA500;">
-                  <p style="margin: 0; font-size: 14px;"><strong>⚠️ Note:</strong> Only ${allLeaderboards.length} dungeon${allLeaderboards.length !== 1 ? 's' : ''} loaded. Some dungeons may be unavailable or the season may have just started.</p>
+                  <p style="margin: 0; font-size: 14px;"><strong>⚠️ Note:</strong> Only ${allLeaderboards.length} of 8 season dungeons loaded. If not all dungeons are showing, please refresh the browser as there may have been a latency issue loading the stats.</p>
                 </div>
               `;
             }
