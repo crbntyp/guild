@@ -1,6 +1,5 @@
 // Events page - displays current and upcoming WoW events
 import PageInitializer from './utils/page-initializer.js';
-import PageHeader from './components/page-header.js';
 
 console.log('⚡ Events page initialized');
 
@@ -104,11 +103,13 @@ class EventsPage {
   render() {
     if (!this.container) return;
 
-    let html = PageHeader.render({
-      className: 'events',
-      title: 'Events',
-      description: 'Current and upcoming World of Warcraft events.'
-    });
+    let html = `
+      <div class="events-hero">
+        <span class="events-hero-badge">gld__ events</span>
+        <h1>Events</h1>
+        <p class="events-hero-subtitle">Current and upcoming World of Warcraft events.</p>
+      </div>
+    `;
 
     html += '<div id="events-content">';
 

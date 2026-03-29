@@ -39,9 +39,20 @@ async function loadLocalSeasonData(seasonId) {
 document.addEventListener('DOMContentLoaded', async () => {
   await PageInitializer.init({
     onInit: async () => {
+      const container = document.getElementById('mythic-plus-container');
       const leaderboardContent = document.getElementById('leaderboard-content');
 
       try {
+        // Render header (matching raids landing style)
+        container.insertAdjacentHTML('afterbegin', `
+          <div class="mplus-hero">
+            <span class="mplus-hero-badge">gld__ mythic+</span>
+            <h1>Mythic+ Leaderboards</h1>
+            <p class="mplus-hero-subtitle">Top keystone runs, meta compositions, and spec distribution across the EU region.</p>
+            <div class="mplus-season-info" id="mplus-season-info"></div>
+          </div>
+        `);
+
         leaderboardContent.innerHTML = `
           <div class="loading-spinner">
             <i class="las la-circle-notch la-spin la-6x"></i>
@@ -76,45 +87,23 @@ document.addEventListener('DOMContentLoaded', async () => {
             isHistoricalData = true;
           }
 
-          // Update the header info-description with season data
-          const infoDescription = document.querySelector('.mythic-plus-header .info-description');
-          if (infoDescription) {
-            const startDate = new Date(seasonDetails.start_timestamp).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            });
-            const isActive = !seasonDetails.end_timestamp;
-            const statusClass = isActive ? 'status-success' : 'status-danger';
-            const statusText = isActive ? 'Active' : 'Ended';
+          // Render season info strip below header
+          const startDate = new Date(seasonDetails.start_timestamp).toLocaleDateString('en-GB', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          });
+          const isActive = !seasonDetails.end_timestamp;
 
-            // Add historical data badge if using local data
-            const historicalBadge = isHistoricalData ?
-              `<span class="status-info" style="margin-left: 8px;">Historical Data</span>` : '';
-
-            infoDescription.innerHTML = `
-              <div class="season-status-wrapper">
-                <div style="display: flex; gap: 8px; align-items: center;">
-                  <span class="${statusClass}">Season ${seasonDetails.id} ${statusText} — ${startDate}</span>
-                  ${historicalBadge}
-                </div>
-              </div>
-              <div class="affix-icons-strip" id="affix-icons-strip"></div>
+          const seasonInfo = document.getElementById('mplus-season-info');
+          if (seasonInfo) {
+            seasonInfo.innerHTML = `
+              <span class="mplus-season-dot ${isActive ? 'active' : 'ended'}"></span>
+              <span class="mplus-season-text">Season ${seasonDetails.id} ${isActive ? 'Active' : 'Ended'} — ${startDate}</span>
             `;
-
-            // Load current affixes from Raider.IO (non-blocking)
-            fetch('https://raider.io/api/v1/mythic-plus/affixes?region=eu&locale=en')
-              .then(r => r.json())
-              .then(affixData => {
-                const strip = document.getElementById('affix-icons-strip');
-                if (strip && affixData.affix_details) {
-                  strip.innerHTML = affixData.affix_details.map(a =>
-                    `<div class="affix-icon-wrapper"><img src="https://wow.zamimg.com/images/wow/icons/large/${a.icon}.jpg" class="affix-icon-circle" /><span class="affix-tooltip">${a.name}</span></div>`
-                  ).join('');
-                }
-              }).catch(() => {});
-
           }
+
+          // Affix fetch deferred until roster controls are rendered
 
           let html = ``;
           let allLeaderboards = [];
@@ -596,6 +585,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               <div class="leaderboard-summary">
                 <div class="roster-controls">
                   ${lastUpdatedText ? `<div class="leaderboard-status">${lastUpdatedText}</div>` : ''}
+                  <div class="affix-icons-strip" id="affix-icons-strip"></div>
                   <div id="dungeon-dropdown-container"></div>
                 </div>
 
@@ -660,6 +650,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             `;
 
             leaderboardContent.innerHTML = html;
+
+            // Load current affixes from Raider.IO (non-blocking)
+            fetch('https://raider.io/api/v1/mythic-plus/affixes?region=eu&locale=en')
+              .then(r => r.json())
+              .then(affixData => {
+                const strip = document.getElementById('affix-icons-strip');
+                if (strip && affixData.affix_details) {
+                  strip.innerHTML = affixData.affix_details.map(a =>
+                    `<div class="affix-icon-wrapper"><img src="https://wow.zamimg.com/images/wow/icons/large/${a.icon}.jpg" class="affix-icon-circle" /><span class="affix-tooltip">${a.name}</span></div>`
+                  ).join('');
+                }
+              }).catch(() => {});
 
             // Store leaderboards and spec lookup for dropdown handler
             window.allLeaderboards = allLeaderboards;

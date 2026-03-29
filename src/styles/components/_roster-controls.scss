@@ -1,6 +1,7 @@
 // Roster Controls Component
 .roster-controls {
   display: flex;
+  align-items: center;
   gap: var(--spacing-sm);
   margin-bottom: 10px;
   flex-wrap: wrap;
@@ -8,13 +9,9 @@
 
   // Leaderboard Status
   .leaderboard-status {
-    @include status-pill(
-      rgba(59, 130, 246, 0.3),  // bg-color-start (blue)
-      rgba(37, 99, 235, 0.3),   // bg-color-end (dark blue)
-      rgba(59, 130, 246, 0.5),  // border-color
-      rgb(167, 213, 255)        // text-color (richer light blue)
-    );
-    margin-right: auto; // Push to left (flex-start)
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.25);
+    margin-right: auto;
   }
 
   // Mini Pagination
@@ -84,8 +81,8 @@
 
     .leaderboard-status {
       width: 100%;
-      justify-content: center;
-      order: -1; // Move to top on mobile
+      text-align: center;
+      order: -1;
     }
   }
 }

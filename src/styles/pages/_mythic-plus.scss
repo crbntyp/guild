@@ -8,16 +8,75 @@
   flex-direction: column;
   min-height: calc(100vh - 200px);
 
-  .mythic-plus-header {
-    @include page-header;
+  .mplus-hero {
+    text-align: center;
+    padding: 40px 20px 30px;
 
-    &-info {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
+    .mplus-hero-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #a335ee;
+      background: rgba(163, 53, 238, 0.15);
+      border: 1px solid rgba(163, 53, 238, 0.3);
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 20px;
     }
+
+    h1 {
+      margin: 0 0 16px 0;
+      font-size: 36px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.2;
+
+      @media (max-width: 768px) {
+        font-size: 28px;
+      }
+    }
+
+    .mplus-hero-subtitle {
+      margin: 0 auto 20px;
+      max-width: 560px;
+      font-size: 16px;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.5);
+
+      @media (max-width: 768px) {
+        font-size: 14px;
+      }
+    }
+  }
+
+  .mplus-season-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .mplus-season-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+
+    &.active {
+      background: #10b981;
+      box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
+    }
+
+    &.ended {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
+
+  .mplus-season-text {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.4);
   }
 
   // Leaderboard summary section
