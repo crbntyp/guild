@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         ${PageHeader.render({
           className: 'crafters',
           title: 'Crafters',
-          description: 'See which characters have the highest profession skills across your account.'
+          description: 'See which characters have the highest profession skills across your account. At least you know who to send all those mats to for maxing your cooking skill :D'
         })}
         <div id="crafters-content">
           <div class="loading-spinner">
@@ -180,8 +180,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Split into primary and secondary
         const primaryIds = [171, 164, 333, 202, 773, 755, 165, 186, 393, 197, 182];
-        const primaryProfs = Object.entries(professionMap).filter(([, v]) => primaryIds.includes(v.id));
-        const secondaryProfs = Object.entries(professionMap).filter(([, v]) => !primaryIds.includes(v.id));
+        const primaryProfs = Object.entries(professionMap).filter(([, v]) => primaryIds.includes(v.id) && v.characters.length > 0);
+        const secondaryProfs = Object.entries(professionMap).filter(([, v]) => !primaryIds.includes(v.id) && v.characters.length > 0);
 
         const renderProfSection = (profs) => profs.map(([name, data]) => {
           const iconName = PROFESSION_ICONS[data.id] || 'inv_misc_questionmark';

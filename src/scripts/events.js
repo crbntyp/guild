@@ -1,29 +1,24 @@
 // Events page - displays current and upcoming WoW events
 import PageInitializer from './utils/page-initializer.js';
+import PageHeader from './components/page-header.js';
 
 console.log('⚡ Events page initialized');
 
 class EventsPage {
   constructor() {
-    this.container = document.getElementById('events-content');
+    this.container = document.getElementById('events-container');
     this.events = [];
     this.currentEvents = [];
     this.upcomingEvents = [];
+    this.laterEvents = [];
     this.updateInterval = null;
   }
 
   async init() {
     try {
-      // Load events data
       await this.loadEvents();
-
-      // Filter and categorize events
       this.categorizeEvents();
-
-      // Render the page
       this.render();
-
-      // Update countdowns every second
       this.updateInterval = setInterval(() => this.updateCountdowns(), 1000);
     } catch (error) {
       console.error('Error loading events:', error);
@@ -32,20 +27,10 @@ class EventsPage {
   }
 
   async loadEvents() {
-    try {
-      const response = await fetch('data/events-generated.json');
-      if (!response.ok) {
-        throw new Error(`Failed to load events: ${response.status}`);
-      }
-
-      const data = await response.json();
-      this.events = data.events || [];
-
-      console.log(`✅ Loaded ${this.events.length} events`);
-    } catch (error) {
-      console.error('Failed to load events:', error);
-      throw error;
-    }
+    const response = await fetch('data/events-generated.json');
+    if (!response.ok) throw new Error(`Failed to load events: ${response.status}`);
+    const data = await response.json();
+    this.events = data.events || [];
   }
 
   categorizeEvents() {
@@ -54,157 +39,165 @@ class EventsPage {
 
     this.currentEvents = [];
     this.upcomingEvents = [];
+    this.laterEvents = [];
 
-    this.events.forEach(event => {
-      // Filter out placeholder events with names like [#1406]
-      if (!event.name || /^\[#\d+\]$/.test(event.name)) {
-        return;
-      }
+    // Filter out junk
+    const raidNames = ['The Voidspire', "March on Quel'Danas", 'The Dreamrift', 'Nerub-ar Palace', 'Liberation of Undermine', 'Manaforge Omega'];
+    const filtered = this.events.filter(e => {
+      if (!e.name || /^\[#\d+\]$/.test(e.name)) return false;
+      if (raidNames.some(r => e.name === r)) return false;
+      if (!e.occurrences || e.occurrences.length === 0) return false;
+      if ((e.popularity || 0) < 30) return false;
+      return true;
+    });
 
-      // Filter out raid instances (handled on the raids page)
-      const raidNames = ['The Voidspire', "March on Quel'Danas", 'The Dreamrift', 'Nerub-ar Palace', 'Liberation of Undermine', 'Manaforge Omega'];
-      if (raidNames.some(r => event.name === r)) {
-        return;
-      }
-
-      if (!event.occurrences || event.occurrences.length === 0) {
-        return;
-      }
-
-      // Find the most relevant occurrence
-      const relevantOccurrence = event.occurrences.find(occ => {
-        const start = new Date(occ.start);
-        const end = new Date(occ.end);
-
-        return end > now; // Not yet ended
-      });
-
-      if (!relevantOccurrence) {
-        return;
-      }
-
-      const start = new Date(relevantOccurrence.start);
-      const end = new Date(relevantOccurrence.end);
-
-      // Categorize
-      if (start <= now && end > now) {
-        // Currently active
-        this.currentEvents.push({ ...event, activeOccurrence: relevantOccurrence });
-      } else if (start > now && start <= twoWeeksFromNow) {
-        // Upcoming within 2 weeks
-        this.upcomingEvents.push({ ...event, activeOccurrence: relevantOccurrence });
+    // Deduplicate by name (keep highest popularity)
+    const deduped = new Map();
+    filtered.forEach(e => {
+      const existing = deduped.get(e.name);
+      if (!existing || (e.popularity || 0) > (existing.popularity || 0)) {
+        deduped.set(e.name, e);
       }
     });
 
-    // Sort by start date
+    deduped.forEach(event => {
+      // Find next relevant occurrence
+      const futureOcc = event.occurrences.find(occ => new Date(occ.end) > now);
+      if (!futureOcc) return;
+
+      const start = new Date(futureOcc.start);
+      const end = new Date(futureOcc.end);
+
+      // Find the NEXT occurrence after this one (for "Returns" display)
+      const currentOccIndex = event.occurrences.indexOf(futureOcc);
+      const nextOcc = event.occurrences[currentOccIndex + 1] || null;
+
+      const enriched = { ...event, activeOccurrence: futureOcc, nextOccurrence: nextOcc };
+
+      if (start <= now && end > now) {
+        this.currentEvents.push(enriched);
+      } else if (start > now && start <= twoWeeksFromNow) {
+        this.upcomingEvents.push(enriched);
+      } else if (start > twoWeeksFromNow && (event.popularity || 0) >= 80) {
+        this.laterEvents.push(enriched);
+      }
+    });
+
+    // Sort
     this.currentEvents.sort((a, b) => new Date(a.activeOccurrence.end) - new Date(b.activeOccurrence.end));
     this.upcomingEvents.sort((a, b) => new Date(a.activeOccurrence.start) - new Date(b.activeOccurrence.start));
-
-    console.log(`📊 Current events: ${this.currentEvents.length}, Upcoming: ${this.upcomingEvents.length}`);
+    this.laterEvents.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+    this.laterEvents = this.laterEvents.slice(0, 12);
   }
 
   render() {
     if (!this.container) return;
 
-    let html = '';
+    let html = PageHeader.render({
+      className: 'events',
+      title: 'Events',
+      description: 'Current and upcoming World of Warcraft events.'
+    });
 
-    // Current Events Section
+    html += '<div id="events-content">';
+
+    // Active events — same compact rows as upcoming
     if (this.currentEvents.length > 0) {
       html += `
         <div class="events-section">
-          <div class="section-header">
-            <i class="las la-calendar-check"></i>
-            <h3>Active Now (${this.currentEvents.length})</h3>
-          </div>
-          <div class="events-grid">
-      `;
-
-      this.currentEvents.forEach(event => {
-        html += this.renderEventCard(event, 'current');
-      });
-
-      html += `
+          <div class="events-section-label"><span class="events-label-dot active"></span> Active Now</div>
+          <div class="events-active-grid">
+            ${this.currentEvents.map(e => this.renderActiveRow(e)).join('')}
           </div>
         </div>
       `;
     }
 
-    // Upcoming Events Section
+    // Upcoming events — compact rows
     if (this.upcomingEvents.length > 0) {
       html += `
         <div class="events-section">
-          <div class="section-header">
-            <i class="las la-clock"></i>
-            <h3>Starting Soon (${this.upcomingEvents.length})</h3>
+          <div class="events-section-label"><span class="events-label-dot upcoming"></span> Starting Soon</div>
+          <div class="events-upcoming-list">
+            ${this.upcomingEvents.map(e => this.renderUpcomingRow(e)).join('')}
           </div>
-          <div class="events-grid">
+        </div>
       `;
+    }
 
-      this.upcomingEvents.forEach(event => {
-        html += this.renderEventCard(event, 'upcoming');
-      });
-
+    // Coming later
+    if (this.laterEvents.length > 0) {
       html += `
+        <div class="events-section">
+          <div class="events-section-label"><span class="events-label-dot later"></span> Popular Events Coming Later This Year</div>
+          <div class="events-later-list">
+            ${this.laterEvents.map((e, i) => this.renderLaterRow(e, i + 1)).join('')}
           </div>
         </div>
       `;
     }
 
-    // No events message
-    if (this.currentEvents.length === 0 && this.upcomingEvents.length === 0) {
-      html = `
-        <div class="empty-state">
+    if (this.currentEvents.length === 0 && this.upcomingEvents.length === 0 && this.laterEvents.length === 0) {
+      html += `
+        <div class="events-empty">
           <i class="las la-calendar-times"></i>
-          <h3>No Active Events</h3>
-          <p>There are no active or upcoming events in the next 2 weeks.</p>
+          <p>No events found</p>
+          <p class="events-empty-sub">Check back later for upcoming World of Warcraft events.</p>
         </div>
       `;
     }
 
+    html += '</div>';
     this.container.innerHTML = html;
   }
 
-  renderEventCard(event, type) {
-    const isActive = type === 'current';
+  renderHeroCard(event) {
+    const bannerUrl = this.getEventBannerUrl(event.name);
+    const iconUrl = this.getEventIconUrl(event.name, event.categoryName);
+    const categoryClass = this.getCategoryClass(event.categoryName, event.name);
+    const displayCategory = this.getDisplayCategory(event);
 
-    // Determine display category
-    let displayCategory = event.categoryName;
-    if (event.name && event.name.startsWith('WoW Remix')) {
-      displayCategory = 'Remix Event';
-    } else if (event.name && (event.name.includes('Timewalking') || event.name.includes('Dungeon Event'))) {
-      displayCategory = 'Recurring';
-    } else if (event.name && event.name.includes('PvP Brawl')) {
-      displayCategory = 'PvP Event';
-    } else if (event.name && /WoW'?s? (\d+\w{2} )?Anniversary/i.test(event.name)) {
-      displayCategory = 'Anniversary';
-    } else if (event.name && event.name.includes('Bonus Event')) {
-      displayCategory = 'Bonus Event';
-    } else if (event.name && event.name.includes('Darkmoon Faire')) {
-      displayCategory = 'Darkmoon Faire';
-    } else if (event.name && event.name.includes('Cup')) {
-      displayCategory = 'Racing Cup';
-    } else if (event.name && /Plunderstorm|Trial of Style|Secrets of Azeroth|Turbulent Timeways/i.test(event.name)) {
-      displayCategory = 'Special Event';
+    // Progress through event
+    const start = new Date(event.activeOccurrence.start);
+    const end = new Date(event.activeOccurrence.end);
+    const now = new Date();
+    const totalDuration = end - start;
+    const elapsed = now - start;
+    const progress = Math.min(Math.round((elapsed / totalDuration) * 100), 100);
+
+    // Days remaining
+    const remaining = end - now;
+    const daysLeft = Math.floor(remaining / (1000 * 60 * 60 * 24));
+    const hoursLeft = Math.floor((remaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+
+    // Returns date
+    let returnsHtml = '';
+    if (event.nextOccurrence) {
+      const nextStart = new Date(event.nextOccurrence.start);
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      returnsHtml = `<span class="event-returns">Returns ${monthNames[nextStart.getMonth()]} ${nextStart.getDate()}</span>`;
     }
 
-    const categoryClass = this.getCategoryClass(event.categoryName, event.name);
-    const iconUrl = this.getEventIconUrl(event.name, event.categoryName);
-    const bannerUrl = this.getEventBannerUrl(event.name);
-    const bannerStyle = bannerUrl ? `style="background-image: url('${bannerUrl}')"` : '';
-    const hasBanner = bannerUrl ? 'has-banner' : '';
-
     return `
-      <div class="event-card ${categoryClass} ${hasBanner}" data-event-id="${event.id}" ${bannerStyle}>
-        <div class="event-card-overlay"></div>
-        <div class="event-card-content">
-          <div class="event-icon">
-            <img src="${iconUrl}" alt="" class="event-icon-img" />
+      <div class="event-hero ${categoryClass}" ${bannerUrl ? `style="background-image: url('${bannerUrl}')"` : ''}>
+        <div class="event-hero-overlay"></div>
+        <div class="event-hero-content">
+          <div class="event-hero-icon">
+            <img src="${iconUrl}" alt="" />
           </div>
-          <div class="event-info">
-            <h3 class="event-name">${event.name}</h3>
-            <div class="event-category">${displayCategory}</div>
-            <div class="event-countdown" data-end="${event.activeOccurrence.end}" data-start="${event.activeOccurrence.start}" data-type="${type}">
-              ${this.formatCountdown(event.activeOccurrence, isActive)}
+          <div class="event-hero-info">
+            <div class="event-hero-top">
+              <span class="event-hero-category">${displayCategory}</span>
+              ${returnsHtml}
+            </div>
+            <h3 class="event-hero-name">${event.name}</h3>
+            <div class="event-hero-timer">
+              <div class="event-hero-countdown" data-end="${event.activeOccurrence.end}" data-start="${event.activeOccurrence.start}" data-type="current">
+                ${daysLeft > 0 ? `${daysLeft}d ${hoursLeft}h remaining` : `${hoursLeft}h remaining`}
+              </div>
+              <div class="event-hero-progress">
+                <div class="event-hero-progress-fill ${categoryClass}" style="width: ${progress}%"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -212,115 +205,123 @@ class EventsPage {
     `;
   }
 
-  getCategoryClass(categoryName, eventName) {
-    // Check for WoW Anniversary events
-    if (eventName && /WoW'?s? (\d+\w{2} )?Anniversary/i.test(eventName)) {
-      return 'category-anniversary';
+  renderActiveRow(event) {
+    const iconUrl = this.getEventIconUrl(event.name, event.categoryName);
+    const categoryClass = this.getCategoryClass(event.categoryName, event.name);
+    const start = new Date(event.activeOccurrence.start);
+    const end = new Date(event.activeOccurrence.end);
+    const now = new Date();
+
+    // Progress
+    const totalDuration = end - start;
+    const elapsed = now - start;
+    const progress = Math.min(Math.round((elapsed / totalDuration) * 100), 100);
+
+    // Returns
+    let returnsHtml = '';
+    if (event.nextOccurrence) {
+      const nextStart = new Date(event.nextOccurrence.start);
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      returnsHtml = `<span class="event-returns">Returns ${monthNames[nextStart.getMonth()]} ${nextStart.getDate()}</span>`;
     }
 
-    // Check for WoW Remix events
-    if (eventName && eventName.startsWith('WoW Remix')) {
-      return 'category-remix';
-    }
-
-    // Timewalking and Dungeon Events are recurring
-    if (eventName && (eventName.includes('Timewalking') || eventName.includes('Dungeon Event'))) {
-      return 'category-recurring';
-    }
-
-    // PvP Brawl events
-    if (eventName && eventName.includes('PvP Brawl')) {
-      return 'category-pvp';
-    }
-
-    // Bonus Events
-    if (eventName && eventName.includes('Bonus Event')) {
-      return 'category-bonus';
-    }
-
-    // Darkmoon Faire
-    if (eventName && eventName.includes('Darkmoon Faire')) {
-      return 'category-darkmoon';
-    }
-
-    // Racing Cups (Dragonriding)
-    if (eventName && eventName.includes('Cup')) {
-      return 'category-racing';
-    }
-
-    // Special Events
-    if (eventName && /Plunderstorm|Trial of Style|Secrets of Azeroth|Turbulent Timeways/i.test(eventName)) {
-      return 'category-special';
-    }
-
-    const categoryMap = {
-      'Holidays': 'category-holiday',
-      'Recurring': 'category-recurring',
-      'PvP Brawl': 'category-pvp',
-      'Raid': 'category-raid',
-      'Dungeon': 'category-dungeon'
-    };
-
-    return categoryMap[categoryName] || 'category-other';
+    return `
+      <div class="event-upcoming-row event-active-row ${categoryClass}">
+        <div class="event-upcoming-icon">
+          <img src="${iconUrl}" alt="" />
+        </div>
+        <div class="event-upcoming-info">
+          <span class="event-upcoming-name">${event.name}</span>
+          <span class="event-upcoming-category">${this.getDisplayCategory(event)}</span>
+        </div>
+        <div class="event-active-right">
+          <span class="event-active-countdown" data-end="${event.activeOccurrence.end}" data-start="${event.activeOccurrence.start}" data-type="current">${this.formatCountdown(event.activeOccurrence, true)}</span>
+          ${returnsHtml}
+        </div>
+        <div class="event-active-progress-bar">
+          <div class="event-active-progress-fill ${categoryClass}" style="width: ${progress}%"></div>
+        </div>
+      </div>
+    `;
   }
 
-  getCategoryIcon(categoryName, eventName) {
-    // Check for WoW Anniversary events
-    if (eventName && /WoW'?s? (\d+\w{2} )?Anniversary/i.test(eventName)) {
-      return 'las la-birthday-cake';
-    }
+  renderUpcomingRow(event) {
+    const iconUrl = this.getEventIconUrl(event.name, event.categoryName);
+    const categoryClass = this.getCategoryClass(event.categoryName, event.name);
+    const start = new Date(event.activeOccurrence.start);
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-    // Check for WoW Remix events
-    if (eventName && eventName.startsWith('WoW Remix')) {
-      return 'las la-redo-alt';
-    }
+    return `
+      <div class="event-upcoming-row ${categoryClass}">
+        <div class="event-upcoming-date">
+          <span class="event-date-day">${dayNames[start.getDay()]}</span>
+          <span class="event-date-num">${start.getDate()}</span>
+          <span class="event-date-month">${monthNames[start.getMonth()]}</span>
+        </div>
+        <div class="event-upcoming-icon">
+          <img src="${iconUrl}" alt="" />
+        </div>
+        <div class="event-upcoming-info">
+          <span class="event-upcoming-name">${event.name}</span>
+          <span class="event-upcoming-category">${this.getDisplayCategory(event)}</span>
+        </div>
+        <div class="event-upcoming-countdown" data-end="${event.activeOccurrence.end}" data-start="${event.activeOccurrence.start}" data-type="upcoming">
+          ${this.formatCountdown(event.activeOccurrence, false)}
+        </div>
+      </div>
+    `;
+  }
 
-    // Timewalking and Dungeon Events are recurring
-    if (eventName && (eventName.includes('Timewalking') || eventName.includes('Dungeon Event'))) {
-      return 'las la-sync';
-    }
+  renderLaterRow(event, rank) {
+    const iconUrl = this.getEventIconUrl(event.name, event.categoryName);
+    const categoryClass = this.getCategoryClass(event.categoryName, event.name);
+    const start = new Date(event.activeOccurrence.start);
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-    // PvP Brawl events
-    if (eventName && eventName.includes('PvP Brawl')) {
-      return 'las la-chess-knight';
-    }
+    return `
+      <div class="event-later-row ${categoryClass}">
+        <span class="event-later-rank">${rank}</span>
+        <div class="event-later-icon">
+          <img src="${iconUrl}" alt="" />
+        </div>
+        <span class="event-later-name">${event.name}</span>
+        <span class="event-later-date">${monthNames[start.getMonth()]} ${start.getDate()}</span>
+      </div>
+    `;
+  }
 
-    // Bonus Events
-    if (eventName && eventName.includes('Bonus Event')) {
-      return 'las la-star';
-    }
+  getDisplayCategory(event) {
+    const name = event.name || '';
+    if (name.startsWith('WoW Remix')) return 'Remix';
+    if (name.includes('Timewalking') || name.includes('Dungeon Event')) return 'Recurring';
+    if (name.includes('PvP Brawl')) return 'PvP';
+    if (/WoW'?s? (\d+\w{2} )?Anniversary/i.test(name)) return 'Anniversary';
+    if (name.includes('Bonus Event')) return 'Bonus';
+    if (name.includes('Darkmoon Faire')) return 'Darkmoon';
+    if (name.includes('Cup')) return 'Racing';
+    if (/Plunderstorm|Trial of Style|Secrets of Azeroth|Turbulent Timeways/i.test(name)) return 'Special';
+    if (event.categoryName === 'Holidays') return 'Holiday';
+    return event.categoryName || 'Event';
+  }
 
-    // Darkmoon Faire
-    if (eventName && eventName.includes('Darkmoon Faire')) {
-      return 'las la-ticket-alt';
-    }
-
-    // Racing Cups
-    if (eventName && eventName.includes('Cup')) {
-      return 'las la-flag-checkered';
-    }
-
-    // Special Events
-    if (eventName && /Plunderstorm|Trial of Style|Secrets of Azeroth|Turbulent Timeways/i.test(eventName)) {
-      return 'las la-bolt';
-    }
-
-    const iconMap = {
-      'Holidays': 'las la-gift',
-      'Recurring': 'las la-sync',
-      'PvP Brawl': 'las la-chess-knight',
-      'Raid': 'las la-dragon',
-      'Dungeon': 'las la-dungeon'
-    };
-
-    return iconMap[categoryName] || 'las la-calendar';
+  getCategoryClass(categoryName, eventName) {
+    if (eventName && /WoW'?s? (\d+\w{2} )?Anniversary/i.test(eventName)) return 'category-anniversary';
+    if (eventName && eventName.startsWith('WoW Remix')) return 'category-remix';
+    if (eventName && (eventName.includes('Timewalking') || eventName.includes('Dungeon Event'))) return 'category-recurring';
+    if (eventName && eventName.includes('PvP Brawl')) return 'category-pvp';
+    if (eventName && eventName.includes('Bonus Event')) return 'category-bonus';
+    if (eventName && eventName.includes('Darkmoon Faire')) return 'category-darkmoon';
+    if (eventName && eventName.includes('Cup')) return 'category-racing';
+    if (eventName && /Plunderstorm|Trial of Style|Secrets of Azeroth|Turbulent Timeways/i.test(eventName)) return 'category-special';
+    const map = { 'Holidays': 'category-holiday', 'Recurring': 'category-recurring' };
+    return map[categoryName] || 'category-other';
   }
 
   getEventIconUrl(eventName, categoryName) {
     const cdn = 'https://wow.zamimg.com/images/wow/icons/large';
     const name = (eventName || '').toLowerCase();
 
-    // Holidays — using official WoW calendar icons
     if (name.includes('winter veil') || name.includes('feast of winter')) return `${cdn}/calendar_winterveilstart.jpg`;
     if (name.includes('noblegarden')) return `${cdn}/calendar_noblegardenstart.jpg`;
     if (name.includes('hallow')) return `${cdn}/calendar_hallowsendstart.jpg`;
@@ -334,56 +335,27 @@ class EventsPage {
     if (name.includes('darkmoon')) return `${cdn}/inv_darkmoon_eye.jpg`;
     if (name.includes('harvest festival')) return `${cdn}/calendar_harvestfestivalstart.jpg`;
     if (name.includes('fireworks')) return `${cdn}/calendar_fireworksstart.jpg`;
-
-    // Anniversary
     if (/wow'?s?\s+(\d+\w{2}\s+)?anniversary/i.test(eventName)) return `${cdn}/calendar_anniversarystart.jpg`;
-
-    // PvP
     if (name.includes('pvp brawl')) return `${cdn}/ability_pvp_gladiatormedallion.jpg`;
     if (name.includes('battleground bonus')) return `${cdn}/pvpcurrency-honor-horde.jpg`;
     if (name.includes('arena skirmish')) return `${cdn}/achievement_legionpvptier4.jpg`;
-
-    // Bonus events
     if (name.includes('pet battle bonus')) return `${cdn}/tracking_wildpet.jpg`;
     if (name.includes('world quest bonus')) return `${cdn}/inv_misc_coin_02.jpg`;
     if (name.includes('delves bonus')) return `${cdn}/ui_delves.jpg`;
-    if (name.includes('apexis bonus')) return `${cdn}/inv_misc_rune_01.jpg`;
-
-    // Timewalking / Dungeon events — expansion-specific icons
     if (name.includes('burning crusade') && name.includes('timewalking')) return `${cdn}/expansionicon_burningcrusade.jpg`;
     if (name.includes('wrath') && name.includes('timewalking')) return `${cdn}/expansionicon_wrathofthelichking.jpg`;
     if (name.includes('cataclysm') && name.includes('timewalking')) return `${cdn}/expansionicon_cataclysm.jpg`;
     if (name.includes('mists of pandaria') && name.includes('timewalking')) return `${cdn}/expansionicon_mistsofpandaria.jpg`;
     if (name.includes('legion') && name.includes('timewalking')) return `${cdn}/inv_sword_2h_artifactashbringer_d_01.jpg`;
-    // Dungeon events — expansion-specific
     if (name.includes('midnight dungeon')) return `${cdn}/spell_shadow_twilight.jpg`;
     if (name.includes('war within dungeon')) return `${cdn}/achievement_dungeon_theatreofpain.jpg`;
     if (name.includes('dragonflight dungeon')) return `${cdn}/inv_misc_head_dragon_black.jpg`;
-    if (name.includes('shadowlands dungeon')) return `${cdn}/spell_shadow_demonicempathy.jpg`;
-    if (name.includes('battle for azeroth dungeon')) return `${cdn}/achievement_dungeon_freehold.jpg`;
-    if (name.includes('legion dungeon')) return `${cdn}/achievement_dungeon_hallsofvalor.jpg`;
-    if (name.includes('draenor dungeon')) return `${cdn}/achievement_dungeon_auchindoun.jpg`;
-    // Generic timewalking/dungeon fallback
     if (name.includes('timewalking') || name.includes('dungeon event')) return `${cdn}/achievement_dungeon_gundrak_heroic.jpg`;
-
-    // Remix
     if (name.includes('remix')) return `${cdn}/spell_arcane_teleportstormwind.jpg`;
-
-    // Racing cups
     if (name.includes('cup')) return `${cdn}/inv_misc_tournaments_symbol_bloodelf.jpg`;
-
-    // Special events
     if (name.includes('trial of style')) return `${cdn}/achievement_character_bloodelf_female.jpg`;
-    if (name.includes('secrets of azeroth')) return `${cdn}/inv_misc_rune_01.jpg`;
-    if (name.includes('turbulent timeways')) return `${cdn}/spell_mage_altertime.jpg`;
-    if (name.includes('tadpoles') || name.includes('hatching')) return `${cdn}/icon_petfamily_beast.jpg`;
-    if (name.includes('gnomeregan')) return `${cdn}/icon_petfamily_mechanical.jpg`;
-
-    // Category fallbacks
+    if (name.includes('un\'goro')) return `${cdn}/inv_misc_monsterhorn_06.jpg`;
     if (categoryName === 'Holidays') return `${cdn}/calendar_winterveilstart.jpg`;
-    if (categoryName === 'Recurring') return `${cdn}/spell_mage_altertime.jpg`;
-
-    // Default
     return `${cdn}/inv_misc_rune_01.jpg`;
   }
 
@@ -391,134 +363,81 @@ class EventsPage {
     const cdn = 'https://render.worldofwarcraft.com/us/zones';
     const name = (eventName || '').toLowerCase();
 
-    // Timewalking — iconic raid from each expansion
     if (name.includes('burning crusade') && name.includes('timewalking')) return `${cdn}/black-temple-small.jpg`;
     if (name.includes('wrath') && name.includes('timewalking')) return `${cdn}/icecrown-citadel-small.jpg`;
     if (name.includes('cataclysm') && name.includes('timewalking')) return `${cdn}/firelands-small.jpg`;
     if (name.includes('mists of pandaria') && name.includes('timewalking')) return `${cdn}/siege-of-orgrimmar-small.jpg`;
     if (name.includes('legion') && name.includes('timewalking')) return `${cdn}/antorus-the-burning-throne-small.jpg`;
-
-    // Dungeon events
     if (name.includes('midnight dungeon')) return `${cdn}/the-voidspire-small.jpg`;
     if (name.includes('war within dungeon')) return `${cdn}/nerubar-palace-small.jpg`;
-    if (name.includes('dragonflight dungeon')) return `${cdn}/aberrus-the-shadowed-crucible-small.jpg`;
-    if (name.includes('shadowlands dungeon')) return `${cdn}/sanctum-of-domination-small.jpg`;
-    if (name.includes('battle for azeroth dungeon')) return `${cdn}/battle-of-dazaralor-small.jpg`;
-    if (name.includes('legion dungeon')) return `${cdn}/tomb-of-sargeras-small.jpg`;
-    if (name.includes('draenor dungeon')) return `${cdn}/hellfire-citadel-small.jpg`;
     if (name.includes('timewalking') || name.includes('dungeon event')) return `${cdn}/ulduar-small.jpg`;
-
-    // PvP
     if (name.includes('pvp brawl') || name.includes('battleground') || name.includes('arena skirmish')) return 'https://wow.zamimg.com/images/content/short-headers/retail/categories/pvp.jpg';
-
-    // Darkmoon Faire
     if (name.includes('darkmoon')) return 'https://wow.zamimg.com/optimized/guide-header-revamp/uploads/guide/header/692.jpg';
-
-    // Holidays
-    if (name.includes('winter veil') || name.includes('feast of winter')) return `${cdn}/naxxramas-small.jpg`;
+    if (name.includes('winter veil')) return `${cdn}/naxxramas-small.jpg`;
     if (name.includes('hallow')) return `${cdn}/castle-nathria-small.jpg`;
     if (name.includes('brewfest')) return `${cdn}/blackrock-foundry-small.jpg`;
     if (name.includes('noblegarden')) return 'https://wow.zamimg.com/optimized/guide-header-revamp/images/content/tall-headers/retail/categories/world-events-holidays.jpg';
     if (name.includes('midsummer') || name.includes('fire festival')) return `${cdn}/firelands-small.jpg`;
     if (name.includes('lunar festival')) return `${cdn}/mogushan-vaults-small.jpg`;
     if (name.includes('love is in the air')) return `${cdn}/sunwell-plateau-small.jpg`;
-
-    // Bonus events
-    if (name.includes('pet battle')) return 'https://wow.zamimg.com/optimized/guide-header-revamp/images/content/tall-headers/retail/categories/battle-pets.jpg';
-    if (name.includes('world quest')) return `${cdn}/the-battle-for-mount-hyjal-small.jpg`;
     if (name.includes('delves')) return `${cdn}/neltharions-lair-small.jpg`;
-
-    // Anniversary
     if (/wow'?s?\s+(\d+\w{2}\s+)?anniversary/i.test(eventName)) return `${cdn}/molten-core-small.jpg`;
-
-    // Remix
-    if (name.includes('remix')) return `${cdn}/the-eye-small.jpg`;
-
-    // Racing cups
-    if (name.includes('cup')) return `${cdn}/vault-of-the-incarnates-small.jpg`;
-
-    // Special events
-    if (name.includes('tadpoles')) return 'https://wow.zamimg.com/uploads/screenshots/normal/619347-march-of-the-tadpoles.jpg';
     if (name.includes('trial of style')) return `${cdn}/the-ruby-sanctum-small.jpg`;
-    if (name.includes('secrets of azeroth')) return `${cdn}/temple-of-ahnqiraj-small.jpg`;
-
-    // No banner for unmatched events
     return null;
   }
 
   formatCountdown(occurrence, isActive) {
     const now = new Date();
-    const targetDate = isActive ? new Date(occurrence.end) : new Date(occurrence.start);
-    const diff = targetDate - now;
-
-    if (diff <= 0) {
-      return isActive ? 'Ending soon' : 'Starting now';
-    }
+    const target = isActive ? new Date(occurrence.end) : new Date(occurrence.start);
+    const diff = target - now;
+    if (diff <= 0) return isActive ? 'Ending now' : 'Starting now';
 
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
-    const parts = [];
-
-    if (days > 0) {
-      parts.push(`${days}d`);
+    if (isActive) {
+      const end = new Date(occurrence.end);
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      return `Ends ${dayNames[end.getDay()]} ${end.getDate()} ${monthNames[end.getMonth()]}`;
     }
-    if (hours > 0 || days > 0) {
-      parts.push(`${hours}h`);
-    }
-    if (days === 0) {
-      parts.push(`${minutes}m`);
-    }
-
-    const timeString = parts.join(' ');
-    return isActive ? `Ends in ${timeString}` : `Starts in ${timeString}`;
+    if (days > 0) return `${days}d ${hours}h`;
+    if (hours > 0) return `${hours}h ${minutes}m`;
+    return `${minutes}m`;
   }
 
   updateCountdowns() {
-    const countdownElements = document.querySelectorAll('.event-countdown');
-
-    countdownElements.forEach(el => {
+    document.querySelectorAll('.event-active-countdown').forEach(el => {
       const end = el.getAttribute('data-end');
-      const start = el.getAttribute('data-start');
-      const type = el.getAttribute('data-type');
-      const isActive = type === 'current';
+      el.textContent = this.formatCountdown({ start: el.getAttribute('data-start'), end }, true);
+    });
 
-      const occurrence = { start, end };
-      el.textContent = this.formatCountdown(occurrence, isActive);
+    document.querySelectorAll('.event-upcoming-countdown').forEach(el => {
+      const start = el.getAttribute('data-start');
+      el.textContent = this.formatCountdown({ start, end: el.getAttribute('data-end') }, false);
     });
   }
 
   renderError(error) {
     if (!this.container) return;
-
     this.container.innerHTML = `
-      <div class="empty-state error-state">
+      <div class="events-empty">
         <i class="las la-exclamation-triangle"></i>
-        <h3>Error Loading Events</h3>
-        <p>${error.message || 'An error occurred while loading events.'}</p>
-        <button class="btn-primary" onclick="window.location.reload()">Try Again</button>
+        <p>Error loading events</p>
+        <p class="events-empty-sub">${error.message || ''}</p>
       </div>
     `;
   }
 
   destroy() {
-    if (this.updateInterval) {
-      clearInterval(this.updateInterval);
-    }
+    if (this.updateInterval) clearInterval(this.updateInterval);
   }
 }
 
-// Initialize everything when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
   await PageInitializer.init();
-
-  // Initialize events page
   const eventsPage = new EventsPage();
   await eventsPage.init();
-
-  // Clean up on page unload
-  window.addEventListener('beforeunload', () => {
-    eventsPage.destroy();
-  });
+  window.addEventListener('beforeunload', () => eventsPage.destroy());
 });

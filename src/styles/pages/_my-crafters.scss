@@ -42,7 +42,7 @@
 
   .crafter-prof-count {
     font-size: 10px;
-    color: rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.7);
   }
 }
 
@@ -124,12 +124,12 @@
   }
 
   &.maxed .crafter-skill-text {
-    color: rgba(16, 185, 129, 0.7);
+    color: rgba(16, 185, 129, 1);
   }
 
   .crafter-tier-name {
     font-size: 9px;
-    color: rgba(255, 255, 255, 0.25);
+    color: rgba(255, 255, 255, 0.7);
     white-space: nowrap;
     min-width: 100px;
     text-align: right;
@@ -157,7 +157,7 @@
 
   .crafter-skill-text {
     font-size: 10px;
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, 0.7);
     font-variant-numeric: tabular-nums;
     min-width: 50px;
     text-align: right;
