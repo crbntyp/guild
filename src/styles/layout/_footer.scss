@@ -9,9 +9,15 @@
 
   p {
     margin: 0;
+  }
 
-    i {
-      color: var(--color-danger);
+  .footer-link {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: #fff;
     }
   }
 }
