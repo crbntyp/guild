@@ -30,6 +30,39 @@
   }
 }
 
+.vault-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  background: rgba(163, 53, 238, 0.08);
+  border: 1px solid rgba(163, 53, 238, 0.2);
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.6);
+
+  p {
+    margin: 0;
+    flex: 1;
+  }
+
+  .vault-banner-close {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    padding: 4px;
+    font-size: 18px;
+    flex-shrink: 0;
+
+    &:hover {
+      color: #fff;
+    }
+  }
+}
+
 // Vault uses roster-grid member-card layout
 .vault-roster {
   @media (max-width: 650px) {

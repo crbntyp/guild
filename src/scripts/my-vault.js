@@ -226,9 +226,25 @@ document.addEventListener('DOMContentLoaded', async () => {
               'Authorization': `Bearer ${token}`,
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ characters: newSnapshots })
+            body: JSON.stringify({ characters: newSnapshots, reward_count: results.length })
           });
         } catch (e) {}
+
+        // Show first-visit banner if no previous snapshots exist
+        const isFirstVisit = Object.keys(prevSnapshots).length === 0;
+        if (isFirstVisit && !localStorage.getItem('vault_banner_dismissed')) {
+          const banner = document.createElement('div');
+          banner.className = 'vault-banner';
+          banner.innerHTML = `
+            <p>Welcome! Any progress your characters make towards vault rewards from this point on will show up here after each weekly reset. Unfortunately any of your current vault progression completed before logging into this feature won't show up (but will in game)</p>
+            <button class="vault-banner-close" aria-label="Dismiss"><i class="las la-times"></i></button>
+          `;
+          container.querySelector('#vault-content').before(banner);
+          banner.querySelector('.vault-banner-close').addEventListener('click', () => {
+            banner.remove();
+            localStorage.setItem('vault_banner_dismissed', '1');
+          });
+        }
 
         // Render results
         const content = document.getElementById('vault-content');

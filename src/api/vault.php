@@ -26,14 +26,23 @@ if ($method === 'GET') {
     $stmt = $db->prepare("
         SELECT character_name, realm_slug, delve_count, dungeon_count, raid_boss_count
         FROM vault_snapshots
-        WHERE bnet_user_id = :uid AND reset_week = :week
+        WHERE bnet_user_id = :uid AND reset_week = :week AND character_name != '__reward_count'
     ");
     $stmt->execute([':uid' => $userId, ':week' => $resetWeek]);
     $snapshots = $stmt->fetchAll();
 
+    // Get reward count
+    $rcStmt = $db->prepare("
+        SELECT delve_count FROM vault_snapshots
+        WHERE bnet_user_id = :uid AND reset_week = :week AND character_name = '__reward_count'
+    ");
+    $rcStmt->execute([':uid' => $userId, ':week' => $resetWeek]);
+    $rc = $rcStmt->fetch();
+
     echo json_encode([
         'reset_week' => $resetWeek,
-        'snapshots' => $snapshots
+        'snapshots' => $snapshots,
+        'reward_count' => $rc ? (int)$rc['delve_count'] : null
     ]);
 
 } elseif ($method === 'POST') {
@@ -74,6 +83,16 @@ if ($method === 'GET') {
             ':raids' => (int)($char['raid_boss_count'] ?? 0),
             ':week' => $resetWeek
         ]);
+    }
+
+    // Store reward count if provided
+    if (isset($data['reward_count'])) {
+        $rcStmt = $db->prepare("
+            INSERT INTO vault_snapshots (bnet_user_id, character_name, realm_slug, delve_count, dungeon_count, raid_boss_count, reset_week)
+            VALUES (:uid, '__reward_count', '', :count, 0, 0, :week)
+            ON DUPLICATE KEY UPDATE delve_count = VALUES(delve_count)
+        ");
+        $rcStmt->execute([':uid' => $userId, ':count' => (int)$data['reward_count'], ':week' => $resetWeek]);
     }
 
     echo json_encode(['success' => true, 'reset_week' => $resetWeek]);

@@ -137,11 +137,11 @@ class TopBar {
         </a>
         ${isAuthenticated ? `
           <div class="nav-dropdown">
-            <button class="nav-link nav-dropdown-toggle${isAccountPageActive ? ' active' : ''}" aria-label="Your Account menu">
+            <a href="my-account.html" class="nav-link nav-dropdown-toggle${isAccountPageActive || currentPage === 'my-account.html' ? ' active' : ''}" aria-label="Your Account menu">
               <i class="las la-user-circle"></i>
               <span>My Account</span>
               <i class="las la-angle-down dropdown-arrow"></i>
-            </button>
+            </a>
             <div class="nav-dropdown-menu">
               <a href="my-characters.html" class="nav-dropdown-item${getActiveClass('my-characters.html')}">
                 <i class="las la-user"></i>
@@ -189,12 +189,15 @@ class TopBar {
       </nav>
       <nav class="mobile-nav">
         <a href="index.html" class="mobile-nav-link${getActiveClass('index.html')}">
-          <i class="las la-search"></i>
-          <span>Guild Finder</span>
+          <i class="las la-shield-alt"></i>
+          <span>Home</span>
         </a>
         ${isAuthenticated ? `
           <div class="mobile-nav-group">
-            <div class="mobile-nav-group-header">Your Account</div>
+            <a href="my-account.html" class="mobile-nav-group-header mobile-nav-link${getActiveClass('my-account.html')}">
+              <i class="las la-user-circle"></i>
+              <span>My Account</span>
+            </a>
             <a href="my-characters.html" class="mobile-nav-link mobile-nav-link-indent${getActiveClass('my-characters.html')}">
               <i class="las la-user"></i>
               <span>My Characters</span>
