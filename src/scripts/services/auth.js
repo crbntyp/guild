@@ -1,9 +1,9 @@
 import config from '../config.js';
 
-// OAuth Proxy Server URL - automatically detects environment
-const API_PROXY_URL = window.location.hostname === 'localhost'
-  ? 'http://localhost:3001'
-  : 'https://guild-production.up.railway.app';
+// OAuth Proxy URL - PHP on VPS
+const API_PROXY_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? 'https://crbntyp.com/gld/api'
+  : '/gld/api';
 
 /**
  * Battle.net OAuth Authentication Service
@@ -74,7 +74,7 @@ class AuthService {
    */
   async exchangeCodeForToken(code) {
     try {
-      const proxyUrl = `${API_PROXY_URL}/api/auth/token`;
+      const proxyUrl = `${API_PROXY_URL}/auth-token.php`;
 
       const response = await fetch(proxyUrl, {
         method: 'POST',

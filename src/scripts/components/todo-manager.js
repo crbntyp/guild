@@ -7,16 +7,18 @@ import PageHeader from './page-header.js';
  */
 class TodoManager extends ItemManager {
   constructor(containerId, authService) {
+    const apiBase = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+      ? 'https://crbntyp.com/gld/api' : '/gld/api';
     super({
       containerId,
       authService,
       storagePrefix: 'guild_todos',
-      apiEndpoint: '/api/user/todos',
-      baseApiUrl: 'https://guild-production.up.railway.app'
+      apiEndpoint: '/todos.php',
+      baseApiUrl: apiBase
     });
 
     // Todo-specific properties
-    this.apiUrl = 'https://guild-production.up.railway.app/api/fetch-metadata';
+    this.apiUrl = `${apiBase}/metadata.php`;
     this.masonry = null;
 
     // Initialize FormModal
@@ -95,28 +97,50 @@ class TodoManager extends ItemManager {
   }
 
   /**
-   * Add a new todo (override parent to include todo-specific fields)
+   * Add a new todo — POST to PHP API
    */
   async addTodo(todoData) {
-    await this.addItem({
-      title: todoData.title,
-      description: todoData.description,
-      url: todoData.url,
-      image: todoData.image || null
-    });
+    try {
+      const token = this.authService?.getAccessToken();
+      if (token) {
+        const res = await fetch(`${this.baseApiUrl}${this.apiEndpoint}`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'add', ...todoData })
+        });
+        const result = await res.json();
+        if (result.id) {
+          this.items.unshift({ id: result.id, ...todoData, createdAt: new Date().toISOString() });
+        }
+      } else {
+        await this.addItem(todoData);
+      }
+    } catch (e) {
+      await this.addItem(todoData);
+    }
     this.renderGrid();
   }
 
   /**
-   * Update an existing todo (override parent to include todo-specific fields)
+   * Update an existing todo — POST to PHP API
    */
   async updateTodo(id, todoData) {
-    await this.updateItem(id, {
-      title: todoData.title,
-      description: todoData.description,
-      url: todoData.url,
-      image: todoData.image || this.getItemById(id)?.image
-    });
+    try {
+      const token = this.authService?.getAccessToken();
+      if (token) {
+        await fetch(`${this.baseApiUrl}${this.apiEndpoint}`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'update', id, ...todoData })
+        });
+        const index = this.items.findIndex(i => i.id === id);
+        if (index !== -1) this.items[index] = { ...this.items[index], ...todoData };
+      } else {
+        await this.updateItem(id, todoData);
+      }
+    } catch (e) {
+      await this.updateItem(id, todoData);
+    }
     this.renderGrid();
   }
 
@@ -132,10 +156,24 @@ class TodoManager extends ItemManager {
   }
 
   /**
-   * Delete a todo (override parent to trigger re-render)
+   * Delete a todo — POST to PHP API
    */
   async deleteTodo(id) {
-    await this.deleteItem(id);
+    try {
+      const token = this.authService?.getAccessToken();
+      if (token) {
+        await fetch(`${this.baseApiUrl}${this.apiEndpoint}`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'delete', id })
+        });
+        this.items = this.items.filter(i => i.id !== id);
+      } else {
+        await this.deleteItem(id);
+      }
+    } catch (e) {
+      await this.deleteItem(id);
+    }
     this.renderGrid();
   }
 

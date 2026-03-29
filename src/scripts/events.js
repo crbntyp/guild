@@ -4,6 +4,13 @@ import PageHeader from './components/page-header.js';
 
 console.log('⚡ Events page initialized');
 
+// EU events start ~23 hours after Wowhead's US-based times
+const EU_OFFSET_MS = 23 * 60 * 60 * 1000;
+
+function euDate(dateStr) {
+  return new Date(new Date(dateStr).getTime() + EU_OFFSET_MS);
+}
+
 class EventsPage {
   constructor() {
     this.container = document.getElementById('events-container');
@@ -62,17 +69,21 @@ class EventsPage {
 
     deduped.forEach(event => {
       // Find next relevant occurrence
-      const futureOcc = event.occurrences.find(occ => new Date(occ.end) > now);
+      const futureOcc = event.occurrences.find(occ => euDate(occ.end) > now);
       if (!futureOcc) return;
 
-      const start = new Date(futureOcc.start);
-      const end = new Date(futureOcc.end);
+      const start = euDate(futureOcc.start);
+      const end = euDate(futureOcc.end);
+
+      // Store EU-adjusted times
+      const euOcc = { start: start.toISOString(), end: end.toISOString() };
 
       // Find the NEXT occurrence after this one (for "Returns" display)
       const currentOccIndex = event.occurrences.indexOf(futureOcc);
-      const nextOcc = event.occurrences[currentOccIndex + 1] || null;
+      const rawNextOcc = event.occurrences[currentOccIndex + 1] || null;
+      const nextOcc = rawNextOcc ? { start: euDate(rawNextOcc.start).toISOString(), end: euDate(rawNextOcc.end).toISOString() } : null;
 
-      const enriched = { ...event, activeOccurrence: futureOcc, nextOccurrence: nextOcc };
+      const enriched = { ...event, activeOccurrence: euOcc, nextOccurrence: nextOcc };
 
       if (start <= now && end > now) {
         this.currentEvents.push(enriched);

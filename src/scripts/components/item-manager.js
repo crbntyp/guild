@@ -10,7 +10,7 @@ class ItemManager {
     this.authService = config.authService;
     this.storagePrefix = config.storagePrefix; // e.g., 'guild_todos' or 'guild_youtube_channels'
     this.apiEndpoint = config.apiEndpoint; // e.g., '/api/user/todos' or '/api/user/youtube'
-    this.baseApiUrl = config.baseApiUrl || 'https://guild-production.up.railway.app';
+    this.baseApiUrl = config.baseApiUrl || ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'https://crbntyp.com/gld/api' : '/gld/api');
     this.storageKey = this.getStorageKey();
     this.editingItemId = null;
   }
@@ -58,28 +58,10 @@ class ItemManager {
       if (this.authService?.isAuthenticated()) {
         const backendData = await this.loadFromBackend();
 
-        // Only use backend data if it's not null AND (has data OR localStorage is empty)
+        // Backend is the source of truth — use it and clear old localStorage
         if (backendData !== null) {
-          const stored = localStorage.getItem(this.storageKey);
-          const localData = stored ? JSON.parse(stored) : [];
-
-          // If backend has data, use it
-          if (backendData.length > 0) {
-            this.items = backendData;
-            localStorage.setItem(this.storageKey, JSON.stringify(this.items));
-            return;
-          }
-
-          // If backend is empty but localStorage has data, keep localStorage and sync to backend
-          if (backendData.length === 0 && localData.length > 0) {
-            this.items = localData;
-            // Sync localStorage to backend
-            this.saveToBackend();
-            return;
-          }
-
-          // Both empty, use backend empty array
           this.items = backendData;
+          localStorage.removeItem(this.storageKey);
           return;
         }
       }

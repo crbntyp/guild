@@ -8,16 +8,18 @@ import videoModal from './video-modal.js';
  */
 class YouTubeManager extends ItemManager {
   constructor(containerId, authService) {
+    const apiBase = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+      ? 'https://crbntyp.com/gld/api' : '/gld/api';
     super({
       containerId,
       authService,
       storagePrefix: 'guild_youtube_channels',
-      apiEndpoint: '/api/user/youtube',
-      baseApiUrl: 'https://guild-production.up.railway.app'
+      apiEndpoint: '/youtube.php',
+      baseApiUrl: apiBase
     });
 
     // YouTube-specific properties
-    this.apiUrl = 'https://guild-production.up.railway.app/api/fetch-youtube';
+    this.apiUrl = `${apiBase}/youtube-fetch.php`;
 
     // Initialize FormModal
     this.formModal = new FormModal({
@@ -86,19 +88,30 @@ class YouTubeManager extends ItemManager {
   }
 
   /**
-   * Add a new channel (override parent to include channel-specific fields)
+   * Add a new channel — POST to PHP API
    */
   async addChannel(channelData) {
-    const channel = await this.addItem({
-      name: channelData.name,
-      url: channelData.url,
-      tags: channelData.tags,
-      videos: []
-    });
+    let channel;
+    try {
+      const token = this.authService?.getAccessToken();
+      if (token) {
+        const res = await fetch(`${this.baseApiUrl}${this.apiEndpoint}`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'add', ...channelData })
+        });
+        const result = await res.json();
+        if (result.error) { console.error(result.error); return; }
+        channel = { id: result.id, ...channelData, videos: [], createdAt: new Date().toISOString() };
+        this.items.unshift(channel);
+      } else {
+        channel = await this.addItem({ ...channelData, videos: [] });
+      }
+    } catch (e) {
+      channel = await this.addItem({ ...channelData, videos: [] });
+    }
 
-    // Fetch videos for this channel
-    await this.fetchChannelVideos(channel.id);
-
+    if (channel) await this.fetchChannelVideos(channel.id);
     this.renderChannels();
   }
 
@@ -128,10 +141,23 @@ class YouTubeManager extends ItemManager {
       const videos = await response.json();
 
       // Add videos to channel with timestamp
-      channel.videos = videos.map(video => ({
+      const enrichedVideos = videos.map(video => ({
         ...video,
         addedAt: new Date().toISOString()
       }));
+      channel.videos = enrichedVideos;
+
+      // Save videos to DB
+      try {
+        const token = this.authService?.getAccessToken();
+        if (token) {
+          await fetch(`${this.baseApiUrl}${this.apiEndpoint}`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'save_videos', channel_id: channel.id, videos: enrichedVideos })
+          });
+        }
+      } catch (e) {}
 
       await this.saveItems();
       this.renderChannels();
@@ -141,27 +167,32 @@ class YouTubeManager extends ItemManager {
   }
 
   /**
-   * Update an existing channel (override parent to include channel-specific fields)
+   * Update an existing channel — POST to PHP API
    */
   async updateChannel(id, channelData) {
     const oldChannel = this.getItemById(id);
     if (!oldChannel) return;
-
     const oldTags = oldChannel.tags;
 
-    await this.updateItem(id, {
-      name: channelData.name,
-      url: channelData.url,
-      tags: channelData.tags
-    });
-
-    // Render immediately to show updated channel info
-    this.renderChannels();
-
-    // Re-fetch videos in background if tags changed
-    if (oldTags !== channelData.tags) {
-      await this.fetchChannelVideos(id);
+    try {
+      const token = this.authService?.getAccessToken();
+      if (token) {
+        await fetch(`${this.baseApiUrl}${this.apiEndpoint}`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'update', id, ...channelData })
+        });
+        const index = this.items.findIndex(i => i.id === id);
+        if (index !== -1) this.items[index] = { ...this.items[index], ...channelData };
+      } else {
+        await this.updateItem(id, channelData);
+      }
+    } catch (e) {
+      await this.updateItem(id, channelData);
     }
+
+    this.renderChannels();
+    if (oldTags !== channelData.tags) await this.fetchChannelVideos(id);
   }
 
   /**
@@ -176,10 +207,24 @@ class YouTubeManager extends ItemManager {
   }
 
   /**
-   * Delete a channel (override parent to trigger re-render)
+   * Delete a channel — POST to PHP API
    */
   async deleteChannel(id) {
-    await this.deleteItem(id);
+    try {
+      const token = this.authService?.getAccessToken();
+      if (token) {
+        await fetch(`${this.baseApiUrl}${this.apiEndpoint}`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'delete', id })
+        });
+        this.items = this.items.filter(i => i.id !== id);
+      } else {
+        await this.deleteItem(id);
+      }
+    } catch (e) {
+      await this.deleteItem(id);
+    }
     this.renderChannels();
   }
 
