@@ -16,6 +16,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       <div class="changelog-entry">
         <div class="changelog-date">March 2026</div>
+        <h3 class="changelog-title">My Account Hub</h3>
+        <p>A new landing page for all your account features. See your characters, crafters, vault, mounts, todos, and YouTube in one place — with live stats like character count and vault rewards. The navigation dropdown now opens on hover for quicker access.</p>
+        <div class="changelog-tags">
+          <span class="changelog-tag">New Feature</span>
+        </div>
+      </div>
+
+      <div class="changelog-entry">
+        <div class="changelog-date">March 2026</div>
         <h3 class="changelog-title">Railway Removed — Full VPS Migration</h3>
         <p>Moved all backend services to a single server. Authentication, data storage, and API proxies now run on one machine. Removed an external dependency and simplified the entire stack.</p>
         <div class="changelog-tags">

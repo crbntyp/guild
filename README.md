@@ -105,6 +105,12 @@ A modern World of Warcraft companion application featuring guild roster manageme
 - Only displays mounts you own (matched against database of 1,481 cataloged mounts)
 - Static database generation (no repeated API calls)
 
+### 👤 My Account Hub (Auth Required)
+- Central landing page for all account features
+- Feature cards with icons, descriptions, and live stats
+- Character count and vault reward count pulled from the database
+- Quick navigation to all sub-features
+
 ### 🔨 Crafters (Auth Required)
 - Cross-character profession overview across all your alts
 - Expansion tier breakdown with skill progress bars
@@ -269,6 +275,8 @@ src/
 │   ├── my-crafters.js               # Crafters page
 │   ├── my-vault.js                  # Weekly vault page
 │   ├── raids.js                     # Raid signups page
+│   ├── my-account.js                # Account hub page
+│   ├── changelog.js                 # Changelog page
 │   └── config.js                    # App configuration
 ├── styles/
 │   ├── _mixins.scss                 # Shared mixins
@@ -289,6 +297,8 @@ src/
 ├── my-crafters.html                 # Crafters
 ├── my-vault.html                    # Weekly vault
 ├── raids.html                       # Raid signups
+├── my-account.html                  # Account hub
+├── changelog.html                   # Changelog
 └── mythic-plus.html                 # Mythic+ leaderboards
 
 src/api/
@@ -297,6 +307,11 @@ src/api/
 ├── raid.php                         # Single raid with signups
 ├── signup.php                       # Signup/update/withdraw
 ├── vault.php                        # Vault snapshot get/save
+├── auth-token.php                   # OAuth token exchange
+├── todos.php                        # Todos CRUD
+├── youtube.php                      # YouTube channels CRUD
+├── youtube-fetch.php                # YouTube API proxy
+├── metadata.php                     # Open Graph metadata proxy
 └── setup.sql                        # Database schema
 
 discord-bot/
@@ -456,6 +471,33 @@ WoW class colors are centralized in `src/scripts/utils/wow-constants.js` using o
 - ~18-20% CSS size reduction
 
 ## 📋 Changelog
+
+### 2026-03-29 — Account Hub, Events Redesign & Infrastructure
+
+- **My Account Hub** 👤
+  - Landing page for all account features with live stats
+  - Character count and vault reward count displayed on cards
+  - Navigation dropdown opens on hover for faster access
+  - Mobile menu updated with clickable My Account link
+
+- **Events Page Redesign** 📅
+  - Active events as cards with progress bars showing duration
+  - Upcoming events in compact timeline rows with date, icon, countdown
+  - "Popular Events Coming Later This Year" ranked by community interest
+  - End dates instead of countdowns (avoids US/EU timing issues)
+  - EU server time offset (+23h from Wowhead data)
+  - Low-popularity events filtered out, deduplicated by name
+
+- **Full VPS Migration** 🔧
+  - Todos and YouTube moved from Railway to PHP/MySQL on VPS
+  - OAuth token exchange now handled by PHP (auth-token.php)
+  - Metadata proxy and YouTube fetch proxy on VPS
+  - Railway dependency fully removed
+  - Todos: 90-day auto-cleanup, YouTube: 20-channel limit, 30-day video cleanup
+
+- **Changelog Page** 📝
+  - Full feature history from v1.0 to present
+  - Linked from footer on every page
 
 ### 2026-03-28 — Crafters & Weekly Vault
 
