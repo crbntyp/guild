@@ -26,7 +26,7 @@ class Footer {
       </section>
 
       <footer class="footer">
-        <p>Powered by Battle.net API | Made with <i class="las la-heart"></i></p>
+        <p>Powered by Battle.net API | Engineered & Designed by <a href="https://crbntyp.com" target="_blank" rel="noopener" class="footer-link">crbntyp.com</a> | <a href="changelog.html" class="footer-link">Changelog</a></p>
       </footer>
     `;
   }
