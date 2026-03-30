@@ -94,6 +94,9 @@ const CACHE_DIR = path.join(__dirname, '..', 'data', '.transmog-cache');
 if (!fs.existsSync(CACHE_DIR)) fs.mkdirSync(CACHE_DIR, { recursive: true });
 
 function saveCache(step, data) {
+  // Don't cache empty results (rate limited responses)
+  const isEmpty = Array.isArray(data) ? data.length === 0 : Object.keys(data).length === 0;
+  if (isEmpty) { console.log(`  [skip caching ${step} — empty result]`); return; }
   fs.writeFileSync(path.join(CACHE_DIR, `${step}.json`), JSON.stringify(data));
   console.log(`  [cached ${step}]`);
 }
