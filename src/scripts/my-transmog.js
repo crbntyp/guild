@@ -1,0 +1,373 @@
+import PageInitializer from './utils/page-initializer.js';
+import authService from './services/auth.js';
+import accountService from './services/account-service.js';
+import battlenetClient from './api/battlenet-client.js';
+import config from './config.js';
+import PageHeader from './components/page-header.js';
+import CustomDropdown from './components/custom-dropdown.js';
+import { getClassIconUrl } from './utils/wow-icons.js';
+import { getClassColor } from './utils/wow-constants.js';
+
+const EXPANSIONS = ['All Expansions', 'Midnight', 'The War Within', 'Dragonflight', 'Shadowlands', 'Battle for Azeroth', 'Legion', 'Warlords of Draenor', 'Mists of Pandaria', 'Cataclysm', 'Wrath of the Lich King', 'The Burning Crusade', 'Classic'];
+
+const CLASSES = [
+  { id: 1, name: 'Warrior' },
+  { id: 2, name: 'Paladin' },
+  { id: 3, name: 'Hunter' },
+  { id: 4, name: 'Rogue' },
+  { id: 5, name: 'Priest' },
+  { id: 6, name: 'Death Knight' },
+  { id: 7, name: 'Shaman' },
+  { id: 8, name: 'Mage' },
+  { id: 9, name: 'Warlock' },
+  { id: 10, name: 'Monk' },
+  { id: 11, name: 'Druid' },
+  { id: 12, name: 'Demon Hunter' },
+  { id: 13, name: 'Evoker' },
+];
+
+const CLASS_IDS = {};
+CLASSES.forEach(c => { CLASS_IDS[c.name] = c.id; });
+
+document.addEventListener('DOMContentLoaded', async () => {
+  await PageInitializer.init({
+    requireAuth: false,
+    onInit: async () => {
+      const container = document.getElementById('transmog-container');
+
+      if (!authService.isAuthenticated()) {
+        container.innerHTML = `
+          <div class="auth-required-view">
+            <h2>Authentication Required</h2>
+            <p>Log in with your Battle.net account to track your transmog collection.</p>
+            <button class="btn-login-auth" id="btn-login-tmog">
+              <i class="las la-user"></i>
+              Login with Battle.net
+            </button>
+          </div>
+        `;
+        document.getElementById('btn-login-tmog')?.addEventListener('click', () => authService.login());
+        return;
+      }
+
+      container.innerHTML = `
+        ${PageHeader.render({
+          className: 'transmog',
+          title: 'Transmog Sets',
+          description: 'Track your class tier sets. See what you own, what you\'re missing, and where to farm it.'
+        })}
+        <div id="transmog-content">
+          <div class="loading-spinner">
+            <i class="las la-circle-notch la-spin la-4x"></i>
+            <p>Loading transmog collection...</p>
+          </div>
+        </div>
+      `;
+
+      try {
+        const [setsResponse, characters] = await Promise.all([
+          fetch('data/transmog-sets.json').then(r => r.json()),
+          accountService.getAccountCharacters()
+        ]);
+
+        const PVP_FILTER = ['gladiator', 'combatant', 'aspirant', 'warmonger'];
+        const allSets = (setsResponse.sets || []).filter(s => {
+          const l = s.name.toLowerCase();
+          return !PVP_FILTER.some(k => l.includes(k));
+        });
+
+        // Fetch transmog collection (account-wide)
+        const mainChar = characters.sort((a, b) => b.level - a.level)[0];
+        if (!mainChar) throw new Error('No characters found');
+
+        const realmSlug = mainChar.realm?.slug || '';
+        const charName = mainChar.name.toLowerCase();
+
+        const collectionData = await battlenetClient.request(
+          `/profile/wow/character/${realmSlug}/${encodeURIComponent(charName)}/collections/transmogs`,
+          { params: { namespace: config.api.namespace.profile } }
+        );
+
+        const collectedAppearances = new Set();
+        if (collectionData?.slots) {
+          collectionData.slots.forEach(slot => {
+            (slot.appearances || []).forEach(app => {
+              collectedAppearances.add(app.id);
+            });
+          });
+        }
+
+        // Deduplicate pieces per slot, enrich, and group by set name
+        // API order varies by variant count
+        // Reorder tabs to show lowest difficulty first
+        const API_DIFF_MAP = {
+          2: ['Normal', 'Heroic'],
+          3: ['Normal', 'Heroic', 'LFR'],
+          4: ['Normal', 'Heroic', 'Mythic', 'LFR']
+        };
+        const DISPLAY_ORDER_MAP = {
+          2: ['Normal', 'Heroic'],
+          3: ['LFR', 'Normal', 'Heroic'],
+          4: ['LFR', 'Normal', 'Heroic', 'Mythic']
+        };
+        const nameCounts = {};
+        allSets.forEach(s => { nameCounts[s.name] = (nameCounts[s.name] || 0) + 1; });
+
+        const nameIndex = {};
+        const enrichedSets = [];
+        const groupedByName = {};
+
+        allSets.forEach(set => {
+          // Deduplicate pieces per slot
+          const seen = new Set();
+          const pieces = set.pieces.filter(p => {
+            if (seen.has(p.slotType)) return false;
+            seen.add(p.slotType);
+            return true;
+          });
+
+          const collected = pieces.filter(p => collectedAppearances.has(p.appearanceId));
+          const missing = pieces.filter(p => !collectedAppearances.has(p.appearanceId));
+          const complete = missing.length === 0;
+          const progress = pieces.length > 0 ? Math.round((collected.length / pieces.length) * 100) : 0;
+
+          // Assign difficulty label
+          let difficulty = null;
+          if (nameCounts[set.name] > 1) {
+            nameIndex[set.name] = (nameIndex[set.name] || 0) + 1;
+            const count = nameCounts[set.name];
+            const diffMap = API_DIFF_MAP[count] || [];
+            difficulty = diffMap[nameIndex[set.name] - 1] || `Variant ${nameIndex[set.name]}`;
+          }
+
+          const enriched = { ...set, pieces, collected, missing, complete, progress, difficulty };
+
+          // Group by base name + classes + expansion for tab cards
+          const groupKey = `${set.name}|${(set.classes || []).join(',')}|${set.expansion}`;
+          if (!groupedByName[groupKey]) {
+            groupedByName[groupKey] = {
+              name: set.name,
+              classes: set.classes,
+              expansion: set.expansion,
+              armorType: set.armorType,
+              variants: []
+            };
+          }
+          groupedByName[groupKey].variants.push(enriched);
+        });
+
+        // Convert groups to array and sort variants by display order (LFR first)
+        const setGroups = Object.values(groupedByName);
+        setGroups.forEach(g => {
+          const displayOrder = DISPLAY_ORDER_MAP[g.variants.length] || [];
+          g.variants.sort((a, b) => {
+            const ai = displayOrder.indexOf(a.difficulty);
+            const bi = displayOrder.indexOf(b.difficulty);
+            return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+          });
+        });
+
+        // Determine which classes the user has characters for
+        const userClassIds = new Set();
+        characters.forEach(c => {
+          if (c.playable_class?.id) userClassIds.add(c.playable_class.id);
+        });
+
+        // State — default to user's first class, or Warrior
+        let activeClass = 'All Classes';
+        let activeExpansion = 'All Expansions';
+        let showCompletedOnly = false;
+
+        const content = document.getElementById('transmog-content');
+
+        function renderTransmog() {
+          let filtered = activeClass === 'All Classes'
+            ? setGroups
+            : setGroups.filter(g => g.classes && g.classes.includes(activeClass));
+          if (activeExpansion !== 'All Expansions') {
+            filtered = filtered.filter(g => g.expansion === activeExpansion);
+          }
+          if (showCompletedOnly) {
+            filtered = filtered.filter(g => g.variants.some(v => v.complete));
+          }
+
+          // Sort by expansion first, then by progress
+          const EXP_ORDER = ['Midnight', 'The War Within', 'Dragonflight', 'Shadowlands', 'Battle for Azeroth', 'Legion', 'Warlords of Draenor', 'Mists of Pandaria', 'Cataclysm', 'Wrath of the Lich King', 'The Burning Crusade', 'Classic', 'Unknown'];
+          filtered.sort((a, b) => {
+            const ea = EXP_ORDER.indexOf(a.expansion);
+            const eb = EXP_ORDER.indexOf(b.expansion);
+            if (ea !== eb) return ea - eb;
+            const aAllComplete = a.variants.every(v => v.complete);
+            const bAllComplete = b.variants.every(v => v.complete);
+            if (aAllComplete !== bAllComplete) return aAllComplete ? 1 : -1;
+            const aBest = Math.max(...a.variants.map(v => v.progress));
+            const bBest = Math.max(...b.variants.map(v => v.progress));
+            return bBest - aBest;
+          });
+
+          const totalSets = filtered.length;
+          const completeSets = filtered.filter(g => g.variants.every(v => v.complete)).length;
+
+          content.innerHTML = `
+            <div class="tmog-layout">
+              <div class="tmog-sidebar">
+                <div class="tmog-sidebar-inner">
+                  <div class="tmog-sidebar-section">
+                    <div class="tmog-sidebar-label">Class</div>
+                    <div id="tmog-class-dropdown"></div>
+                  </div>
+                  <div class="tmog-sidebar-section">
+                    <div class="tmog-sidebar-label">Expansion</div>
+                    <div id="tmog-expansion-dropdown"></div>
+                  </div>
+                  <div class="tmog-sidebar-section">
+                    <label class="tmog-toggle">
+                      <input type="checkbox" id="tmog-show-complete" ${showCompletedOnly ? 'checked' : ''} />
+                      <span>Completed only</span>
+                    </label>
+                  </div>
+                  <div class="tmog-stats">${completeSets}/${totalSets} complete</div>
+                </div>
+              </div>
+
+              <div class="tmog-main">
+                <div class="tmog-grid">
+                  ${filtered.length === 0 ? `
+                    <div class="tmog-empty">No incomplete sets found for ${activeClass}</div>
+                  ` : filtered.map((group, gi) => {
+                    const firstVariant = group.variants[0];
+                    const hasTabs = group.variants.length > 1;
+                    const setIcon = firstVariant.pieces[0]?.icon || '';
+
+                    return `
+                      <div class="tmog-card" data-group="${gi}">
+                        <div class="tmog-card-header">
+                          <div class="tmog-card-meta-row">
+                            ${setIcon ? `<img src="${setIcon}" class="tmog-set-icon" />` : ''}
+                            ${(activeClass === 'All Classes' ? group.classes : [activeClass]).map(cn => {
+                              const cid = CLASS_IDS[cn] || 0;
+                              const cc = getClassColor(cid);
+                              return `<span class="tmog-class-pill" style="color: ${cc}; background: ${cc}20; border-color: ${cc}40">${cn}</span>`;
+                            }).join('')}
+                            <span class="tmog-expansion-tag">${group.expansion}</span>
+                          </div>
+                          <h3 class="tmog-set-name">${group.name}</h3>
+                          ${hasTabs ? `
+                            <div class="tmog-diff-tabs">
+                              ${group.variants.map((v, vi) => `
+                                <button class="tmog-diff-tab${vi === 0 ? ' active' : ''}${v.complete ? ' tab-complete' : ''}" data-group="${gi}" data-variant="${vi}">
+                                  ${v.difficulty || 'Default'}
+                                  <span class="tmog-tab-progress">${v.collected.length}/${v.pieces.length}</span>
+                                </button>
+                              `).join('')}
+                            </div>
+                          ` : `
+                            <div class="tmog-progress-info">
+                              <span class="tmog-progress-text">${firstVariant.collected.length}/${firstVariant.pieces.length}</span>
+                            </div>
+                          `}
+                          <div class="tmog-progress-bar">
+                            <div class="tmog-progress-fill${firstVariant.complete ? ' complete' : ''}" style="width: ${firstVariant.progress}%" data-group-bar="${gi}"></div>
+                          </div>
+                        </div>
+                        ${group.variants.map((variant, vi) => `
+                          <div class="tmog-pieces${vi === 0 ? ' active' : ''}" data-group-pieces="${gi}" data-variant="${vi}">
+                            ${variant.pieces.map(piece => {
+                              const owned = collectedAppearances.has(piece.appearanceId);
+                              return `
+                                <div class="tmog-piece ${owned ? 'owned' : 'missing'}">
+                                  ${piece.icon ? `<img src="${piece.icon}" class="tmog-piece-icon" />` : `<span class="tmog-piece-icon-placeholder"></span>`}
+                                  <span class="tmog-piece-slot">${piece.slot}</span>
+                                  <a href="https://www.wowhead.com/item=${piece.itemId}" target="_blank" rel="noopener" class="tmog-piece-name">${piece.itemName}</a>
+                                  ${owned ? '<i class="las la-check tmog-piece-check"></i>' : piece.source ? `<span class="tmog-piece-source">${piece.source.boss} — ${piece.source.instance}</span>` : '<i class="las la-search tmog-piece-find"></i>'}
+                                </div>
+                              `;
+                            }).join('')}
+                          </div>
+                        `).join('')}
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+            </div>
+          `;
+
+          // Init dropdowns
+          const classDropdown = new CustomDropdown({
+            id: 'tmog-class-dd',
+            label: 'Class',
+            options: [
+              { value: 'All Classes', label: 'All Classes' },
+              ...CLASSES.map(c => ({
+                value: c.name,
+                label: userClassIds.has(c.id) ? c.name : `${c.name} ✗`,
+                icon: getClassIconUrl(c.id),
+                disabled: !userClassIds.has(c.id)
+              }))
+            ],
+            selectedValue: activeClass,
+            onChange: (val) => { activeClass = val; renderTransmog(); }
+          });
+
+          const expDropdown = new CustomDropdown({
+            id: 'tmog-exp-dd',
+            label: 'Expansion',
+            options: EXPANSIONS.filter(exp => {
+              if (exp === 'All Expansions') return true;
+              if (activeClass === 'All Classes') return setGroups.some(g => g.expansion === exp);
+              return setGroups.some(g => g.expansion === exp && g.classes?.includes(activeClass));
+            }).map(exp => ({ value: exp, label: exp })),
+            selectedValue: activeExpansion,
+            onChange: (val) => { activeExpansion = val; renderTransmog(); }
+          });
+
+          classDropdown.attachToElement(document.getElementById('tmog-class-dropdown'));
+          expDropdown.attachToElement(document.getElementById('tmog-expansion-dropdown'));
+
+          // Difficulty tab handlers
+          content.querySelectorAll('.tmog-diff-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+              const gi = tab.dataset.group;
+              const vi = tab.dataset.variant;
+
+              // Toggle active tab
+              content.querySelectorAll(`.tmog-diff-tab[data-group="${gi}"]`).forEach(t => t.classList.remove('active'));
+              tab.classList.add('active');
+
+              // Toggle active pieces
+              content.querySelectorAll(`.tmog-pieces[data-group-pieces="${gi}"]`).forEach(p => p.classList.remove('active'));
+              content.querySelector(`.tmog-pieces[data-group-pieces="${gi}"][data-variant="${vi}"]`)?.classList.add('active');
+
+              // Update progress bar
+              const variant = filtered[gi]?.variants[vi];
+              if (variant) {
+                const bar = content.querySelector(`[data-group-bar="${gi}"]`);
+                if (bar) {
+                  bar.style.width = variant.progress + '%';
+                  bar.classList.toggle('complete', variant.complete);
+                }
+              }
+            });
+          });
+
+          document.getElementById('tmog-show-complete')?.addEventListener('change', (e) => {
+            showCompletedOnly = e.target.checked;
+            renderTransmog();
+          });
+        }
+
+        renderTransmog();
+
+      } catch (error) {
+        console.error('Error loading transmog data:', error);
+        document.getElementById('transmog-content').innerHTML = `
+          <div class="tmog-empty">
+            <p>Failed to load transmog data</p>
+            <p style="font-size:12px;color:rgba(255,255,255,0.3)">${error.message || ''}</p>
+          </div>
+        `;
+      }
+    }
+  });
+});

@@ -120,7 +120,7 @@ class TopBar {
     };
 
     // Check if any account page is active for dropdown active state
-    const isAccountPageActive = ['my-characters.html', 'my-todos.html', 'my-youtube.html', 'my-mounts.html', 'my-crafters.html', 'my-vault.html'].includes(currentPage);
+    const isAccountPageActive = ['my-characters.html', 'my-todos.html', 'my-youtube.html', 'my-mounts.html', 'my-crafters.html', 'my-vault.html', 'my-transmog.html'].includes(currentPage);
 
     this.leftContainer.innerHTML = `
       <a href="index.html" class="top-bar-logo">
@@ -166,6 +166,10 @@ class TopBar {
               <a href="my-vault.html" class="nav-dropdown-item${getActiveClass('my-vault.html')}">
                 <i class="las la-gift"></i>
                 <span>Weekly Vault</span>
+              </a>
+              <a href="my-transmog.html" class="nav-dropdown-item${getActiveClass('my-transmog.html')}">
+                <i class="las la-tshirt"></i>
+                <span>Transmog Sets</span>
               </a>
             </div>
           </div>
@@ -221,6 +225,10 @@ class TopBar {
             <a href="my-vault.html" class="mobile-nav-link mobile-nav-link-indent${getActiveClass('my-vault.html')}">
               <i class="las la-gift"></i>
               <span>Weekly Vault</span>
+            </a>
+            <a href="my-transmog.html" class="mobile-nav-link mobile-nav-link-indent${getActiveClass('my-transmog.html')}">
+              <i class="las la-tshirt"></i>
+              <span>Transmog Sets</span>
             </a>
           </div>
         ` : ''}

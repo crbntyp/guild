@@ -1,11 +1,12 @@
 /**
- * Generate Transmog Set Data
+ * Generate Transmog Set Data — Hybrid Approach
  *
- * Fetches all transmog appearance sets from the Blizzard API,
- * resolves each set's appearances (slot, item name, icon),
- * and builds a static JSON database for the transmog collection tracker.
+ * 1. Fetch item-sets (942) for class identification
+ * 2. Fetch appearance sets for full piece lists (all slots including belt/cloak/bracer)
+ * 3. Cross-reference: if an appearance set's items overlap with an item-set, inherit the class
+ * 4. For modern sets without class restriction, use armor type → class mapping
  *
- * Usage: node scripts/generate-transmog-data.js
+ * Usage: node scripts/generate-transmog-data.cjs
  * Output: data/transmog-sets.json
  */
 
@@ -14,17 +15,14 @@ const path = require('path');
 
 const CLIENT_ID = '86af3b20703442e78f9a90778846ce3b';
 const CLIENT_SECRET = 'xHpqmVAnuwV8DFcMQncEYxCio35MSUHq';
-const REGION = 'eu';
+const API_BASE = 'https://eu.api.blizzard.com';
 const NAMESPACE = 'static-eu';
 const LOCALE = 'en_GB';
-const API_BASE = `https://${REGION}.api.blizzard.com`;
 
 let accessToken = '';
 let requestCount = 0;
-
-// Rate limiting: max 80 requests per second (safe margin under 100)
 const BATCH_SIZE = 40;
-const BATCH_DELAY = 600; // ms between batches
+const BATCH_DELAY = 600;
 
 async function getAccessToken() {
   const res = await fetch('https://oauth.battle.net/token', {
@@ -35,191 +33,278 @@ async function getAccessToken() {
     },
     body: 'grant_type=client_credentials'
   });
-  const data = await res.json();
-  accessToken = data.access_token;
-  console.log('✅ Got access token');
+  accessToken = (await res.json()).access_token;
+  console.log('Got access token');
 }
 
-async function apiRequest(endpoint) {
+async function api(endpoint) {
   requestCount++;
   const url = `${API_BASE}${endpoint}${endpoint.includes('?') ? '&' : '?'}namespace=${NAMESPACE}&locale=${LOCALE}`;
   try {
-    const res = await fetch(url, {
-      headers: { 'Authorization': `Bearer ${accessToken}` }
-    });
+    const res = await fetch(url, { headers: { 'Authorization': `Bearer ${accessToken}` } });
     if (!res.ok) return null;
     return await res.json();
-  } catch (e) {
-    return null;
-  }
+  } catch (e) { return null; }
 }
 
-async function batchRequests(items, handler) {
+async function batch(items, handler) {
   const results = [];
   for (let i = 0; i < items.length; i += BATCH_SIZE) {
-    const batch = items.slice(i, i + BATCH_SIZE);
-    const batchResults = await Promise.all(batch.map(handler));
-    results.push(...batchResults);
-
-    const progress = Math.min(i + BATCH_SIZE, items.length);
-    process.stdout.write(`\r  ${progress}/${items.length} (${Math.round(progress/items.length*100)}%)`);
-
-    if (i + BATCH_SIZE < items.length) {
-      await new Promise(r => setTimeout(r, BATCH_DELAY));
-    }
+    const b = items.slice(i, i + BATCH_SIZE);
+    results.push(...await Promise.all(b.map(handler)));
+    const p = Math.min(i + BATCH_SIZE, items.length);
+    process.stdout.write(`\r  ${p}/${items.length} (${Math.round(p / items.length * 100)}%)`);
+    if (i + BATCH_SIZE < items.length) await new Promise(r => setTimeout(r, BATCH_DELAY));
   }
   console.log('');
   return results;
 }
 
-// Armor type classification
-const ARMOR_TYPES = {
-  1: 'Cloth',
-  2: 'Leather',
-  3: 'Mail',
-  4: 'Plate'
+const ARMOR_TYPES = { 1: 'Cloth', 2: 'Leather', 3: 'Mail', 4: 'Plate' };
+const ARMOR_CLASSES = {
+  'Cloth': ['Mage', 'Priest', 'Warlock'],
+  'Leather': ['Rogue', 'Druid', 'Monk', 'Demon Hunter'],
+  'Mail': ['Hunter', 'Shaman', 'Evoker'],
+  'Plate': ['Warrior', 'Paladin', 'Death Knight']
 };
+const SHARED_TIER_EXPANSIONS = ['Dragonflight', 'The War Within', 'Midnight'];
 
-// Guess expansion from set name patterns or item ID ranges
-function guessExpansion(setName, itemIds) {
-  const name = (setName || '').toLowerCase();
+function getExpansionFromLevel(requiredLevel) {
+  if (requiredLevel >= 90) return 'Midnight';
+  if (requiredLevel >= 80) return 'The War Within';
+  if (requiredLevel >= 70) return 'Dragonflight';
+  if (requiredLevel >= 60) return 'Shadowlands';
+  if (requiredLevel >= 50) return 'Battle for Azeroth';
+  if (requiredLevel >= 45) return 'Legion';
+  if (requiredLevel >= 40) return 'Warlords of Draenor';
+  if (requiredLevel >= 35) return 'Mists of Pandaria';
+  if (requiredLevel >= 32) return 'Cataclysm';
+  if (requiredLevel >= 30) return 'Wrath of the Lich King';
+  if (requiredLevel >= 27) return 'The Burning Crusade';
+  return 'Classic';
+}
 
-  // Midnight (12.x)
-  if (name.includes('thalassian') || name.includes('sunsworn') || name.includes('dawnlit') ||
-      name.includes('quel\'thalas') || name.includes('silvermoon')) return 'Midnight';
+function isPvp(name) {
+  const l = (name || '').toLowerCase();
+  return l.includes('gladiator') || l.includes('combatant') || l.includes('aspirant');
+}
 
-  // The War Within (11.x)
-  if (name.includes('nerub') || name.includes('undermine') || name.includes('algari') ||
-      name.includes('awakened') || name.includes('forged gladiator')) return 'The War Within';
+// Step caching — avoids re-fetching completed steps on retry
+const CACHE_DIR = path.join(__dirname, '..', 'data', '.transmog-cache');
+if (!fs.existsSync(CACHE_DIR)) fs.mkdirSync(CACHE_DIR, { recursive: true });
 
-  // Dragonflight (10.x)
-  if (name.includes('obsidian') || name.includes('verdant') || name.includes('draconic') ||
-      name.includes('primal') || name.includes('centaur')) return 'Dragonflight';
-
-  // Shadowlands (9.x)
-  if (name.includes('covenant') || name.includes('maldraxxus') || name.includes('sinful') ||
-      name.includes('necrolord') || name.includes('venthyr') || name.includes('korthian')) return 'Shadowlands';
-
-  // BfA (8.x)
-  if (name.includes('dread gladiator') || name.includes('notorious') || name.includes('corrupted') ||
-      name.includes('dazar') || name.includes('zandalari') || name.includes('kul tiran')) return 'Battle for Azeroth';
-
-  // Legion (7.x)
-  if (name.includes('cruel gladiator') || name.includes('fearless') || name.includes('demonic') ||
-      name.includes('nighthold') || name.includes('tomb') || name.includes('antorus')) return 'Legion';
-
-  // Use item ID ranges as fallback
-  if (itemIds && itemIds.length > 0) {
-    const maxId = Math.max(...itemIds);
-    if (maxId > 240000) return 'Midnight';
-    if (maxId > 210000) return 'The War Within';
-    if (maxId > 190000) return 'Dragonflight';
-    if (maxId > 170000) return 'Shadowlands';
-    if (maxId > 150000) return 'Battle for Azeroth';
-    if (maxId > 130000) return 'Legion';
-    if (maxId > 110000) return 'Warlords of Draenor';
-    if (maxId > 90000) return 'Mists of Pandaria';
-    if (maxId > 70000) return 'Cataclysm';
-    if (maxId > 40000) return 'Wrath of the Lich King';
-    if (maxId > 25000) return 'The Burning Crusade';
-    return 'Classic';
+function saveCache(step, data) {
+  fs.writeFileSync(path.join(CACHE_DIR, `${step}.json`), JSON.stringify(data));
+  console.log(`  [cached ${step}]`);
+}
+function loadCache(step) {
+  const p = path.join(CACHE_DIR, `${step}.json`);
+  if (fs.existsSync(p)) {
+    console.log(`  [using cached ${step}]`);
+    return JSON.parse(fs.readFileSync(p, 'utf-8'));
   }
-
-  return 'Unknown';
+  return null;
 }
 
 async function main() {
-  console.log('🔧 Generating transmog set data...\n');
-
+  console.log('Generating transmog data (hybrid approach)...\n');
   await getAccessToken();
 
-  // Step 1: Fetch all appearance sets
-  console.log('📋 Fetching appearance set index...');
-  const setIndex = await apiRequest('/data/wow/item-appearance/set/index');
-  if (!setIndex || !setIndex.appearance_sets) {
-    console.error('❌ Failed to fetch set index');
-    return;
+  // ── Step 1: Build class lookup from item-sets ──
+  let step1 = loadCache('step1');
+  const itemSetItemToClass = {};
+  const itemSetItemIds = new Set();
+  const itemRequiredLevel = {};
+
+  if (step1) {
+    Object.entries(step1.classMap).forEach(([id, cls]) => { itemSetItemToClass[id] = cls; });
+    step1.itemIds.forEach(id => itemSetItemIds.add(id));
+    Object.entries(step1.levels).forEach(([id, lvl]) => { itemRequiredLevel[id] = lvl; });
+  } else {
+    console.log('Step 1: Fetching item-set index for class identification...');
+    const itemSetIndex = await api('/data/wow/item-set/index');
+    const itemSets = itemSetIndex?.item_sets || [];
+    console.log(`  Found ${itemSets.length} item sets`);
+
+    console.log('Fetching item-set details...');
+    await batch(itemSets, async (iset) => {
+      const data = await api(`/data/wow/item-set/${iset.id}`);
+      if (!data || !data.items) return null;
+      data.items.forEach(i => { if (i.id) itemSetItemIds.add(i.id); });
+      return null;
+    });
+
+    console.log(`\nFetching class + level info for ${itemSetItemIds.size} item-set items...`);
+    await batch([...itemSetItemIds], async (itemId) => {
+      const data = await api(`/data/wow/item/${itemId}`);
+      const classes = data?.preview_item?.requirements?.playable_classes?.links || [];
+      if (classes.length > 0) itemSetItemToClass[itemId] = classes.map(c => c.name);
+      if (data?.required_level) itemRequiredLevel[itemId] = data.required_level;
+      return null;
+    });
+    console.log(`  Got class info for ${Object.keys(itemSetItemToClass).length} items`);
+    saveCache('step1', { classMap: itemSetItemToClass, itemIds: [...itemSetItemIds], levels: itemRequiredLevel });
   }
 
-  const allSets = setIndex.appearance_sets;
-  console.log(`  Found ${allSets.length} appearance sets`);
+  // ── Step 2: Fetch appearance sets (PvE only) ──
+  let validAppSets = loadCache('step2');
+  if (!validAppSets) {
+    console.log('Step 2: Fetching appearance set index...');
+    const appSetIndex = await api('/data/wow/item-appearance/set/index');
+    const allAppSets = (appSetIndex?.appearance_sets || []).filter(s => !isPvp(s.name));
+    console.log(`  ${allAppSets.length} PvE appearance sets\n`);
 
-  // Step 2: Fetch details for each set
-  console.log('\n📦 Fetching set details...');
-  const setDetails = await batchRequests(allSets, async (set) => {
-    const data = await apiRequest(`/data/wow/item-appearance/set/${set.id}`);
-    if (!data) return null;
-    return {
-      id: data.id,
-      name: data.set_name || set.name || 'Unknown Set',
-      appearanceIds: (data.appearances || []).map(a => a.id)
-    };
-  });
+    console.log('Fetching appearance set details...');
+    const appSetDetails = await batch(allAppSets, async (set) => {
+      const data = await api(`/data/wow/item-appearance/set/${set.id}`);
+      if (!data) return null;
+      return { id: data.id, name: data.set_name || set.name || 'Unknown', appearanceIds: (data.appearances || []).map(a => a.id) };
+    });
+    validAppSets = appSetDetails.filter(Boolean);
+    console.log(`  Got ${validAppSets.length} sets`);
+    saveCache('step2', validAppSets);
+  }
 
-  const validSets = setDetails.filter(Boolean);
-  console.log(`  Got details for ${validSets.length} sets`);
+  // ── Step 3: Resolve appearances ──
+  let appLookup = loadCache('step3');
+  if (!appLookup) {
+    appLookup = {};
+    const allAppIds = new Set();
+    validAppSets.forEach(s => s.appearanceIds.forEach(id => allAppIds.add(id)));
+    console.log(`Step 3: Fetching ${allAppIds.size} unique appearances...`);
+    await batch([...allAppIds], async (appId) => {
+      const data = await api(`/data/wow/item-appearance/${appId}`);
+      if (!data) return null;
+      const firstItem = data.items?.[0] || {};
+      appLookup[appId] = { id: data.id, slot: data.slot?.name || 'Unknown', slotType: data.slot?.type || 'UNKNOWN', armorTypeId: data.item_subclass?.id || 0, itemName: firstItem.name || 'Unknown', itemId: firstItem.id || 0 };
+      return null;
+    });
+    console.log(`  Resolved ${Object.keys(appLookup).length} appearances`);
+    saveCache('step3', appLookup);
+  }
 
-  // Step 3: Collect all unique appearance IDs
-  const allAppearanceIds = new Set();
-  validSets.forEach(s => s.appearanceIds.forEach(id => allAppearanceIds.add(id)));
-  console.log(`\n🎨 Fetching ${allAppearanceIds.size} unique appearances...`);
+  // ── Step 4: Get icons for all unique items ──
+  let iconLookup = loadCache('step4');
+  if (!iconLookup) {
+    iconLookup = {};
+    const uniqueItemIds = new Set();
+    Object.values(appLookup).forEach(a => { if (a.itemId > 0) uniqueItemIds.add(a.itemId); });
+    console.log(`Step 4: Fetching icons for ${uniqueItemIds.size} items...`);
+    await batch([...uniqueItemIds], async (itemId) => {
+      const media = await api(`/data/wow/media/item/${itemId}`);
+      iconLookup[itemId] = media?.assets?.find(a => a.key === 'icon')?.value || '';
+      return null;
+    });
+    console.log(`  Got ${Object.values(iconLookup).filter(Boolean).length} icons`);
+    saveCache('step4', iconLookup);
+  }
 
-  const appearanceLookup = {};
-  const appearanceResults = await batchRequests([...allAppearanceIds], async (appId) => {
-    const data = await apiRequest(`/data/wow/item-appearance/${appId}`);
-    if (!data) return null;
+  // ── Step 5: Build item source lookup from Journal API ──
+  let itemSourceLookup = loadCache('step5');
+  if (!itemSourceLookup) {
+    itemSourceLookup = {};
+    console.log('Step 5: Fetching journal instances for item sources...');
+    const journalIndex = await api('/data/wow/journal-instance/index');
+    const instances = journalIndex?.instances || [];
+    console.log(`  Found ${instances.length} instances`);
 
-    const firstItem = (data.items && data.items[0]) || {};
-    return {
-      id: data.id,
-      slot: data.slot?.name || 'Unknown',
-      slotType: data.slot?.type || 'UNKNOWN',
-      armorType: data.item_subclass?.name || 'Unknown',
-      armorTypeId: data.item_subclass?.id || 0,
-      itemName: firstItem.name || 'Unknown Item',
-      itemId: firstItem.id || 0,
-      mediaId: data.media?.id || 0
-    };
-  });
+    console.log('Fetching instance details...');
+    const encounterIds = [];
+    await batch(instances, async (inst) => {
+      const data = await api(`/data/wow/journal-instance/${inst.id}`);
+      if (!data || !data.encounters) return null;
+      const instName = data.name || inst.name || 'Unknown';
+      data.encounters.forEach(enc => {
+        encounterIds.push({ id: enc.id, instance: instName });
+      });
+      return null;
+    });
+    console.log(`  Found ${encounterIds.length} encounters\n`);
 
-  appearanceResults.filter(Boolean).forEach(a => {
-    appearanceLookup[a.id] = a;
-  });
-  console.log(`  Resolved ${Object.keys(appearanceLookup).length} appearances`);
+    console.log('Fetching encounter loot tables...');
+    await batch(encounterIds, async (enc) => {
+      const data = await api(`/data/wow/journal-encounter/${enc.id}`);
+      if (!data) return null;
+      const bossName = data.name || 'Unknown Boss';
+      (data.items || []).forEach(drop => {
+        const itemId = drop.item?.id;
+        if (itemId) itemSourceLookup[itemId] = { boss: bossName, instance: enc.instance };
+      });
+      return null;
+    });
+    console.log(`  Built source data for ${Object.keys(itemSourceLookup).length} items`);
+    saveCache('step5', itemSourceLookup);
+  }
 
-  // Step 4: Build final dataset
-  console.log('\n🔨 Building dataset...');
-  const sets = validSets.map(set => {
-    const pieces = set.appearanceIds
-      .map(id => appearanceLookup[id])
-      .filter(Boolean);
-
+  // ── Step 6: Build dataset ──
+  console.log('Step 6: Building dataset...');
+  const sets = validAppSets.map(set => {
+    const pieces = set.appearanceIds.map(id => appLookup[id]).filter(Boolean);
     if (pieces.length === 0) return null;
 
-    // Determine armor type from pieces
+    // Determine armor type
     const armorTypeIds = pieces.map(p => p.armorTypeId).filter(id => id > 0);
     const primaryArmorTypeId = armorTypeIds.length > 0
-      ? armorTypeIds.sort((a, b) => armorTypeIds.filter(v => v === b).length - armorTypeIds.filter(v => v === a).length)[0]
-      : 0;
+      ? armorTypeIds.sort((a, b) =>
+          armorTypeIds.filter(v => v === b).length - armorTypeIds.filter(v => v === a).length
+        )[0] : 0;
+    const armorType = ARMOR_TYPES[primaryArmorTypeId] || 'Other';
 
     const itemIds = pieces.map(p => p.itemId).filter(id => id > 0);
+
+    // Determine expansion from required_level of any item-set item in this set
+    let expansion = 'Unknown';
+    for (const id of itemIds) {
+      if (itemRequiredLevel[id]) {
+        expansion = getExpansionFromLevel(itemRequiredLevel[id]);
+        break;
+      }
+    }
+
+    // Cross-reference with item-sets for class
+    let classes = null;
+    for (const p of pieces) {
+      if (itemSetItemToClass[p.itemId]) {
+        classes = itemSetItemToClass[p.itemId];
+        break;
+      }
+    }
+
+    // For modern expansions without class restriction, use armor type → classes
+    if (!classes && SHARED_TIER_EXPANSIONS.includes(expansion)) {
+      // Only if any item is in an item-set (confirms it's a tier set)
+      const isTierSet = itemIds.some(id => itemSetItemIds.has(id));
+      if (isTierSet) {
+        classes = ARMOR_CLASSES[armorType] || null;
+      }
+    }
+
+    // Skip if we can't determine class (not a class tier set)
+    if (!classes) return null;
 
     return {
       id: set.id,
       name: set.name,
-      armorType: ARMOR_TYPES[primaryArmorTypeId] || 'Other',
-      expansion: guessExpansion(set.name, itemIds),
-      pieces: pieces.map(p => ({
-        appearanceId: p.id,
-        slot: p.slot,
-        slotType: p.slotType,
-        itemName: p.itemName,
-        itemId: p.itemId
-      }))
+      classes,
+      armorType,
+      expansion,
+      pieceCount: pieces.length,
+      pieces: pieces.map(p => {
+        const source = itemSourceLookup[p.itemId] || null;
+        return {
+          appearanceId: p.id,
+          slot: p.slot,
+          slotType: p.slotType,
+          itemName: p.itemName,
+          itemId: p.itemId,
+          icon: iconLookup[p.itemId] || '',
+          source: source ? { boss: source.boss, instance: source.instance } : null
+        };
+      })
     };
   }).filter(Boolean);
 
-  // Sort by expansion (newest first), then name
+  // Sort
   const expansionOrder = ['Midnight', 'The War Within', 'Dragonflight', 'Shadowlands', 'Battle for Azeroth', 'Legion', 'Warlords of Draenor', 'Mists of Pandaria', 'Cataclysm', 'Wrath of the Lich King', 'The Burning Crusade', 'Classic', 'Unknown'];
   sets.sort((a, b) => {
     const ea = expansionOrder.indexOf(a.expansion);
@@ -230,31 +315,26 @@ async function main() {
 
   // Stats
   const byExpansion = {};
-  const byArmor = {};
+  const byClass = {};
   sets.forEach(s => {
     byExpansion[s.expansion] = (byExpansion[s.expansion] || 0) + 1;
-    byArmor[s.armorType] = (byArmor[s.armorType] || 0) + 1;
+    s.classes.forEach(c => { byClass[c] = (byClass[c] || 0) + 1; });
   });
 
-  console.log(`\n📊 Final dataset:`);
+  console.log(`\nFinal dataset:`);
   console.log(`  Total sets: ${sets.length}`);
   console.log(`  Total pieces: ${sets.reduce((sum, s) => sum + s.pieces.length, 0)}`);
-  console.log(`  API requests made: ${requestCount}`);
+  console.log(`  API requests: ${requestCount}`);
   console.log(`\n  By expansion:`);
-  Object.entries(byExpansion).forEach(([k, v]) => console.log(`    ${k}: ${v}`));
-  console.log(`\n  By armor type:`);
-  Object.entries(byArmor).forEach(([k, v]) => console.log(`    ${k}: ${v}`));
+  expansionOrder.forEach(e => { if (byExpansion[e]) console.log(`    ${e}: ${byExpansion[e]}`); });
+  console.log(`\n  By class:`);
+  Object.entries(byClass).sort((a, b) => b[1] - a[1]).forEach(([k, v]) => console.log(`    ${k}: ${v}`));
 
-  // Write output
-  const output = {
-    generated: new Date().toISOString(),
-    totalSets: sets.length,
-    sets
-  };
-
+  const output = { generated: new Date().toISOString(), totalSets: sets.length, sets };
   const outputPath = path.join(__dirname, '..', 'data', 'transmog-sets.json');
-  fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
-  console.log(`\n✅ Written to ${outputPath}`);
+  fs.writeFileSync(outputPath, JSON.stringify(output));
+  const sizeMB = (fs.statSync(outputPath).size / 1024 / 1024).toFixed(1);
+  console.log(`\nWritten to ${outputPath} (${sizeMB}MB)`);
 }
 
 main().catch(console.error);

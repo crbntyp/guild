@@ -27,10 +27,11 @@ class CustomDropdown {
         <div class="dropdown-menu" role="listbox">
           ${this.options.map(option => `
             <button
-              class="dropdown-item ${option.value === this.selectedValue ? 'selected' : ''}"
+              class="dropdown-item ${option.value === this.selectedValue ? 'selected' : ''} ${option.disabled ? 'disabled' : ''}"
               data-value="${option.value}"
               role="option"
               aria-selected="${option.value === this.selectedValue}"
+              ${option.disabled ? 'disabled' : ''}
             >
               ${option.icon ? `<img src="${option.icon}" alt="" class="dropdown-icon" />` : ''}
               <span class="dropdown-item-text">${option.label}</span>
