@@ -729,12 +729,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         let lootDungeon = 'All Dungeons';
         let lootArmor = 'All';
 
+        // Map dungeons to expansions by instance name
+        const BC_DUNGEONS = ['Hellfire Ramparts','The Blood Furnace','The Slave Pens','The Underbog','Mana-Tombs','Auchenai Crypts','Old Hillsbrad Foothills','Shadow Labyrinth','The Shattered Halls','The Steamvault','The Black Morass','The Botanica','Sethekk Halls','The Mechanar','The Arcatraz',"Magisters' Terrace"];
+        function getDungeonExpansion(instance) {
+          if (BC_DUNGEONS.includes(instance)) return 'The Burning Crusade';
+          return 'Classic';
+        }
+
         async function renderLoot() {
           // Lazy load loot data
           if (!lootData) {
             content.innerHTML = `<div class="tmog-loading"><i class="las la-circle-notch la-spin la-3x"></i><p>Loading dungeon loot...</p></div>`;
             try {
-              const res = await fetch('data/classic-dungeon-loot.json');
+              const res = await fetch('data/dungeon-loot.json');
               lootData = await res.json();
             } catch(e) {
               content.innerHTML = `<div class="tmog-empty">Failed to load dungeon loot data</div>`;
@@ -744,26 +751,48 @@ document.addEventListener('DOMContentLoaded', async () => {
 
           // Group items by dungeon → boss
           const EXCLUDED_SLOTS = ['NON_EQUIP', 'BAG', 'THROWN', 'AMMO', 'NECK', 'FINGER', 'TRINKET', 'RELIC', 'RANGED', 'RANGEDRIGHT'];
-          const items = Object.entries(lootData.items || {}).filter(([, item]) => {
+          const allLootItems = Object.entries(lootData.items || {}).filter(([, item]) => {
             if (!item.slotType || EXCLUDED_SLOTS.includes(item.slotType)) return false;
-            if (item.itemClass !== 4 && item.itemClass !== 2) return false; // Only armor and weapons
+            if (item.itemClass !== 4 && item.itemClass !== 2) return false;
             return true;
           });
-          const dungeons = {};
-          items.forEach(([id, item]) => {
+
+          // Build expansion → dungeon mapping
+          const dungeonsByInstance = {};
+          allLootItems.forEach(([id, item]) => {
+            if (!dungeonsByInstance[item.instance]) dungeonsByInstance[item.instance] = [];
+            dungeonsByInstance[item.instance].push([id, item]);
+          });
+          const dungeonExpMap = {};
+          Object.entries(dungeonsByInstance).forEach(([inst, ditems]) => {
+            dungeonExpMap[inst] = getDungeonExpansion(inst);
+          });
+          // Only show expansions we have loot data for
+          const LOOT_EXPANSIONS = ['Classic', 'The Burning Crusade'];
+          const availableExpansions = LOOT_EXPANSIONS;
+
+          // Filter by expansion, dungeon, armor
+          const items = allLootItems.filter(([, item]) => {
+            if (lootExpansion !== 'All Expansions' && dungeonExpMap[item.instance] !== lootExpansion) return false;
+            if (lootDungeon !== 'All Dungeons' && item.instance !== lootDungeon) return false;
             if (lootArmor !== 'All') {
               const armorMap = { 'Cloth': 1, 'Leather': 2, 'Mail': 3, 'Plate': 4 };
-              if (item.itemClass === 4 && item.armorTypeId !== armorMap[lootArmor]) return;
+              if (item.itemClass === 4 && item.armorTypeId !== armorMap[lootArmor]) return false;
             }
-            if (lootDungeon !== 'All Dungeons' && item.instance !== lootDungeon) return;
+            return true;
+          });
 
+          const dungeons = {};
+          items.forEach(([id, item]) => {
             if (!dungeons[item.instance]) dungeons[item.instance] = {};
             if (!dungeons[item.instance][item.boss]) dungeons[item.instance][item.boss] = [];
             dungeons[item.instance][item.boss].push({ ...item, itemId: parseInt(id) });
           });
 
-          // Get all dungeon names for dropdown
-          const allDungeonNames = [...new Set(items.map(([,i]) => i.instance))].sort();
+          // Dungeon names filtered by selected expansion
+          const filteredDungeonNames = Object.entries(dungeonExpMap)
+            .filter(([, exp]) => lootExpansion === 'All Expansions' || exp === lootExpansion)
+            .map(([name]) => name).sort();
 
           const totalItems = items.length;
           const collectedItems = items.filter(([,i]) => collectedAppearances.has(i.appearanceId)).length;
@@ -772,6 +801,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div class="tmog-layout">
               <div class="tmog-sidebar">
                 <div class="tmog-sidebar-inner">
+                  <div class="tmog-sidebar-section">
+                    <div class="tmog-sidebar-label">Expansion</div>
+                    <div id="tmog-loot-expansion-dropdown"></div>
+                  </div>
                   <div class="tmog-sidebar-section">
                     <div class="tmog-sidebar-label">Dungeon</div>
                     <div id="tmog-loot-dungeon-dropdown"></div>
@@ -823,10 +856,17 @@ document.addEventListener('DOMContentLoaded', async () => {
           `;
 
           // Dropdowns
+          const expDd = new CustomDropdown({
+            id: 'tmog-loot-exp-dd',
+            label: 'Expansion',
+            options: availableExpansions.map(e => ({ value: e, label: e })),
+            selectedValue: lootExpansion === 'All Expansions' ? (availableExpansions[0] || 'Classic') : lootExpansion,
+            onChange: (val) => { lootExpansion = val; lootDungeon = 'All Dungeons'; renderLoot(); }
+          });
           const dungeonDd = new CustomDropdown({
             id: 'tmog-loot-dungeon-dd',
             label: 'Dungeon',
-            options: [{ value: 'All Dungeons', label: 'All Dungeons' }, ...allDungeonNames.map(n => ({ value: n, label: n }))],
+            options: [{ value: 'All Dungeons', label: 'All Dungeons' }, ...filteredDungeonNames.map(n => ({ value: n, label: n }))],
             selectedValue: lootDungeon,
             onChange: (val) => { lootDungeon = val; renderLoot(); }
           });
@@ -837,6 +877,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             selectedValue: lootArmor,
             onChange: (val) => { lootArmor = val; renderLoot(); }
           });
+          expDd.attachToElement(document.getElementById('tmog-loot-expansion-dropdown'));
           dungeonDd.attachToElement(document.getElementById('tmog-loot-dungeon-dropdown'));
           armorDd.attachToElement(document.getElementById('tmog-loot-armor-dropdown'));
 
