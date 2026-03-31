@@ -98,23 +98,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         // Deduplicate pieces per slot, enrich, and group by set name
-        // API order varies by variant count
-        // Reorder tabs to show lowest difficulty first
-        const API_DIFF_MAP = {
-          2: ['Normal', 'Heroic'],
-          3: ['Normal', 'Heroic', 'LFR'],
-          4: ['Normal', 'Heroic', 'Mythic', 'LFR']
-        };
-        const DISPLAY_ORDER_MAP = {
-          2: ['Normal', 'Heroic'],
-          3: ['LFR', 'Normal', 'Heroic'],
-          4: ['LFR', 'Normal', 'Heroic', 'Mythic']
-        };
+        const DISPLAY_ORDER = ['LFR', 'Normal', 'Heroic', 'Mythic'];
         const nameCounts = {};
         allSets.forEach(s => { nameCounts[s.name] = (nameCounts[s.name] || 0) + 1; });
 
-        const nameIndex = {};
-        const enrichedSets = [];
         const groupedByName = {};
 
         allSets.forEach(set => {
@@ -131,16 +118,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           const complete = missing.length === 0;
           const progress = pieces.length > 0 ? Math.round((collected.length / pieces.length) * 100) : 0;
 
-          // Assign difficulty label
-          let difficulty = null;
-          if (nameCounts[set.name] > 1) {
-            nameIndex[set.name] = (nameIndex[set.name] || 0) + 1;
-            const count = nameCounts[set.name];
-            const diffMap = API_DIFF_MAP[count] || [];
-            difficulty = diffMap[nameIndex[set.name] - 1] || `Variant ${nameIndex[set.name]}`;
-          }
-
-          const enriched = { ...set, pieces, collected, missing, complete, progress, difficulty };
+          const enriched = { ...set, pieces, collected, missing, complete, progress, difficulty: set.difficulty || null };
 
           // Group by base name + classes + expansion for tab cards
           const groupKey = `${set.name}|${(set.classes || []).join(',')}|${set.expansion}`;
@@ -156,15 +134,21 @@ document.addEventListener('DOMContentLoaded', async () => {
           groupedByName[groupKey].variants.push(enriched);
         });
 
-        // Convert groups to array and sort variants by display order (LFR first)
+        // Sort variants by set ID (deterministic) and assign per-expansion difficulty labels
         const setGroups = Object.values(groupedByName);
         setGroups.forEach(g => {
-          const displayOrder = DISPLAY_ORDER_MAP[g.variants.length] || [];
-          g.variants.sort((a, b) => {
-            const ai = displayOrder.indexOf(a.difficulty);
-            const bi = displayOrder.indexOf(b.difficulty);
-            return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
-          });
+          if (g.variants.length > 1) {
+            // Assign fallback labels for any without difficulty from generator
+            g.variants.forEach((v, i) => {
+              if (!v.difficulty) v.difficulty = `Variant ${i + 1}`;
+            });
+            // Sort tabs: LFR first, then Normal, Heroic, Mythic
+            g.variants.sort((a, b) => {
+              const ai = DISPLAY_ORDER.indexOf(a.difficulty);
+              const bi = DISPLAY_ORDER.indexOf(b.difficulty);
+              return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+            });
+          }
         });
 
         // Determine which classes the user has characters for

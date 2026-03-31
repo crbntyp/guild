@@ -187,19 +187,27 @@ async function main() {
   }
 
   // ── Step 4: Get icons for all unique items ──
-  let iconLookup = loadCache('step4');
-  if (!iconLookup) {
-    iconLookup = {};
+  let step4Data = loadCache('step4');
+  let iconLookup = {};
+  let itemLevelLookup = {};
+  if (step4Data) {
+    iconLookup = step4Data.icons || {};
+    itemLevelLookup = step4Data.levels || {};
+  } else {
     const uniqueItemIds = new Set();
     Object.values(appLookup).forEach(a => { if (a.itemId > 0) uniqueItemIds.add(a.itemId); });
-    console.log(`Step 4: Fetching icons for ${uniqueItemIds.size} items...`);
+    console.log(`Step 4: Fetching icons + item levels for ${uniqueItemIds.size} items...`);
     await batch([...uniqueItemIds], async (itemId) => {
-      const media = await api(`/data/wow/media/item/${itemId}`);
+      const [media, itemData] = await Promise.all([
+        api(`/data/wow/media/item/${itemId}`),
+        api(`/data/wow/item/${itemId}`)
+      ]);
       iconLookup[itemId] = media?.assets?.find(a => a.key === 'icon')?.value || '';
+      if (itemData?.level) itemLevelLookup[itemId] = itemData.level;
       return null;
     });
-    console.log(`  Got ${Object.values(iconLookup).filter(Boolean).length} icons`);
-    saveCache('step4', iconLookup);
+    console.log(`  Got ${Object.values(iconLookup).filter(Boolean).length} icons, ${Object.keys(itemLevelLookup).length} item levels`);
+    saveCache('step4', { icons: iconLookup, levels: itemLevelLookup });
   }
 
   // ── Step 5: Build item source lookup from Journal API ──
@@ -237,6 +245,91 @@ async function main() {
     });
     console.log(`  Built source data for ${Object.keys(itemSourceLookup).length} items`);
     saveCache('step5', itemSourceLookup);
+  }
+
+  // ── Step 5b: Determine difficulty order via item appearances array ──
+  // Each item has an appearances[] array where the order encodes difficulty:
+  // First occurrence = Normal, then LFR, Heroic, Mythic
+  let difficultyMap = loadCache('step5b');
+  if (!difficultyMap) {
+    difficultyMap = {}; // appearanceSetId → difficulty label
+
+    // Group appearance sets by name to find multi-variant groups
+    const appSetsByName = {};
+    validAppSets.forEach(set => {
+      if (!appSetsByName[set.name]) appSetsByName[set.name] = [];
+      appSetsByName[set.name].push(set);
+    });
+
+    // For multi-variant groups, find an item-set item that appears in one of the variants
+    const groupsToResolve = [];
+    Object.values(appSetsByName).forEach(variants => {
+      if (variants.length < 2) return;
+
+      // Find an item-set item that exists in any variant's appearances
+      let matchedItemId = null;
+      for (const variant of variants) {
+        for (const appId of variant.appearanceIds) {
+          const app = appLookup[appId];
+          if (app && itemSetItemIds.has(app.itemId)) {
+            matchedItemId = app.itemId;
+            break;
+          }
+        }
+        if (matchedItemId) break;
+      }
+
+      if (matchedItemId) {
+        groupsToResolve.push({ variants, itemId: matchedItemId });
+      }
+    });
+
+    console.log(`Step 5b: Resolving difficulty order for ${groupsToResolve.length} multi-variant groups...`);
+    const DIFF_ORDER_4 = ['Normal', 'LFR', 'Heroic', 'Mythic'];
+    const DIFF_ORDER_3 = ['Normal', 'Heroic', 'Mythic'];
+    const DIFF_ORDER_2 = ['Normal', 'Heroic'];
+
+    await batch(groupsToResolve, async (group) => {
+      const itemData = await api(`/data/wow/item/${group.itemId}`);
+      if (!itemData || !itemData.appearances) return null;
+
+      const itemApps = itemData.appearances.map(a => a.id);
+
+      // Map each appearance ID to its variant
+      const appToVariant = {};
+      group.variants.forEach(v => {
+        v.appearanceIds.forEach(appId => {
+          appToVariant[appId] = v.id;
+        });
+      });
+
+      // Find first occurrence of each variant in the item's appearances array
+      const variantOrder = [];
+      const seen = new Set();
+      itemApps.forEach(appId => {
+        const variantId = appToVariant[appId];
+        if (variantId && !seen.has(variantId)) {
+          seen.add(variantId);
+          variantOrder.push(variantId);
+        }
+      });
+
+      // Assign difficulty labels based on order
+      const diffLabels = group.variants.length === 4 ? DIFF_ORDER_4 :
+                         group.variants.length === 3 ? DIFF_ORDER_3 :
+                         group.variants.length === 2 ? DIFF_ORDER_2 : [];
+
+      variantOrder.forEach((variantId, i) => {
+        if (diffLabels[i]) {
+          difficultyMap[variantId] = diffLabels[i];
+        }
+      });
+
+      return null;
+    });
+
+    console.log(`  Resolved difficulty for ${Object.keys(difficultyMap).length} appearance sets`);
+    saveCache('step5b', difficultyMap);
   }
 
   // ── Step 6: Build dataset ──
@@ -291,7 +384,9 @@ async function main() {
       classes,
       armorType,
       expansion,
+      difficulty: difficultyMap[set.id] || null,
       pieceCount: pieces.length,
+      ilvl: Math.max(...pieces.map(p => itemLevelLookup[p.itemId] || 0)),
       pieces: pieces.map(p => {
         const source = itemSourceLookup[p.itemId] || null;
         return {
