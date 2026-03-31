@@ -98,6 +98,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         // Fetch collection from each armor type character in parallel
+        // Fill missing source data — if any piece in the set has a source, use that raid for pieces without
+        allSets.forEach(set => {
+          const knownInstances = new Set();
+          set.pieces.forEach(p => { if (p.source?.instance) knownInstances.add(p.source.instance); });
+          if (knownInstances.size > 0) {
+            const raidName = [...knownInstances][0]; // Use first known instance
+            set.pieces.forEach(p => {
+              if (!p.source) {
+                p.source = { boss: 'Raid Token', instance: raidName };
+              }
+            });
+          }
+        });
+
         const collectedAppearances = new Set();
         const fetchPromises = Object.entries(charsByArmor).map(async ([armor, char]) => {
           try {
@@ -297,11 +311,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                             ${variant.pieces.map(piece => {
                               const owned = collectedAppearances.has(piece.appearanceId);
                               return `
-                                <div class="tmog-piece ${owned ? 'owned' : 'missing'}">
-                                  ${piece.icon ? `<img src="${piece.icon}" class="tmog-piece-icon" />` : `<span class="tmog-piece-icon-placeholder"></span>`}
+                                <div class="tmog-piece ${owned ? 'owned' : 'missing'}" data-item-id="${piece.itemId}" data-item-name="${piece.itemName}" data-slot="${piece.slot}" data-icon="${piece.icon || ''}" data-boss="${piece.source?.boss || ''}" data-instance="${piece.source?.instance || ''}" data-owned="${owned}">
+                                  ${piece.icon ? `<a href="https://www.wowhead.com/item=${piece.itemId}" data-wh-icon-size="small" onclick="event.preventDefault()" class="tmog-piece-icon-link"><img src="${piece.icon}" class="tmog-piece-icon" /></a>` : `<span class="tmog-piece-icon-placeholder"></span>`}
                                   <span class="tmog-piece-slot">${piece.slot}</span>
-                                  <a href="https://www.wowhead.com/item=${piece.itemId}" target="_blank" rel="noopener" class="tmog-piece-name">${piece.itemName}</a>
-                                  ${owned ? '<i class="las la-check tmog-piece-check"></i>' : piece.source ? `<span class="tmog-piece-source">${piece.source.boss} — ${piece.source.instance}</span>` : '<i class="las la-search tmog-piece-find"></i>'}
+                                  <span class="tmog-piece-name">${piece.itemName}</span>
+                                  ${owned ? '<i class="las la-check tmog-piece-check"></i>' : ''}
                                 </div>
                               `;
                             }).join('')}
@@ -346,6 +360,93 @@ document.addEventListener('DOMContentLoaded', async () => {
 
           classDropdown.attachToElement(document.getElementById('tmog-class-dropdown'));
           expDropdown.attachToElement(document.getElementById('tmog-expansion-dropdown'));
+
+          // Piece click → modal
+          content.querySelectorAll('.tmog-piece').forEach(el => {
+            el.addEventListener('click', () => {
+              const itemId = el.dataset.itemId;
+              const itemName = el.dataset.itemName;
+              const slot = el.dataset.slot;
+              const icon = el.dataset.icon;
+              const boss = el.dataset.boss;
+              const instance = el.dataset.instance;
+              const owned = el.dataset.owned === 'true';
+
+              // Remove existing modal
+              document.querySelector('.tmog-modal-overlay')?.remove();
+
+              const wowheadUrl = `https://www.wowhead.com/item=${itemId}`;
+              const modal = document.createElement('div');
+              modal.className = 'tmog-modal-overlay';
+              modal.innerHTML = `
+                <div class="tmog-modal">
+                  <button class="tmog-modal-close"><i class="las la-times"></i></button>
+                  <div class="tmog-modal-content">
+                    <a href="${wowheadUrl}" onclick="event.preventDefault()" class="tmog-modal-icon-link">
+                      <img src="${icon}" class="tmog-modal-icon" />
+                    </a>
+                    <div class="tmog-modal-info">
+                      <span class="tmog-modal-slot">${slot}</span>
+                      <h3 class="tmog-modal-name">${itemName}</h3>
+                      <span class="tmog-modal-status ${owned ? 'owned' : 'missing'}">${owned ? 'Collected' : 'Missing'}</span>
+                    </div>
+                  </div>
+                  ${boss ? `
+                    <div class="tmog-modal-source">
+                      <div class="tmog-modal-source-row">
+                        <i class="las la-skull"></i>
+                        <span>${boss}</span>
+                      </div>
+                      <div class="tmog-modal-source-row">
+                        <i class="las la-dungeon"></i>
+                        <span>${instance}</span>
+                      </div>
+                    </div>
+                  ` : ''}
+                  <div class="tmog-modal-actions">
+                    ${!owned ? `<button class="tmog-modal-todo" id="tmog-add-todo"><i class="las la-plus"></i> Add to Todos</button>` : ''}
+                    <a href="${wowheadUrl}" target="_blank" rel="noopener" class="tmog-modal-wowhead">
+                      Wowhead <i class="las la-external-link-alt"></i>
+                    </a>
+                  </div>
+                </div>
+              `;
+
+              document.body.appendChild(modal);
+
+              // Add to todo handler
+              const todoBtn = modal.querySelector('#tmog-add-todo');
+              if (todoBtn) {
+                todoBtn.addEventListener('click', async () => {
+                  todoBtn.disabled = true;
+                  todoBtn.innerHTML = '<i class="las la-circle-notch la-spin"></i> Adding...';
+                  try {
+                    const apiBase = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+                      ? 'https://crbntyp.com/gld/api' : '/gld/api';
+                    const token = authService.getAccessToken();
+                    const desc = boss ? `Drops from ${boss} in ${instance}` : `Missing ${slot} piece`;
+                    await fetch(`${apiBase}/todos.php`, {
+                      method: 'POST',
+                      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ action: 'add', title: `Farm: ${itemName}`, description: desc, url: wowheadUrl, image: icon })
+                    });
+                    todoBtn.innerHTML = '<i class="las la-check"></i> Added!';
+                    todoBtn.classList.add('added');
+                  } catch (e) {
+                    todoBtn.innerHTML = '<i class="las la-exclamation"></i> Failed';
+                    todoBtn.disabled = false;
+                  }
+                });
+              }
+
+              // Close handlers
+              modal.querySelector('.tmog-modal-close').addEventListener('click', () => modal.remove());
+              modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+              document.addEventListener('keydown', function handler(e) {
+                if (e.key === 'Escape') { modal.remove(); document.removeEventListener('keydown', handler); }
+              });
+            });
+          });
 
           // Difficulty tab handlers
           content.querySelectorAll('.tmog-diff-tab').forEach(tab => {
