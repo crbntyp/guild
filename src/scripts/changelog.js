@@ -16,6 +16,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       <div class="changelog-entry">
         <div class="changelog-date">March 2026</div>
+        <h3 class="changelog-title">Transmog Set Collection Tracker</h3>
+        <p>Track every class tier set across every expansion. See which pieces you own, which you're missing, and exactly where to farm them — boss names, raid locations, and direct Wowhead tooltips on every item. Filter by class, expansion, and difficulty. Add missing pieces to your todo list with one click.</p>
+        <div class="changelog-tags">
+          <span class="changelog-tag">New Feature</span>
+          <span class="changelog-tag">Database</span>
+        </div>
+      </div>
+
+      <div class="changelog-entry">
+        <div class="changelog-date">March 2026</div>
         <h3 class="changelog-title">My Account Hub</h3>
         <p>A new landing page for all your account features. See your characters, crafters, vault, mounts, todos, and YouTube in one place — with live stats like character count and vault rewards. The navigation dropdown now opens on hover for quicker access.</p>
         <div class="changelog-tags">
