@@ -57,9 +57,10 @@ document.addEventListener('DOMContentLoaded', async () => {
           description: 'Track your class tier sets. See what you own, what you\'re missing, and where to farm it.'
         })}
         <div id="transmog-content">
-          <div class="loading-spinner">
-            <i class="las la-circle-notch la-spin la-4x"></i>
-            <p>Loading transmog collection...</p>
+          <div class="tmog-loading">
+            <i class="las la-circle-notch la-spin la-3x"></i>
+            <p>Loading your transmog collection...</p>
+            <p class="tmog-loading-sub">Fetching set data and comparing with your appearances</p>
           </div>
         </div>
       `;
@@ -76,26 +77,47 @@ document.addEventListener('DOMContentLoaded', async () => {
           return !PVP_FILTER.some(k => l.includes(k));
         });
 
-        // Fetch transmog collection (account-wide)
-        const mainChar = characters.sort((a, b) => b.level - a.level)[0];
-        if (!mainChar) throw new Error('No characters found');
+        // Fetch transmog collection from one character per armor type
+        // The API only returns appearances for armor types the character can wear
+        const ARMOR_CLASS_MAP = {
+          'Cloth': [5, 8, 9],       // Priest, Mage, Warlock
+          'Leather': [4, 10, 11, 12], // Rogue, Monk, Druid, DH
+          'Mail': [3, 7, 13],       // Hunter, Shaman, Evoker
+          'Plate': [1, 2, 6]        // Warrior, Paladin, DK
+        };
 
-        const realmSlug = mainChar.realm?.slug || '';
-        const charName = mainChar.name.toLowerCase();
+        // Find one character per armor type (highest level)
+        const charsByArmor = {};
+        characters.sort((a, b) => b.level - a.level).forEach(c => {
+          const classId = c.playable_class?.id;
+          for (const [armor, classIds] of Object.entries(ARMOR_CLASS_MAP)) {
+            if (classIds.includes(classId) && !charsByArmor[armor]) {
+              charsByArmor[armor] = c;
+            }
+          }
+        });
 
-        const collectionData = await battlenetClient.request(
-          `/profile/wow/character/${realmSlug}/${encodeURIComponent(charName)}/collections/transmogs`,
-          { params: { namespace: config.api.namespace.profile } }
-        );
-
+        // Fetch collection from each armor type character in parallel
         const collectedAppearances = new Set();
-        if (collectionData?.slots) {
-          collectionData.slots.forEach(slot => {
-            (slot.appearances || []).forEach(app => {
-              collectedAppearances.add(app.id);
-            });
-          });
-        }
+        const fetchPromises = Object.entries(charsByArmor).map(async ([armor, char]) => {
+          try {
+            const data = await battlenetClient.request(
+              `/profile/wow/character/${char.realm?.slug}/${encodeURIComponent(char.name.toLowerCase())}/collections/transmogs`,
+              { params: { namespace: config.api.namespace.profile } }
+            );
+            if (data?.slots) {
+              data.slots.forEach(slot => {
+                (slot.appearances || []).forEach(app => collectedAppearances.add(app.id));
+              });
+            }
+            console.log(`Transmog: ${armor} from ${char.name} (${char.playable_class?.name})`);
+          } catch (e) {
+            console.warn(`Failed to fetch ${armor} collection from ${char.name}:`, e.message);
+          }
+        });
+
+        await Promise.all(fetchPromises);
+        console.log(`Transmog: ${collectedAppearances.size} total appearances from ${Object.keys(charsByArmor).length} characters`);
 
         // Deduplicate pieces per slot, enrich, and group by set name
         const DISPLAY_ORDER = ['LFR', 'Normal', 'Heroic', 'Mythic'];
@@ -191,6 +213,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
           const totalSets = filtered.length;
           const completeSets = filtered.filter(g => g.variants.every(v => v.complete)).length;
+          const totalPieces = filtered.reduce((sum, g) => sum + Math.max(...g.variants.map(v => v.pieces.length)), 0);
+          const collectedPieces = filtered.reduce((sum, g) => sum + Math.max(...g.variants.map(v => v.collected.length)), 0);
+          const overallProgress = totalPieces > 0 ? Math.round((collectedPieces / totalPieces) * 100) : 0;
 
           content.innerHTML = `
             <div class="tmog-layout">
@@ -210,7 +235,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                       <span>Completed only</span>
                     </label>
                   </div>
-                  <div class="tmog-stats">${completeSets}/${totalSets} complete</div>
+                  <div class="tmog-sidebar-stats">
+                    <div class="tmog-stat">
+                      <span class="tmog-stat-value">${completeSets}</span>
+                      <span class="tmog-stat-label">Sets Complete</span>
+                    </div>
+                    <div class="tmog-stat">
+                      <span class="tmog-stat-value">${collectedPieces}</span>
+                      <span class="tmog-stat-label">Pieces Collected</span>
+                    </div>
+                    <div class="tmog-stat">
+                      <span class="tmog-stat-value">${overallProgress}%</span>
+                      <span class="tmog-stat-label">Overall</span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
