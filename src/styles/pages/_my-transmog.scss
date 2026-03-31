@@ -7,6 +7,52 @@
   min-height: calc(100vh - 317px);
 }
 
+// Page tabs
+.tmog-page-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 0;
+}
+
+.tmog-page-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+
+  i {
+    font-size: 16px;
+  }
+
+  &:hover {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  &.active {
+    color: #fff;
+    border-bottom-color: #a335ee;
+  }
+
+  @media (max-width: 500px) {
+    flex: 1;
+    justify-content: center;
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+}
+
 // Layout
 .tmog-layout {
   display: flex;
@@ -699,6 +745,53 @@
     background: rgba(255, 255, 255, 0.08);
     color: #fff;
   }
+}
+
+// Dungeon Loot
+.tmog-loot-dungeon {
+  margin-bottom: 24px;
+}
+
+.tmog-loot-dungeon-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  i {
+    color: #a335ee;
+  }
+}
+
+.tmog-loot-boss {
+  margin-bottom: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tmog-loot-boss-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  i {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 14px;
+  }
+}
+
+.tmog-loot-items {
+  padding: 4px 0;
 }
 
 // Loading state

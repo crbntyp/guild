@@ -69,11 +69,13 @@ const ARMOR_CLASSES = {
 };
 const SHARED_TIER_EXPANSIONS = ['Dragonflight', 'The War Within', 'Midnight'];
 
-function getExpansionFromLevel(requiredLevel) {
-  if (requiredLevel >= 90) return 'Midnight';
-  if (requiredLevel >= 80) return 'The War Within';
-  if (requiredLevel >= 70) return 'Dragonflight';
-  if (requiredLevel >= 60) return 'Shadowlands';
+function getExpansionFromLevel(requiredLevel, itemId) {
+  // Use item ID for post-squish content (Midnight items have squished reqLevels)
+  if (itemId && itemId > 240000) return 'Midnight';
+  if (itemId && itemId > 210000) return 'The War Within';
+  if (itemId && itemId > 190000) return 'Dragonflight';
+  if (itemId && itemId > 170000) return 'Shadowlands';
+  // Use required_level for everything else (reliable pre-Shadowlands)
   if (requiredLevel >= 50) return 'Battle for Azeroth';
   if (requiredLevel >= 45) return 'Legion';
   if (requiredLevel >= 40) return 'Warlords of Draenor';
@@ -81,6 +83,10 @@ function getExpansionFromLevel(requiredLevel) {
   if (requiredLevel >= 32) return 'Cataclysm';
   if (requiredLevel >= 30) return 'Wrath of the Lich King';
   if (requiredLevel >= 27) return 'The Burning Crusade';
+  // Final fallback to item ID for BfA/Legion if reqLevel is 0
+  if (itemId && itemId > 150000) return 'Battle for Azeroth';
+  if (itemId && itemId > 130000) return 'Legion';
+  if (itemId && itemId > 110000) return 'Warlords of Draenor';
   return 'Classic';
 }
 
@@ -251,8 +257,9 @@ async function main() {
       const data = await api(`/data/wow/journal-instance/${inst.id}`);
       if (!data || !data.encounters) return null;
       const instName = data.name || inst.name || 'Unknown';
+      const instType = data.category?.type || 'UNKNOWN'; // DUNGEON or RAID
       data.encounters.forEach(enc => {
-        encounterIds.push({ id: enc.id, instance: instName });
+        encounterIds.push({ id: enc.id, instance: instName, type: instType });
       });
       return null;
     });
@@ -265,7 +272,7 @@ async function main() {
       const bossName = data.name || 'Unknown Boss';
       (data.items || []).forEach(drop => {
         const itemId = drop.item?.id;
-        if (itemId) itemSourceLookup[itemId] = { boss: bossName, instance: enc.instance };
+        if (itemId) itemSourceLookup[itemId] = { boss: bossName, instance: enc.instance, type: enc.type };
       });
       return null;
     });
@@ -386,13 +393,22 @@ async function main() {
 
     const itemIds = pieces.map(p => p.itemId).filter(id => id > 0);
 
-    // Determine expansion from required_level of any item-set item in this set
+    // Determine expansion from highest required_level across all items
     let expansion = 'Unknown';
+    let bestLevel = 0;
+    let bestItemId = 0;
     for (const id of itemIds) {
-      if (itemRequiredLevel[id]) {
-        expansion = getExpansionFromLevel(itemRequiredLevel[id]);
-        break;
+      const lvl = itemRequiredLevel[id] || 0;
+      if (lvl > bestLevel) {
+        bestLevel = lvl;
+        bestItemId = id;
       }
+    }
+    if (bestLevel > 0 || itemIds.length > 0) {
+      // Use median item ID to avoid outliers (e.g. one Midnight item in a Legion set)
+      const sortedIds = [...itemIds].sort((a, b) => a - b);
+      const medianItemId = sortedIds[Math.floor(sortedIds.length / 2)];
+      expansion = getExpansionFromLevel(bestLevel, medianItemId);
     }
 
     // Cross-reference with item-sets for class — try item ID match first
@@ -418,13 +434,28 @@ async function main() {
       }
     }
 
-    // Skip if we can't determine class (not a class tier set)
-    if (!classes) return null;
+    // Determine set type: check journal source to see if items drop from raids or dungeons
+    let setType = null;
+    const dungeonItems = itemIds.filter(id => itemSourceLookup[id]?.type === 'DUNGEON').length;
+    const raidItems = itemIds.filter(id => itemSourceLookup[id]?.type === 'RAID').length;
+
+    if (dungeonItems > raidItems) {
+      // More items from dungeons than raids = dungeon set
+      setType = 'dungeon';
+    } else if (classes || raidItems > 0) {
+      setType = 'raid';
+    } else if (dungeonItems > 0) {
+      setType = 'dungeon';
+    }
+
+    // Skip if neither raid nor dungeon set
+    if (!setType) return null;
 
     return {
       id: set.id,
       name: set.name,
-      classes,
+      type: setType,
+      classes: classes || null,
       armorType,
       expansion,
       difficulty: difficultyMap[set.id] || null,
@@ -459,11 +490,13 @@ async function main() {
   const byClass = {};
   sets.forEach(s => {
     byExpansion[s.expansion] = (byExpansion[s.expansion] || 0) + 1;
-    s.classes.forEach(c => { byClass[c] = (byClass[c] || 0) + 1; });
+    (s.classes || []).forEach(c => { byClass[c] = (byClass[c] || 0) + 1; });
   });
 
+  const raidSets = sets.filter(s => s.type === 'raid');
+  const dungeonSets = sets.filter(s => s.type === 'dungeon');
   console.log(`\nFinal dataset:`);
-  console.log(`  Total sets: ${sets.length}`);
+  console.log(`  Total sets: ${sets.length} (${raidSets.length} raid, ${dungeonSets.length} dungeon)`);
   console.log(`  Total pieces: ${sets.reduce((sum, s) => sum + s.pieces.length, 0)}`);
   console.log(`  API requests: ${requestCount}`);
   console.log(`\n  By expansion:`);
