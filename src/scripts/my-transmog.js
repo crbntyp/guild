@@ -99,14 +99,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Fetch collection from each armor type character in parallel
         // Fill missing source data — if any piece in the set has a source, use that raid for pieces without
+        const TIER_SLOTS = ['HEAD', 'SHOULDER', 'CHEST', 'HAND', 'LEGS'];
         allSets.forEach(set => {
           const knownInstances = new Set();
           set.pieces.forEach(p => { if (p.source?.instance) knownInstances.add(p.source.instance); });
           if (knownInstances.size > 0) {
-            const raidName = [...knownInstances][0]; // Use first known instance
+            const raidName = [...knownInstances][0];
             set.pieces.forEach(p => {
               if (!p.source) {
-                p.source = { boss: 'Raid Token', instance: raidName };
+                const isTierSlot = TIER_SLOTS.includes(p.slotType);
+                p.source = { boss: isTierSlot ? 'Raid Token' : 'Zone Drop / World Drop / Crafted', instance: raidName };
               }
             });
           }

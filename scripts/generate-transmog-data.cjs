@@ -118,11 +118,15 @@ async function main() {
   const itemSetItemToClass = {};
   const itemSetItemIds = new Set();
   const itemRequiredLevel = {};
+  const itemSetNameToClass = {}; // setName → [class names]
+  let nameItemMap = {}; // setName → itemId (for step5b)
 
   if (step1) {
     Object.entries(step1.classMap).forEach(([id, cls]) => { itemSetItemToClass[id] = cls; });
     step1.itemIds.forEach(id => itemSetItemIds.add(id));
     Object.entries(step1.levels).forEach(([id, lvl]) => { itemRequiredLevel[id] = lvl; });
+    if (step1.nameMap) Object.entries(step1.nameMap).forEach(([name, cls]) => { itemSetNameToClass[name] = cls; });
+    if (step1.nameItemMap) nameItemMap = step1.nameItemMap;
   } else {
     console.log('Step 1: Fetching item-set index for class identification...');
     const itemSetIndex = await api('/data/wow/item-set/index');
@@ -130,10 +134,17 @@ async function main() {
     console.log(`  Found ${itemSets.length} item sets`);
 
     console.log('Fetching item-set details...');
+    const itemSetNames = {}; // itemId → setName
     await batch(itemSets, async (iset) => {
       const data = await api(`/data/wow/item-set/${iset.id}`);
       if (!data || !data.items) return null;
-      data.items.forEach(i => { if (i.id) itemSetItemIds.add(i.id); });
+      const setName = data.name || iset.name || '';
+      data.items.forEach(i => {
+        if (i.id) {
+          itemSetItemIds.add(i.id);
+          itemSetNames[i.id] = setName;
+        }
+      });
       return null;
     });
 
@@ -145,8 +156,21 @@ async function main() {
       if (data?.required_level) itemRequiredLevel[itemId] = data.required_level;
       return null;
     });
-    console.log(`  Got class info for ${Object.keys(itemSetItemToClass).length} items`);
-    saveCache('step1', { classMap: itemSetItemToClass, itemIds: [...itemSetItemIds], levels: itemRequiredLevel });
+    // Build name→class map
+    Object.entries(itemSetItemToClass).forEach(([itemId, classes]) => {
+      const setName = itemSetNames[itemId];
+      if (setName && !itemSetNameToClass[setName]) {
+        itemSetNameToClass[setName] = classes;
+      }
+    });
+    // Build name→itemId map for step5b fallback
+    const nameItemMap = {};
+    Object.entries(itemSetNames).forEach(([itemId, setName]) => {
+      if (!nameItemMap[setName]) nameItemMap[setName] = itemId;
+    });
+
+    console.log(`  Got class info for ${Object.keys(itemSetItemToClass).length} items, ${Object.keys(itemSetNameToClass).length} named sets`);
+    saveCache('step1', { classMap: itemSetItemToClass, itemIds: [...itemSetItemIds], levels: itemRequiredLevel, nameMap: itemSetNameToClass, nameItemMap });
   }
 
   // ── Step 2: Fetch appearance sets (PvE only) ──
@@ -193,6 +217,7 @@ async function main() {
   if (step4Data) {
     iconLookup = step4Data.icons || {};
     itemLevelLookup = step4Data.levels || {};
+    if (step4Data.requiredLevels) Object.entries(step4Data.requiredLevels).forEach(([id, lvl]) => { itemRequiredLevel[id] = lvl; });
   } else {
     const uniqueItemIds = new Set();
     Object.values(appLookup).forEach(a => { if (a.itemId > 0) uniqueItemIds.add(a.itemId); });
@@ -204,10 +229,11 @@ async function main() {
       ]);
       iconLookup[itemId] = media?.assets?.find(a => a.key === 'icon')?.value || '';
       if (itemData?.level) itemLevelLookup[itemId] = itemData.level;
+      if (itemData?.required_level) itemRequiredLevel[itemId] = itemData.required_level;
       return null;
     });
     console.log(`  Got ${Object.values(iconLookup).filter(Boolean).length} icons, ${Object.keys(itemLevelLookup).length} item levels`);
-    saveCache('step4', { icons: iconLookup, levels: itemLevelLookup });
+    saveCache('step4', { icons: iconLookup, levels: itemLevelLookup, requiredLevels: itemRequiredLevel });
   }
 
   // ── Step 5: Build item source lookup from Journal API ──
@@ -277,6 +303,18 @@ async function main() {
           }
         }
         if (matchedItemId) break;
+      }
+
+      // Fallback: find item-set by name and use one of its items
+      if (!matchedItemId) {
+        const setName = variants[0].name;
+        // Find any item-set item that matches this set name
+        for (const [itemId, sName] of Object.entries(nameItemMap)) {
+          if (sName === setName) {
+            matchedItemId = parseInt(itemId);
+            break;
+          }
+        }
       }
 
       if (matchedItemId) {
@@ -357,7 +395,7 @@ async function main() {
       }
     }
 
-    // Cross-reference with item-sets for class
+    // Cross-reference with item-sets for class — try item ID match first
     let classes = null;
     for (const p of pieces) {
       if (itemSetItemToClass[p.itemId]) {
@@ -366,10 +404,15 @@ async function main() {
       }
     }
 
+    // Fallback: match by set name (handles older sets where item IDs differ)
+    if (!classes && itemSetNameToClass[set.name]) {
+      classes = itemSetNameToClass[set.name];
+    }
+
     // For modern expansions without class restriction, use armor type → classes
     if (!classes && SHARED_TIER_EXPANSIONS.includes(expansion)) {
-      // Only if any item is in an item-set (confirms it's a tier set)
-      const isTierSet = itemIds.some(id => itemSetItemIds.has(id));
+      // Only if any item is in an item-set or matched by name
+      const isTierSet = itemIds.some(id => itemSetItemIds.has(id)) || itemSetNameToClass[set.name];
       if (isTierSet) {
         classes = ARMOR_CLASSES[armorType] || null;
       }
