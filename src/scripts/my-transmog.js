@@ -59,15 +59,10 @@ document.addEventListener('DOMContentLoaded', async () => {
           description: 'Track your sets across raids and dungeons. See what you own, what you\'re missing, and where to farm it.'
         })}
         <div class="tmog-page-tabs">
-          <button class="tmog-page-tab active" data-tab="raids">
-            <i class="las la-dungeon"></i> Raid Sets
-          </button>
-          <button class="tmog-page-tab" data-tab="dungeons">
-            <i class="las la-door-open"></i> Dungeon Sets
-          </button>
-          <button class="tmog-page-tab" data-tab="loot">
-            <i class="las la-scroll-old"></i> Dungeon Loot
-          </button>
+          <button class="tmog-page-tab active" data-tab="raids">Raid Sets</button>
+          <button class="tmog-page-tab" data-tab="armor">Armor Sets</button>
+          <button class="tmog-page-tab" data-tab="raidloot">Raid Loot</button>
+          <button class="tmog-page-tab" data-tab="loot">Dungeon Loot</button>
         </div>
         <div id="transmog-content">
           <div class="tmog-loading">
@@ -113,7 +108,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Fetch collection from each armor type character in parallel
         // Split into raid and dungeon sets
         const raidSets = allSets.filter(s => s.type === 'raid' && s.classes);
-        const dungeonSets = allSets.filter(s => s.type === 'dungeon');
+        const armorSets = allSets.filter(s => s.type === 'armor' || s.type === 'dungeon');
+        const dungeonSets = armorSets;
 
         // Fill missing source data — if any piece in the set has a source, use that raid for pieces without
         const TIER_SLOTS = ['HEAD', 'SHOULDER', 'CHEST', 'HAND', 'LEGS'];
@@ -725,15 +721,92 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Dungeon Loot tab
         let lootData = null;
-        let lootExpansion = 'Classic';
+        let lootExpansion = 'Midnight';
         let lootDungeon = 'All Dungeons';
         let lootArmor = 'All';
 
         // Map dungeons to expansions by instance name
-        const BC_DUNGEONS = ['Hellfire Ramparts','The Blood Furnace','The Slave Pens','The Underbog','Mana-Tombs','Auchenai Crypts','Old Hillsbrad Foothills','Shadow Labyrinth','The Shattered Halls','The Steamvault','The Black Morass','The Botanica','Sethekk Halls','The Mechanar','The Arcatraz',"Magisters' Terrace"];
+        const DUNGEON_EXP_MAP = {
+          // Classic
+          'Deadmines': 'Classic', 'Shadowfang Keep': 'Classic', 'Wailing Caverns': 'Classic', 'Gnomeregan': 'Classic',
+          'Razorfen Kraul': 'Classic', 'Razorfen Downs': 'Classic', 'Uldaman': 'Classic', 'The Stockade': 'Classic',
+          'Blackfathom Deeps': 'Classic', "Zul'Farrak": 'Classic', "The Temple of Atal'hakkar": 'Classic',
+          'Blackrock Depths': 'Classic', 'Stratholme - Main Gate': 'Classic', 'Stratholme - Service Entrance': 'Classic',
+          'Lower Blackrock Spire': 'Classic', 'Maraudon': 'Classic', 'Dire Maul - Warpwood Quarter': 'Classic',
+          'Dire Maul - Capital Gardens': 'Classic', 'Dire Maul - Gordok Commons': 'Classic',
+          'Ragefire Chasm': 'Classic', 'Scholomance': 'Classic', 'Scarlet Halls': 'Classic', 'Scarlet Monastery': 'Classic',
+          // Burning Crusade
+          'Hellfire Ramparts': 'The Burning Crusade', 'The Blood Furnace': 'The Burning Crusade',
+          'The Slave Pens': 'The Burning Crusade', 'The Underbog': 'The Burning Crusade',
+          'Mana-Tombs': 'The Burning Crusade', 'Auchenai Crypts': 'The Burning Crusade',
+          'Old Hillsbrad Foothills': 'The Burning Crusade', 'Shadow Labyrinth': 'The Burning Crusade',
+          'The Shattered Halls': 'The Burning Crusade', 'The Steamvault': 'The Burning Crusade',
+          'The Black Morass': 'The Burning Crusade', 'The Botanica': 'The Burning Crusade',
+          'Sethekk Halls': 'The Burning Crusade', 'The Mechanar': 'The Burning Crusade',
+          'The Arcatraz': 'The Burning Crusade', "Magisters' Terrace": 'The Burning Crusade',
+          // Wrath
+          'Utgarde Keep': 'Wrath of the Lich King', 'Utgarde Pinnacle': 'Wrath of the Lich King',
+          'The Nexus': 'Wrath of the Lich King', 'The Oculus': 'Wrath of the Lich King',
+          'Azjol-Nerub': 'Wrath of the Lich King', "Ahn'kahet: The Old Kingdom": 'Wrath of the Lich King',
+          "Drak'Tharon Keep": 'Wrath of the Lich King', 'Gundrak': 'Wrath of the Lich King',
+          'Halls of Stone': 'Wrath of the Lich King', 'Halls of Lightning': 'Wrath of the Lich King',
+          'The Violet Hold': 'Wrath of the Lich King', 'The Culling of Stratholme': 'Wrath of the Lich King',
+          'Trial of the Champion': 'Wrath of the Lich King', 'The Forge of Souls': 'Wrath of the Lich King',
+          'Pit of Saron': 'Wrath of the Lich King', 'Halls of Reflection': 'Wrath of the Lich King',
+          // Cataclysm
+          'Blackrock Caverns': 'Cataclysm', 'Throne of the Tides': 'Cataclysm',
+          'The Stonecore': 'Cataclysm', 'The Vortex Pinnacle': 'Cataclysm',
+          'Lost City of the Tol\'vir': 'Cataclysm', 'Halls of Origination': 'Cataclysm',
+          'Grim Batol': 'Cataclysm', 'End Time': 'Cataclysm', 'Hour of Twilight': 'Cataclysm',
+          'Well of Eternity': 'Cataclysm', "Zul'Aman": 'Cataclysm', "Zul'Gurub": 'Cataclysm',
+          // Mists of Pandaria
+          'Temple of the Jade Serpent': 'Mists of Pandaria', 'Stormstout Brewery': 'Mists of Pandaria',
+          "Mogu'shan Palace": 'Mists of Pandaria', 'Shado-Pan Monastery': 'Mists of Pandaria',
+          'Gate of the Setting Sun': 'Mists of Pandaria', 'Siege of Niuzao Temple': 'Mists of Pandaria',
+          // Warlords of Draenor
+          'Bloodmaul Slag Mines': 'Warlords of Draenor', 'Iron Docks': 'Warlords of Draenor',
+          'Auchindoun': 'Warlords of Draenor', 'Skyreach': 'Warlords of Draenor',
+          'The Everbloom': 'Warlords of Draenor', 'Grimrail Depot': 'Warlords of Draenor',
+          'Shadowmoon Burial Grounds': 'Warlords of Draenor', 'Upper Blackrock Spire': 'Warlords of Draenor',
+          // Legion
+          'Eye of Azshara': 'Legion', 'Darkheart Thicket': 'Legion', 'Halls of Valor': 'Legion',
+          "Neltharion's Lair": 'Legion', 'Maw of Souls': 'Legion', 'Vault of the Wardens': 'Legion',
+          'Black Rook Hold': 'Legion', 'The Arcway': 'Legion', 'Court of Stars': 'Legion',
+          'Cathedral of Eternal Night': 'Legion', 'Seat of the Triumvirate': 'Legion',
+          'Return to Karazhan': 'Legion', 'Assault on Violet Hold': 'Legion',
+          // Battle for Azeroth
+          "Atal'Dazar": 'Battle for Azeroth', "Kings' Rest": 'Battle for Azeroth',
+          'Freehold': 'Battle for Azeroth', 'Shrine of the Storm': 'Battle for Azeroth',
+          'Siege of Boralus': 'Battle for Azeroth', 'Temple of Sethraliss': 'Battle for Azeroth',
+          'The Underrot': 'Battle for Azeroth', 'Tol Dagor': 'Battle for Azeroth',
+          'Waycrest Manor': 'Battle for Azeroth', 'The MOTHERLODE!!': 'Battle for Azeroth',
+          'Operation: Mechagon': 'Battle for Azeroth',
+          // Shadowlands
+          'The Necrotic Wake': 'Shadowlands', 'Plaguefall': 'Shadowlands',
+          'Mists of Tirna Scithe': 'Shadowlands', 'Halls of Atonement': 'Shadowlands',
+          'Spires of Ascension': 'Shadowlands', 'Theater of Pain': 'Shadowlands',
+          'De Other Side': 'Shadowlands', 'Sanguine Depths': 'Shadowlands',
+          'Tazavesh, the Veiled Market': 'Shadowlands',
+          // Dragonflight
+          'Ruby Life Pools': 'Dragonflight', 'The Nokhud Offensive': 'Dragonflight',
+          'The Azure Vault': 'Dragonflight', 'Algeth\'ar Academy': 'Dragonflight',
+          'Brackenhide Hollow': 'Dragonflight', 'Halls of Infusion': 'Dragonflight',
+          'Neltharus': 'Dragonflight', 'Uldaman: Legacy of Tyr': 'Dragonflight',
+          'Dawn of the Infinite': 'Dragonflight',
+          // The War Within
+          'Ara-Kara, City of Echoes': 'The War Within', 'City of Threads': 'The War Within',
+          'The Dawnbreaker': 'The War Within', 'The Stonevault': 'The War Within',
+          'Darkflame Cleft': 'The War Within', 'The Rookery': 'The War Within',
+          'Cinderbrew Meadery': 'The War Within', 'The Blinding Vale': 'The War Within',
+          'Priory of the Sacred Flame': 'The War Within', 'Operation: Floodgate': 'The War Within',
+          // Midnight
+          'Windrunner Spire': 'Midnight', 'Maisara Caverns': 'Midnight',
+          'Nexus-Point Xenas': 'Midnight', 'Murder Row': 'Midnight',
+          'Den of Nalorakk': 'Midnight', 'Voidscar Arena': 'Midnight',
+          'Eco-Dome Al\'dani': 'Midnight',
+        };
         function getDungeonExpansion(instance) {
-          if (BC_DUNGEONS.includes(instance)) return 'The Burning Crusade';
-          return 'Classic';
+          return DUNGEON_EXP_MAP[instance] || 'Unknown';
         }
 
         async function renderLoot() {
@@ -767,9 +840,11 @@ document.addEventListener('DOMContentLoaded', async () => {
           Object.entries(dungeonsByInstance).forEach(([inst, ditems]) => {
             dungeonExpMap[inst] = getDungeonExpansion(inst);
           });
-          // Only show expansions we have loot data for
-          const LOOT_EXPANSIONS = ['Classic', 'The Burning Crusade'];
-          const availableExpansions = LOOT_EXPANSIONS;
+          // Build available expansions from actual data
+          const availableExpansions = [...new Set(Object.values(dungeonExpMap))];
+          const EXP_SORT = ['Midnight', 'The War Within', 'Dragonflight', 'Shadowlands', 'Battle for Azeroth', 'Legion', 'Warlords of Draenor', 'Mists of Pandaria', 'Cataclysm', 'Wrath of the Lich King', 'The Burning Crusade', 'Classic'];
+          availableExpansions.sort((a, b) => EXP_SORT.indexOf(a) - EXP_SORT.indexOf(b));
+          availableExpansions.unshift('All Expansions');
 
           // Filter by expansion, dungeon, armor
           const items = allLootItems.filter(([, item]) => {
@@ -919,9 +994,161 @@ document.addEventListener('DOMContentLoaded', async () => {
           });
         }
 
+        let raidLootData = null;
+        let raidLootExpansion = 'Classic';
+        let raidLootRaid = 'All Raids';
+        let raidLootArmor = 'All';
+
+        const CLASSIC_RAIDS = ['Molten Core','Blackwing Lair','Temple of Ahn\'Qiraj','Ruins of Ahn\'Qiraj'];
+        function getRaidExpansion(instance) {
+          if (CLASSIC_RAIDS.includes(instance)) return 'Classic';
+          return 'Unknown';
+        }
+
+        async function renderRaidLoot() {
+          if (!raidLootData) {
+            content.innerHTML = `<div class="tmog-loading"><i class="las la-circle-notch la-spin la-3x"></i><p>Loading raid loot...</p></div>`;
+            try {
+              const res = await fetch('data/raid-loot.json');
+              raidLootData = await res.json();
+            } catch(e) {
+              content.innerHTML = `<div class="tmog-empty">Failed to load raid loot data</div>`;
+              return;
+            }
+          }
+
+          const EXCLUDED_SLOTS = ['NON_EQUIP', 'BAG', 'THROWN', 'AMMO', 'NECK', 'FINGER', 'TRINKET', 'RELIC', 'RANGED', 'RANGEDRIGHT'];
+          const allRaidLootItems = Object.entries(raidLootData.items || {}).filter(([, item]) => {
+            if (!item.slotType || EXCLUDED_SLOTS.includes(item.slotType)) return false;
+            if (item.itemClass !== 4 && item.itemClass !== 2) return false;
+            return true;
+          });
+
+          const raidsByInstance = {};
+          allRaidLootItems.forEach(([id, item]) => {
+            if (!raidsByInstance[item.instance]) raidsByInstance[item.instance] = [];
+            raidsByInstance[item.instance].push([id, item]);
+          });
+          const raidExpMap = {};
+          Object.keys(raidsByInstance).forEach(inst => { raidExpMap[inst] = getRaidExpansion(inst); });
+
+          const RAID_LOOT_EXPANSIONS = ['Classic'];
+
+          const items = allRaidLootItems.filter(([, item]) => {
+            if (raidLootExpansion !== 'All Expansions' && raidExpMap[item.instance] !== raidLootExpansion) return false;
+            if (raidLootRaid !== 'All Raids' && item.instance !== raidLootRaid) return false;
+            if (raidLootArmor !== 'All') {
+              const armorMap = { 'Cloth': 1, 'Leather': 2, 'Mail': 3, 'Plate': 4 };
+              if (item.itemClass === 4 && item.armorTypeId !== armorMap[raidLootArmor]) return false;
+            }
+            return true;
+          });
+
+          const raids = {};
+          items.forEach(([id, item]) => {
+            if (!raids[item.instance]) raids[item.instance] = {};
+            if (!raids[item.instance][item.boss]) raids[item.instance][item.boss] = [];
+            raids[item.instance][item.boss].push({ ...item, itemId: parseInt(id) });
+          });
+
+          const filteredRaidNames = Object.entries(raidExpMap)
+            .filter(([, exp]) => raidLootExpansion === 'All Expansions' || exp === raidLootExpansion)
+            .map(([name]) => name).sort();
+
+          const totalItems = items.length;
+          const collectedItems = items.filter(([,i]) => collectedAppearances.has(i.appearanceId)).length;
+
+          content.innerHTML = `
+            <div class="tmog-layout">
+              <div class="tmog-sidebar">
+                <div class="tmog-sidebar-inner">
+                  <div class="tmog-sidebar-section">
+                    <div class="tmog-sidebar-label">Expansion</div>
+                    <div id="tmog-rl-expansion-dropdown"></div>
+                  </div>
+                  <div class="tmog-sidebar-section">
+                    <div class="tmog-sidebar-label">Raid</div>
+                    <div id="tmog-rl-raid-dropdown"></div>
+                  </div>
+                  <div class="tmog-sidebar-section">
+                    <div class="tmog-sidebar-label">Armor Type</div>
+                    <div id="tmog-rl-armor-dropdown"></div>
+                  </div>
+                  <div class="tmog-sidebar-stats">
+                    <div class="tmog-stat">
+                      <span class="tmog-stat-value">${collectedItems}</span>
+                      <span class="tmog-stat-label">Collected</span>
+                    </div>
+                    <div class="tmog-stat">
+                      <span class="tmog-stat-value">${totalItems}</span>
+                      <span class="tmog-stat-label">Total</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="tmog-main">
+                ${Object.keys(raids).length === 0 ? `<div class="tmog-empty">No items found</div>` :
+                  Object.entries(raids).map(([raid, bosses]) => `
+                    <div class="tmog-loot-dungeon">
+                      <h3 class="tmog-loot-dungeon-name"><i class="las la-dungeon"></i> ${raid}</h3>
+                      ${Object.entries(bosses).map(([boss, loot]) => `
+                        <div class="tmog-loot-boss">
+                          <div class="tmog-loot-boss-name"><i class="las la-skull"></i> ${boss}</div>
+                          <div class="tmog-loot-items">
+                            ${loot.map(item => {
+                              const owned = collectedAppearances.has(item.appearanceId);
+                              return `
+                                <div class="tmog-piece ${owned ? 'owned' : 'missing'}" data-item-id="${item.itemId}" data-item-name="${item.name}" data-slot="${item.slot}" data-icon="${item.icon}" data-boss="${item.boss}" data-instance="${item.instance}" data-owned="${owned}">
+                                  ${item.icon ? `<a href="https://www.wowhead.com/item=${item.itemId}" onclick="event.preventDefault()" class="tmog-piece-icon-link"><img src="${item.icon}" class="tmog-piece-icon" /></a>` : `<span class="tmog-piece-icon-placeholder"></span>`}
+                                  <span class="tmog-piece-slot">${item.slot}</span>
+                                  <span class="tmog-piece-name">${item.name}</span>
+                                  ${owned ? '<i class="las la-check tmog-piece-check"></i>' : ''}
+                                </div>
+                              `;
+                            }).join('')}
+                          </div>
+                        </div>
+                      `).join('')}
+                    </div>
+                  `).join('')
+                }
+              </div>
+            </div>
+          `;
+
+          // Dropdowns
+          new CustomDropdown({ id: 'tmog-rl-exp-dd', label: 'Expansion', options: RAID_LOOT_EXPANSIONS.map(e => ({ value: e, label: e })), selectedValue: raidLootExpansion, onChange: (val) => { raidLootExpansion = val; raidLootRaid = 'All Raids'; renderRaidLoot(); } }).attachToElement(document.getElementById('tmog-rl-expansion-dropdown'));
+          new CustomDropdown({ id: 'tmog-rl-raid-dd', label: 'Raid', options: [{ value: 'All Raids', label: 'All Raids' }, ...filteredRaidNames.map(n => ({ value: n, label: n }))], selectedValue: raidLootRaid, onChange: (val) => { raidLootRaid = val; renderRaidLoot(); } }).attachToElement(document.getElementById('tmog-rl-raid-dropdown'));
+          new CustomDropdown({ id: 'tmog-rl-armor-dd', label: 'Armor', options: ['All', 'Cloth', 'Leather', 'Mail', 'Plate'].map(a => ({ value: a, label: a === 'All' ? 'All Armor' : a })), selectedValue: raidLootArmor, onChange: (val) => { raidLootArmor = val; renderRaidLoot(); } }).attachToElement(document.getElementById('tmog-rl-armor-dropdown'));
+
+          // Piece click modal
+          content.querySelectorAll('.tmog-piece').forEach(el => {
+            el.addEventListener('click', () => {
+              const itemId = el.dataset.itemId, itemName = el.dataset.itemName, slot = el.dataset.slot, icon = el.dataset.icon, boss = el.dataset.boss, instance = el.dataset.instance, owned = el.dataset.owned === 'true';
+              document.querySelector('.tmog-modal-overlay')?.remove();
+              const wowheadUrl = 'https://www.wowhead.com/item=' + itemId;
+              const modal = document.createElement('div');
+              modal.className = 'tmog-modal-overlay';
+              modal.innerHTML = '<div class="tmog-modal"><button class="tmog-modal-close"><i class="las la-times"></i></button><div class="tmog-modal-content"><a href="'+wowheadUrl+'" onclick="event.preventDefault()" class="tmog-modal-icon-link"><img src="'+icon+'" class="tmog-modal-icon" /></a><div class="tmog-modal-info"><span class="tmog-modal-slot">'+slot+'</span><h3 class="tmog-modal-name">'+itemName+'</h3><span class="tmog-modal-status '+(owned?'owned':'missing')+'">'+(owned?'Collected':'Missing')+'</span></div></div>'+(boss?'<div class="tmog-modal-source"><div class="tmog-modal-source-row"><i class="las la-skull"></i><span>'+boss+'</span></div><div class="tmog-modal-source-row"><i class="las la-dungeon"></i><span>'+instance+'</span></div></div>':'')+'<div class="tmog-modal-actions">'+(!owned?'<button class="tmog-modal-todo" id="tmog-add-todo"><i class="las la-plus"></i> Add to Todos</button>':'')+'<a href="'+wowheadUrl+'" target="_blank" rel="noopener" class="tmog-modal-wowhead">Wowhead <i class="las la-external-link-alt"></i></a></div></div>';
+              document.body.appendChild(modal);
+              modal.querySelector('.tmog-modal-close').addEventListener('click', () => modal.remove());
+              modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+              document.addEventListener('keydown', function handler(e) { if (e.key === 'Escape') { modal.remove(); document.removeEventListener('keydown', handler); } });
+              const todoBtn = modal.querySelector('#tmog-add-todo');
+              if (todoBtn) {
+                todoBtn.addEventListener('click', async () => {
+                  todoBtn.disabled = true; todoBtn.innerHTML = '<i class="las la-circle-notch la-spin"></i> Adding...';
+                  try { const apiBase = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'https://crbntyp.com/gld/api' : '/gld/api'; await fetch(apiBase+'/todos.php', { method: 'POST', headers: { 'Authorization': 'Bearer '+authService.getAccessToken(), 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'add', title: 'Farm: '+itemName, description: 'Drops from '+boss+' in '+instance, url: wowheadUrl, image: icon }) }); todoBtn.innerHTML = '<i class="las la-check"></i> Added!'; todoBtn.classList.add('added'); } catch(e) { todoBtn.innerHTML = 'Failed'; todoBtn.disabled = false; }
+                });
+              }
+            });
+          });
+        }
+
         function renderActiveTab() {
           if (activeTab === 'raids') renderTransmog();
-          else if (activeTab === 'dungeons') renderDungeons();
+          else if (activeTab === 'armor') renderDungeons();
+          else if (activeTab === 'raidloot') renderRaidLoot();
           else renderLoot();
         }
 

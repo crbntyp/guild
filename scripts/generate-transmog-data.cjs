@@ -445,13 +445,38 @@ async function main() {
     const dungeonItems = itemIds.filter(id => itemSourceLookup[id]?.type === 'DUNGEON').length;
     const raidItems = itemIds.filter(id => itemSourceLookup[id]?.type === 'RAID').length;
 
-    if (dungeonItems > raidItems) {
-      // More items from dungeons than raids = dungeon set
-      setType = 'dungeon';
-    } else if (classes || raidItems > 0) {
+    const hasAnySource = dungeonItems > 0 || raidItems > 0;
+
+    // Check if set is in item-set API (by item ID or name match)
+    const isInItemSet = itemIds.some(id => itemSetItemIds.has(id)) || !!itemSetNameToClass[set.name];
+    // Manual class fixes for sets where API data is incomplete
+    const MANUAL_CLASS_MAP = {
+      "Mystic Heron's Discipline": ['Monk'],
+    };
+    // Fix misclassified expansion for re-added items with reqLevel 1
+    const EXPANSION_FIXES = {
+      "Battleplate of Resounding Rings": 'Mists of Pandaria',
+    };
+    if (EXPANSION_FIXES[set.name]) expansion = EXPANSION_FIXES[set.name];
+    if (!classes && MANUAL_CLASS_MAP[set.name]) {
+      classes = MANUAL_CLASS_MAP[set.name];
+    }
+
+    // Single class = raid tier set. Multiple classes = shared armor set (vendor/crafted/dungeon)
+    const isSingleClass = classes && classes.length === 1;
+
+    if (isSingleClass && isInItemSet) {
+      // Single class + in item-set API = raid tier set
+      setType = 'raid';
+    } else if (dungeonItems > raidItems) {
+      setType = 'armor';
+    } else if (raidItems > 0) {
       setType = 'raid';
     } else if (dungeonItems > 0) {
-      setType = 'dungeon';
+      setType = 'armor';
+    } else if (classes) {
+      // Has class but not in item-set and no journal source = vendor/crafted
+      setType = 'armor';
     }
 
     // Skip if neither raid nor dungeon set
@@ -503,9 +528,9 @@ async function main() {
   });
 
   const raidSets = sets.filter(s => s.type === 'raid');
-  const dungeonSets = sets.filter(s => s.type === 'dungeon');
+  const armorSets = sets.filter(s => s.type === 'armor');
   console.log(`\nFinal dataset:`);
-  console.log(`  Total sets: ${sets.length} (${raidSets.length} raid, ${dungeonSets.length} dungeon)`);
+  console.log(`  Total sets: ${sets.length} (${raidSets.length} raid, ${armorSets.length} armor)`);
   console.log(`  Total pieces: ${sets.reduce((sum, s) => sum + s.pieces.length, 0)}`);
   console.log(`  API requests: ${requestCount}`);
   console.log(`\n  By expansion:`);
