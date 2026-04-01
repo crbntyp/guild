@@ -220,10 +220,12 @@ async function main() {
   let step4Data = loadCache('step4');
   let iconLookup = {};
   let itemLevelLookup = {};
+  const itemReputationLookup = {}; // itemId → { faction, level, display }
   if (step4Data) {
     iconLookup = step4Data.icons || {};
     itemLevelLookup = step4Data.levels || {};
     if (step4Data.requiredLevels) Object.entries(step4Data.requiredLevels).forEach(([id, lvl]) => { itemRequiredLevel[id] = lvl; });
+    if (step4Data.reputations) Object.entries(step4Data.reputations).forEach(([id, rep]) => { itemReputationLookup[id] = rep; });
   } else {
     const uniqueItemIds = new Set();
     Object.values(appLookup).forEach(a => { if (a.itemId > 0) uniqueItemIds.add(a.itemId); });
@@ -236,10 +238,14 @@ async function main() {
       iconLookup[itemId] = media?.assets?.find(a => a.key === 'icon')?.value || '';
       if (itemData?.level) itemLevelLookup[itemId] = itemData.level;
       if (itemData?.required_level) itemRequiredLevel[itemId] = itemData.required_level;
+      const rep = itemData?.preview_item?.requirements?.reputation;
+      if (rep) {
+        itemReputationLookup[itemId] = { faction: rep.faction?.name || '', level: rep.display_string || '' };
+      }
       return null;
     });
     console.log(`  Got ${Object.values(iconLookup).filter(Boolean).length} icons, ${Object.keys(itemLevelLookup).length} item levels`);
-    saveCache('step4', { icons: iconLookup, levels: itemLevelLookup, requiredLevels: itemRequiredLevel });
+    saveCache('step4', { icons: iconLookup, levels: itemLevelLookup, requiredLevels: itemRequiredLevel, reputations: itemReputationLookup });
   }
 
   // ── Step 5: Build item source lookup from Journal API ──
@@ -463,6 +469,7 @@ async function main() {
       ilvl: Math.max(...pieces.map(p => itemLevelLookup[p.itemId] || 0)),
       pieces: pieces.map(p => {
         const source = itemSourceLookup[p.itemId] || null;
+        const rep = itemReputationLookup[p.itemId] || null;
         return {
           appearanceId: p.id,
           slot: p.slot,
@@ -470,7 +477,9 @@ async function main() {
           itemName: p.itemName,
           itemId: p.itemId,
           icon: iconLookup[p.itemId] || '',
-          source: source ? { boss: source.boss, instance: source.instance } : null
+          source: rep
+            ? { boss: rep.level, instance: rep.faction }
+            : source ? { boss: source.boss, instance: source.instance } : null
         };
       })
     };
