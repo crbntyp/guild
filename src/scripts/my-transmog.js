@@ -995,14 +995,56 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         let raidLootData = null;
-        let raidLootExpansion = 'Classic';
+        let raidLootExpansion = 'Midnight';
         let raidLootRaid = 'All Raids';
         let raidLootArmor = 'All';
 
-        const CLASSIC_RAIDS = ['Molten Core','Blackwing Lair','Temple of Ahn\'Qiraj','Ruins of Ahn\'Qiraj'];
+        const RAID_EXP_MAP = {
+          // Classic
+          'Molten Core': 'Classic', 'Blackwing Lair': 'Classic', "Temple of Ahn'Qiraj": 'Classic', "Ruins of Ahn'Qiraj": 'Classic',
+          // Burning Crusade
+          'Karazhan': 'The Burning Crusade', "Gruul's Lair": 'The Burning Crusade', "Magtheridon's Lair": 'The Burning Crusade',
+          'Serpentshrine Cavern': 'The Burning Crusade', 'The Eye': 'The Burning Crusade',
+          'The Battle for Mount Hyjal': 'The Burning Crusade', 'Black Temple': 'The Burning Crusade',
+          'Sunwell Plateau': 'The Burning Crusade',
+          // Wrath
+          'Naxxramas': 'Wrath of the Lich King', 'The Obsidian Sanctum': 'Wrath of the Lich King',
+          'The Eye of Eternity': 'Wrath of the Lich King', 'Ulduar': 'Wrath of the Lich King',
+          'Trial of the Crusader': 'Wrath of the Lich King', "Onyxia's Lair": 'Wrath of the Lich King',
+          'Icecrown Citadel': 'Wrath of the Lich King', 'The Ruby Sanctum': 'Wrath of the Lich King',
+          'Vault of Archavon': 'Wrath of the Lich King',
+          // Cataclysm
+          'Blackwing Descent': 'Cataclysm', 'The Bastion of Twilight': 'Cataclysm',
+          'Throne of the Four Winds': 'Cataclysm', 'Baradin Hold': 'Cataclysm',
+          'Firelands': 'Cataclysm', 'Dragon Soul': 'Cataclysm',
+          // Mists of Pandaria
+          "Mogu'shan Vaults": 'Mists of Pandaria', 'Heart of Fear': 'Mists of Pandaria',
+          'Terrace of Endless Spring': 'Mists of Pandaria', 'Throne of Thunder': 'Mists of Pandaria',
+          'Siege of Orgrimmar': 'Mists of Pandaria',
+          // Warlords of Draenor
+          'Highmaul': 'Warlords of Draenor', 'Blackrock Foundry': 'Warlords of Draenor',
+          'Hellfire Citadel': 'Warlords of Draenor',
+          // Legion
+          'The Emerald Nightmare': 'Legion', 'Trial of Valor': 'Legion', 'The Nighthold': 'Legion',
+          'Tomb of Sargeras': 'Legion', 'Antorus, the Burning Throne': 'Legion',
+          // Battle for Azeroth
+          'Uldir': 'Battle for Azeroth', 'Battle of Dazar\'alor': 'Battle for Azeroth',
+          'Crucible of Storms': 'Battle for Azeroth', 'The Eternal Palace': 'Battle for Azeroth',
+          "Ny'alotha, the Waking City": 'Battle for Azeroth',
+          // Shadowlands
+          'Castle Nathria': 'Shadowlands', 'Sanctum of Domination': 'Shadowlands',
+          'Sepulcher of the First Ones': 'Shadowlands',
+          // Dragonflight
+          'Vault of the Incarnates': 'Dragonflight', 'Aberrus, the Shadowed Crucible': 'Dragonflight',
+          "Amirdrassil, the Dream's Hope": 'Dragonflight',
+          // The War Within
+          'Nerub-ar Palace': 'The War Within', 'Manaforge Omega': 'The War Within',
+          'Liberation of Undermine': 'The War Within',
+          // Midnight
+          'The Voidspire': 'Midnight', "March on Quel'Danas": 'Midnight', 'The Dreamrift': 'Midnight',
+        };
         function getRaidExpansion(instance) {
-          if (CLASSIC_RAIDS.includes(instance)) return 'Classic';
-          return 'Unknown';
+          return RAID_EXP_MAP[instance] || 'Unknown';
         }
 
         async function renderRaidLoot() {
@@ -1032,7 +1074,10 @@ document.addEventListener('DOMContentLoaded', async () => {
           const raidExpMap = {};
           Object.keys(raidsByInstance).forEach(inst => { raidExpMap[inst] = getRaidExpansion(inst); });
 
-          const RAID_LOOT_EXPANSIONS = ['Classic'];
+          const RAID_LOOT_EXPANSIONS = [...new Set(Object.values(raidExpMap))];
+          const RAID_EXP_SORT = ['Midnight', 'The War Within', 'Dragonflight', 'Shadowlands', 'Battle for Azeroth', 'Legion', 'Warlords of Draenor', 'Mists of Pandaria', 'Cataclysm', 'Wrath of the Lich King', 'The Burning Crusade', 'Classic'];
+          RAID_LOOT_EXPANSIONS.sort((a, b) => RAID_EXP_SORT.indexOf(a) - RAID_EXP_SORT.indexOf(b));
+          RAID_LOOT_EXPANSIONS.unshift('All Expansions');
 
           const items = allRaidLootItems.filter(([, item]) => {
             if (raidLootExpansion !== 'All Expansions' && raidExpMap[item.instance] !== raidLootExpansion) return false;

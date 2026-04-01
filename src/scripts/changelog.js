@@ -15,9 +15,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     <div class="changelog-content">
 
       <div class="changelog-entry">
+        <div class="changelog-date">April 2026</div>
+        <h3 class="changelog-title">Raid & Dungeon Loot Browser</h3>
+        <p>Browse every piece of loot from every raid and dungeon across all expansions. Over 15,000 items with icons, boss names, and collection tracking. Filter by expansion, instance, and armor type. Click any item for details and add missing pieces to your todo list.</p>
+        <div class="changelog-tags">
+          <span class="changelog-tag">New Feature</span>
+        </div>
+      </div>
+
+      <div class="changelog-entry">
         <div class="changelog-date">March 2026</div>
         <h3 class="changelog-title">Transmog Set Collection Tracker</h3>
-        <p>Track every class tier set across every expansion. See which pieces you own, which you're missing, and exactly where to farm them — boss names, raid locations, and direct Wowhead tooltips on every item. Filter by class, expansion, and difficulty. Add missing pieces to your todo list with one click.</p>
+        <p>Track every class tier set across every expansion. See which pieces you own, which you're missing, and exactly where to farm them — boss names, raid locations, and direct Wowhead tooltips on every item. Four tabs: Raid Sets, Armor Sets, Raid Loot, and Dungeon Loot. Reputation items show faction and standing required. Add missing pieces to your todo list with one click.</p>
         <div class="changelog-tags">
           <span class="changelog-tag">New Feature</span>
           <span class="changelog-tag">Database</span>

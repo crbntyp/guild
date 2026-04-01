@@ -58,6 +58,13 @@ document.addEventListener('DOMContentLoaded', async () => {
               </div>
               <div class="account-card-stat" id="stat-vault"><i class="las la-circle-notch la-spin"></i></div>
             </a>
+            <a href="my-transmog.html" class="account-card">
+              <div class="account-card-icon"><i class="las la-tshirt"></i></div>
+              <div class="account-card-info">
+                <h3>Transmog Sets</h3>
+                <p>Track raid sets, armor sets, and browse every piece of loot from raids and dungeons across all expansions.</p>
+              </div>
+            </a>
             <a href="my-mounts.html" class="account-card">
               <div class="account-card-icon"><i class="las la-horse"></i></div>
               <div class="account-card-info">
