@@ -328,6 +328,7 @@ class TopBar {
       <div class="user-info">
         <div class="user-avatar-container">
           <i class="las la-circle-notch la-spin"></i>
+          <div class="admin-tooltip" id="admin-tooltip"></div>
         </div>
         <a href="my-characters.html" class="user-battletag">${user.battletag || 'User'}</a>
         <button class="btn-logout" id="bnet-logout-btn">
@@ -352,6 +353,26 @@ class TopBar {
 
     // Load user's main character avatar
     this.loadUserAvatar();
+    this.loadAdminStats();
+  }
+
+  async loadAdminStats() {
+    try {
+      const apiBase = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+        ? 'https://crbntyp.com/gld/api' : '/gld/api';
+      const token = (await import('../services/auth.js')).default.getAccessToken();
+      const res = await fetch(`${apiBase}/admin-stats.php`, { headers: { 'Authorization': `Bearer ${token}` } });
+      if (!res.ok) return;
+      const stats = await res.json();
+      const tooltip = document.getElementById('admin-tooltip');
+      if (tooltip) {
+        tooltip.innerHTML = `
+          <div class="admin-stat">${stats.total_logins} logins</div>
+          <div class="admin-stat">${stats.unique_users} unique</div>
+          <div class="admin-stat">${stats.recent_logins} this week</div>
+        `;
+      }
+    } catch (e) {}
   }
 
   /**
@@ -365,25 +386,33 @@ class TopBar {
       const avatarContainer = this.rightContainer.querySelector('.user-avatar-container');
       if (!avatarContainer) return;
 
+      const setAvatarContent = (container, html) => {
+        const tooltip = container.querySelector('.admin-tooltip');
+        container.innerHTML = html;
+        if (tooltip) container.appendChild(tooltip);
+      };
+
       if (mainChar) {
         const avatarUrl = `https://render.worldofwarcraft.com/eu/character/${mainChar.realm.slug}/${mainChar.name.toLowerCase()}-avatar.jpg`;
 
         const img = new Image();
         img.onload = () => {
-          avatarContainer.innerHTML = `<img src="${avatarUrl}" alt="${mainChar.name}" class="user-avatar" />`;
+          setAvatarContent(avatarContainer, `<img src="${avatarUrl}" alt="${mainChar.name}" class="user-avatar" />`);
         };
         img.onerror = () => {
-          avatarContainer.innerHTML = `<i class="las la-user"></i>`;
+          setAvatarContent(avatarContainer, `<i class="las la-user"></i>`);
         };
         img.src = avatarUrl;
       } else {
-        avatarContainer.innerHTML = `<i class="las la-user"></i>`;
+        setAvatarContent(avatarContainer, `<i class="las la-user"></i>`);
       }
     } catch (error) {
       console.error('Error loading user avatar:', error);
       const avatarContainer = this.rightContainer.querySelector('.user-avatar-container');
       if (avatarContainer) {
+        const tooltip = avatarContainer.querySelector('.admin-tooltip');
         avatarContainer.innerHTML = `<i class="las la-user"></i>`;
+        if (tooltip) avatarContainer.appendChild(tooltip);
       }
     }
   }

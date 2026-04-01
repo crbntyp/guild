@@ -75,6 +75,20 @@ if (!isset($tokenData['access_token'])) {
     exit;
 }
 
+// Log successful login
+try {
+    require_once __DIR__ . '/config.php';
+    $token = $tokenData['access_token'];
+    $userRes = file_get_contents('https://oauth.battle.net/userinfo', false, stream_context_create([
+        'http' => ['header' => "Authorization: Bearer $token"]
+    ]));
+    if ($userRes) {
+        $user = json_decode($userRes, true);
+        $stmt = $db->prepare("INSERT INTO login_log (bnet_user_id, battletag) VALUES (:uid, :tag)");
+        $stmt->execute([':uid' => $user['id'] ?? 0, ':tag' => $user['battletag'] ?? '']);
+    }
+} catch (Exception $e) {}
+
 echo json_encode([
     'access_token' => $tokenData['access_token'],
     'expires_in' => $tokenData['expires_in'] ?? 86400

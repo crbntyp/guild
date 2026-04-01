@@ -355,12 +355,39 @@
       width: 32px;
       height: 32px;
       border-radius: 50%;
-      overflow: hidden;
+      overflow: visible;
       display: flex;
       align-items: center;
       justify-content: center;
       background: rgba(255, 255, 255, 0.08);
       border: 2px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+
+      .admin-tooltip {
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        background: rgba(0, 0, 0, 0.95);
+        border-radius: 6px;
+        padding: 8px 12px;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s ease;
+        white-space: nowrap;
+        z-index: 10001;
+        pointer-events: none;
+
+        .admin-stat {
+          font-size: 10px;
+          color: rgba(255, 255, 255, 0.6);
+          line-height: 1.6;
+        }
+      }
+
+      &:hover .admin-tooltip {
+        opacity: 1;
+        visibility: visible;
+      }
 
       .user-avatar {
         width: 100%;
