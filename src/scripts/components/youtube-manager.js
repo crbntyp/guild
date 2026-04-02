@@ -235,6 +235,7 @@ class YouTubeManager extends ItemManager {
     this.container.innerHTML = `
       ${PageHeader.render({
         className: 'youtube',
+        badge: 'gld__ youtube',
         title: 'My YouTube',
         description: 'Curate and organize your favorite Warcraft YouTube videos, guides, and content creators all in one place.',
         actionButton: {

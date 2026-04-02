@@ -311,6 +311,12 @@
         background: rgba(88, 101, 242, 0.35);
         transform: translateY(-1px);
       }
+
+      &.disabled {
+        opacity: 0.4;
+        cursor: default;
+        pointer-events: none;
+      }
     }
 
     .raids-landing-cta-text {

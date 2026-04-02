@@ -112,10 +112,10 @@ document.addEventListener('DOMContentLoaded', async () => {
               </div>
 
               <div class="raids-landing-cta">
-                <a href="https://discord.com/oauth2/authorize?client_id=1486760650138193990&permissions=18432&scope=bot+applications.commands" target="_blank" class="btn-add-bot">
+                <span class="btn-add-bot disabled">
                   <i class="lab la-discord"></i>
-                  Add gld__ Raid Bot to your Discord
-                </a>
+                  Discord Bot — Coming Soon
+                </span>
               </div>
             </div>
           `;
@@ -283,10 +283,10 @@ document.addEventListener('DOMContentLoaded', async () => {
               <div class="raids-landing-cta">
                 <p class="raids-landing-cta-text">Click a raid signup link from your Discord server to get started.</p>
                 <p class="raids-landing-cta-sub">Your GM creates raids via the <code>/raid</code> command in Discord, which posts a signup link to your channel.</p>
-                <a href="https://discord.com/oauth2/authorize?client_id=1486760650138193990&permissions=18432&scope=bot+applications.commands" target="_blank" class="btn-add-bot">
+                <span class="btn-add-bot disabled">
                   <i class="lab la-discord"></i>
-                  Add gld__ Raid Bot to your Discord
-                </a>
+                  Discord Bot — Coming Soon
+                </span>
               </div>
             </div>
           `;

@@ -39,6 +39,7 @@ class RaidManager {
   render() {
     const headerHTML = PageHeader.render({
       className: 'raids',
+      badge: 'gld__ raids',
       title: 'Raids',
       description: 'Sign up for upcoming raids with your guild. Pick a character, choose your role, and lock in your spot.'
     });

@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       container.innerHTML = `
         ${PageHeader.render({
           className: 'account',
+          badge: 'gld__ account',
           title: battletag,
           description: 'Your account hub — everything in one place.'
         })}

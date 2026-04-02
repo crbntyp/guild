@@ -1,7 +1,6 @@
 /**
  * PageHeader Component
  * Generates standardized page header HTML
- * Used by: TodoManager, YouTubeManager, and potentially other pages
  */
 
 class PageHeader {
@@ -10,11 +9,12 @@ class PageHeader {
    *
    * @param {Object} options - Configuration options
    * @param {string} options.className - Base CSS class name (e.g., 'todos', 'youtube', 'gallery')
-   * @param {string} options.title - Page title (e.g., 'My Todos', 'My YouTube')
+   * @param {string} options.title - Page title
    * @param {string} options.description - Page description text
+   * @param {string} options.badge - Badge text for hero mode (e.g., 'gld__ transmog')
    * @param {Object} options.actionButton - Optional action button configuration
    * @param {string} options.actionButton.id - Button ID
-   * @param {string} options.actionButton.icon - Line Awesome icon class (e.g., 'la-plus')
+   * @param {string} options.actionButton.icon - Line Awesome icon class
    * @param {string} options.actionButton.text - Button text
    * @returns {string} HTML string for the page header
    */
@@ -23,6 +23,7 @@ class PageHeader {
       className = 'page',
       title = '',
       description = '',
+      badge = null,
       actionButton = null
     } = options;
 
@@ -32,6 +33,17 @@ class PageHeader {
         <span>${actionButton.text}</span>
       </button>
     ` : '';
+
+    if (badge) {
+      return `
+        <div class="${className}-header page-header-hero">
+          <span class="page-header-badge">${badge}</span>
+          <h1>${title}</h1>
+          <p class="page-header-subtitle">${description}</p>
+          ${actionButtonHTML}
+        </div>
+      `;
+    }
 
     return `
       <div class="${className}-header page-header-panel">

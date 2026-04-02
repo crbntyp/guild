@@ -184,6 +184,7 @@ class TodoManager extends ItemManager {
     this.container.innerHTML = `
       ${PageHeader.render({
         className: 'todos',
+        badge: 'gld__ todos',
         title: 'Todos',
         description: 'Organise your Warcraft activities with ease. Farm mounts, leave reminders, or save interesting links to check back on.',
         actionButton: {

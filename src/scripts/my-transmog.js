@@ -55,6 +55,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       container.innerHTML = `
         ${PageHeader.render({
           className: 'transmog',
+          badge: 'gld__ transmog',
           title: 'Transmog Sets',
           description: 'Track your sets across raids and dungeons. See what you own, what you\'re missing, and where to farm it.'
         })}

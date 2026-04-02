@@ -3,6 +3,55 @@
   backdrop-filter: blur(10px);
 }
 
+// Critter Kill Squad Progress Bar
+.critter-bar-wrapper {
+  max-width: 1290px;
+  margin: 0 auto;
+  padding: 6px var(--spacing-md) 8px;
+
+  .critter-bar-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+
+  .critter-bar-title {
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgba(255, 255, 255, 0.35);
+  }
+
+  .critter-bar-count {
+    font-size: 9px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  .critter-bar {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .critter-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #a335ee, #ff8000);
+    border-radius: 2px;
+    transition: width 0.8s ease;
+  }
+
+  .critter-bar-remaining {
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.25);
+    text-align: right;
+    margin-top: 2px;
+  }
+}
+
 // Guild Search Bar
 .guild-search-bar {
   max-width: 1290px;
@@ -561,6 +610,47 @@
   gap: 4px;
   flex-wrap: wrap;
   margin-left: auto;
+}
+
+// Transmog showcase on homepage
+.home-transmog-showcase {
+  .demo-tmog-card {
+    pointer-events: none;
+    min-width: 380px;
+    max-width: 380px;
+    flex-shrink: 0;
+  }
+}
+
+.home-feature-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  transition: color 0.2s ease;
+
+  .home-feature-chip {
+    font-size: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    background: rgba(0, 174, 255, 0.15);
+    border: 1px solid rgba(0, 174, 255, 0.3);
+    color: #00AEFF;
+  }
+
+  &:hover {
+    color: #fff;
+  }
+
+  i {
+    font-size: 14px;
+  }
 }
 
 .home-features {

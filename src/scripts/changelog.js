@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   container.innerHTML = `
     ${PageHeader.render({
       className: 'changelog',
+      badge: 'gld__ changelog',
       title: 'Changelog',
       description: 'Everything we\'ve built, from day one to today.'
     })}

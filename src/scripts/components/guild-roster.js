@@ -562,7 +562,8 @@ class GuildRoster {
 
           const insetAsset = media.assets.find(asset => asset.key === 'inset');
           const avatarAsset = media.assets.find(asset => asset.key === 'avatar');
-          const imageUrl = insetAsset?.value || avatarAsset?.value;
+          const rawUrl = insetAsset?.value || avatarAsset?.value;
+          const imageUrl = rawUrl ? `${rawUrl}${rawUrl.includes('?') ? '&' : '?'}v=${Date.now()}` : null;
 
           if (imageUrl) {
             const memberHeader = avatarPlaceholder.querySelector('.member-header');
@@ -653,7 +654,8 @@ class GuildRoster {
           // Get inset image (or fallback to avatar)
           const insetAsset = media.assets.find(asset => asset.key === 'inset');
           const avatarAsset = media.assets.find(asset => asset.key === 'avatar');
-          const imageUrl = insetAsset?.value || avatarAsset?.value;
+          const rawUrl = insetAsset?.value || avatarAsset?.value;
+          const imageUrl = rawUrl ? `${rawUrl}${rawUrl.includes('?') ? '&' : '?'}v=${Date.now()}` : null;
 
           if (imageUrl) {
             // Preserve the member-header div that's already inside the placeholder

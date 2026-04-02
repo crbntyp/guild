@@ -55,6 +55,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       container.innerHTML = `
         ${PageHeader.render({
           className: 'crafters',
+          badge: 'gld__ crafters',
           title: 'Crafters',
           description: 'See which characters have the highest profession skills across your account. At least you know who to send all those mats to for maxing your cooking skill :D'
         })}

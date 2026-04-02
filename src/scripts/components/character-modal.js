@@ -143,10 +143,11 @@ class CharacterModal {
     // Get spec ID from the active spec
     const specId = activeSpec?.id || null;
 
-    // Get character avatar from media
-    const avatarUrl = media?.assets?.find(asset => asset.key === 'inset')?.value ||
+    // Get character avatar from media (cache-bust to get fresh renders)
+    const rawAvatarUrl = media?.assets?.find(asset => asset.key === 'inset')?.value ||
                      media?.assets?.find(asset => asset.key === 'avatar')?.value ||
                      profile.avatar_url || '';
+    const avatarUrl = rawAvatarUrl ? `${rawAvatarUrl}${rawAvatarUrl.includes('?') ? '&' : '?'}v=${Date.now()}` : '';
 
     // Get realm name
     const realmName = slugToFriendly(character.realm?.slug || character.realm?.name || character.realm || '');

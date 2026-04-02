@@ -393,16 +393,19 @@ class TopBar {
       };
 
       if (mainChar) {
-        const avatarUrl = `https://render.worldofwarcraft.com/eu/character/${mainChar.realm.slug}/${mainChar.name.toLowerCase()}-avatar.jpg`;
-
-        const img = new Image();
-        img.onload = () => {
-          setAvatarContent(avatarContainer, `<img src="${avatarUrl}" alt="${mainChar.name}" class="user-avatar" />`);
-        };
-        img.onerror = () => {
+        // Use the character media API for reliable avatar URLs
+        try {
+          const wowApi = (await import('../api/wow-api.js')).default;
+          const mediaData = await wowApi.getCharacterMedia(mainChar.realm.slug, mainChar.name);
+          const avatarAsset = mediaData?.assets?.find(a => a.key === 'avatar');
+          if (avatarAsset?.value) {
+            setAvatarContent(avatarContainer, `<img src="${avatarAsset.value}" alt="${mainChar.name}" class="user-avatar" />`);
+          } else {
+            setAvatarContent(avatarContainer, `<i class="las la-user"></i>`);
+          }
+        } catch (e) {
           setAvatarContent(avatarContainer, `<i class="las la-user"></i>`);
-        };
-        img.src = avatarUrl;
+        }
       } else {
         setAvatarContent(avatarContainer, `<i class="las la-user"></i>`);
       }

@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       container.innerHTML = `
         ${PageHeader.render({
           className: 'vault',
+          badge: 'gld__ vault',
           title: 'Weekly Rewards',
           description: 'Characters with vault rewards available this week. If you see a colored dot, this means you are close to a reward eg. 1/2 delves...'
         })}

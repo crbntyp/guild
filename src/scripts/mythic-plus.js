@@ -5,6 +5,7 @@ import config from './config.js';
 import { getFactionIconUrl, getSpecIconUrl, getClassIconUrl } from './utils/wow-icons.js';
 import { getClassColor } from './utils/wow-constants.js';
 import CustomDropdown from './components/custom-dropdown.js';
+import PageHeader from './components/page-header.js';
 
 console.log('⚡ Mythic+ Leaderboards Page initialized');
 
@@ -43,15 +44,18 @@ document.addEventListener('DOMContentLoaded', async () => {
       const leaderboardContent = document.getElementById('leaderboard-content');
 
       try {
-        // Render header (matching raids landing style)
+        // Render header
         container.insertAdjacentHTML('afterbegin', `
-          <div class="mplus-hero">
-            <span class="mplus-hero-badge">gld__ mythic+</span>
-            <h1>Mythic+ Leaderboards</h1>
-            <p class="mplus-hero-subtitle">Top keystone runs, meta compositions, and spec distribution across the EU region.</p>
-            <div class="mplus-season-info" id="mplus-season-info"></div>
-          </div>
+          ${PageHeader.render({
+            className: 'mplus',
+            badge: 'gld__ mythic+',
+            title: 'Mythic+ Leaderboards',
+            description: 'Top keystone runs, meta compositions, and spec distribution across the EU region.'
+          })}
         `);
+        // Add season info strip inside the hero
+        const heroEl = container.querySelector('.page-header-hero');
+        if (heroEl) heroEl.insertAdjacentHTML('beforeend', '<div class="mplus-season-info" id="mplus-season-info"></div>');
 
         leaderboardContent.innerHTML = `
           <div class="loading-spinner">
@@ -102,8 +106,6 @@ document.addEventListener('DOMContentLoaded', async () => {
               <span class="mplus-season-text">Season ${seasonDetails.id} ${isActive ? 'Active' : 'Ended'} — ${startDate}</span>
             `;
           }
-
-          // Affix fetch deferred until roster controls are rendered
 
           let html = ``;
           let allLeaderboards = [];
@@ -226,137 +228,106 @@ document.addEventListener('DOMContentLoaded', async () => {
             }));
 
           } else if (seasonDetails.periods && seasonDetails.periods.length > 0) {
-            // Fetch from API (existing logic)
-            // Try only the most recent 3 periods to minimize 404s
-            const recentPeriods = seasonDetails.periods.slice(-3).map(p => p.id).reverse();
-
-            let foundPeriodWithData = false;
-
-            // Try each recent period until we find one with leaderboard data
-            for (const testPeriodId of recentPeriods) {
-              // Try first dungeon (Windrunner Spire, ID 557) to see if this period has data
+            // Check sessionStorage cache first
+            const cacheKey = `mplus_cache_s${currentSeasonId}`;
+            const cached = sessionStorage.getItem(cacheKey);
+            if (cached) {
               try {
-                const testLeaderboard = await wowApi.getMythicKeystoneLeaderboard(557, testPeriodId);
-                if (testLeaderboard && testLeaderboard.leading_groups && testLeaderboard.leading_groups.length > 0) {
-                  periodId = testPeriodId;
-                  foundPeriodWithData = true;
-                  break;
+                const cachedData = JSON.parse(cached);
+                // Cache valid for 30 minutes
+                if (cachedData.timestamp && (Date.now() - cachedData.timestamp) < 30 * 60 * 1000) {
+                  console.log('⚡ Using cached M+ data');
+                  allLeaderboards = cachedData.leaderboards;
+                  periodId = cachedData.periodId;
                 }
-              } catch (error) {
-                // Period not available, try next (404s are expected and suppressed in console)
+              } catch (e) {
+                sessionStorage.removeItem(cacheKey);
               }
             }
 
-            if (!foundPeriodWithData) {
-              html += `
-                <div style="margin: 20px; padding: 20px; background: rgba(255,165,0,0.2); border-radius: 8px;">
-                  <h3>⚠️ No Leaderboard Data Available</h3>
-                  <p>No recent leaderboard data found for Season ${seasonDetails.id}.</p>
-                  <p>This likely means the season just started and no keys have been completed yet.</p>
-                </div>
-              `;
-              leaderboardContent.innerHTML = html;
-              return;
-            }
+            if (allLeaderboards.length === 0) {
+              // Fetch dungeons index and find valid period in parallel
+              const recentPeriods = seasonDetails.periods.slice(-3).map(p => p.id).reverse();
 
-            // Fetch current season dungeons from the Mythic Keystone Dungeons API
-            let dungeonIds = [];
+              // Fetch dungeons index (just need IDs, not individual details)
+              const dungeonsPromise = wowApi.getMythicKeystoneDungeons().catch(() => null);
 
-            try {
-              const dungeonsData = await wowApi.getMythicKeystoneDungeons();
+              // Probe periods — try most recent first
+              let foundPeriodWithData = false;
+              for (const testPeriodId of recentPeriods) {
+                try {
+                  const testLeaderboard = await wowApi.getMythicKeystoneLeaderboard(557, testPeriodId);
+                  if (testLeaderboard && testLeaderboard.leading_groups && testLeaderboard.leading_groups.length > 0) {
+                    periodId = testPeriodId;
+                    foundPeriodWithData = true;
+                    break;
+                  }
+                } catch (error) {
+                  // Period not available, try next
+                }
+              }
 
+              if (!foundPeriodWithData) {
+                html += `
+                  <div style="margin: 20px; padding: 20px; background: rgba(255,165,0,0.2); border-radius: 8px;">
+                    <h3>⚠️ No Leaderboard Data Available</h3>
+                    <p>No recent leaderboard data found for Season ${seasonDetails.id}.</p>
+                    <p>This likely means the season just started and no keys have been completed yet.</p>
+                  </div>
+                `;
+                leaderboardContent.innerHTML = html;
+                return;
+              }
+
+              // Get dungeon IDs from index (no individual detail fetches needed)
+              let dungeonIds = [];
+              const dungeonsData = await dungeonsPromise;
               if (dungeonsData && dungeonsData.dungeons) {
-                // Fetch details for each dungeon to get names and IDs
-                const dungeonDetailsPromises = dungeonsData.dungeons.map(async (d) => {
+                dungeonIds = dungeonsData.dungeons.map(d => d.id);
+              }
+
+              // Dungeon-to-journal mapping for background images (loaded async after render)
+              const dungeonToJournalMap = {
+                161: 476, 239: 945, 402: 1201, 556: 278,
+                557: 1299, 558: 1300, 559: 1316, 560: 1315
+              };
+
+              // Fetch all leaderboards in parallel — no background fetching here
+              const results = await Promise.allSettled(
+                dungeonIds.map(async (dungeonId) => {
                   try {
-                    const details = await wowApi.getMythicKeystoneDungeon(d.id);
-                    return { id: d.id, name: details.name };
+                    const leaderboard = await wowApi.getMythicKeystoneLeaderboard(dungeonId, periodId);
+                    if (leaderboard && leaderboard.leading_groups && leaderboard.leading_groups.length > 0) {
+                      return {
+                        id: dungeonId,
+                        name: leaderboard.map?.name || leaderboard.name || `Dungeon ${dungeonId}`,
+                        data: leaderboard,
+                        backgroundUrl: null,
+                        journalInstanceId: dungeonToJournalMap[dungeonId] || null
+                      };
+                    }
                   } catch (error) {
                     return null;
                   }
-                });
-
-                const dungeonDetails = await Promise.all(dungeonDetailsPromises);
-                const validDungeons = dungeonDetails.filter(d => d !== null);
-
-                // Use all valid dungeon IDs - the API should only return current season dungeons
-                dungeonIds = validDungeons.map(d => d.id);
-              }
-            } catch (dungeonsError) {
-              console.error('Error fetching dungeons:', dungeonsError);
-            }
-
-            // Fetch all dungeon leaderboards
-            // Manual mapping of dungeon IDs to journal instance IDs for backgrounds
-            // Add mappings here as needed for current season dungeons
-            const dungeonToJournalMap = {
-              // Midnight Season 1
-              161: 476,    // Skyreach
-              239: 945,    // Seat of the Triumvirate
-              402: 1201,   // Algeth'ar Academy
-              556: 278,    // Pit of Saron
-              557: 1299,   // Windrunner Spire
-              558: 1300,   // Magisters' Terrace
-              559: 1316,   // Nexus-Point Xenas
-              560: 1315    // Maisara Caverns
-            };
-
-            // Manual name overrides for dungeons with incorrect API names
-            const dungeonNameOverrides = {
-            };
-
-            // Helper function to fetch a single dungeon with retry logic
-            async function fetchDungeonLeaderboard(dungeonId, periodId, retries = 3) {
-              for (let attempt = 0; attempt < retries; attempt++) {
-                try {
-                  const leaderboard = await wowApi.getMythicKeystoneLeaderboard(dungeonId, periodId);
-                  if (leaderboard && leaderboard.leading_groups && leaderboard.leading_groups.length > 0) {
-                    // Fetch dungeon background image
-                    let backgroundUrl = null;
-                    const journalInstanceId = dungeonToJournalMap[dungeonId];
-                    if (journalInstanceId) {
-                      try {
-                        const mediaData = await wowApi.getJournalInstanceMedia(journalInstanceId);
-                        const tileAsset = mediaData.assets?.find(asset => asset.key === 'tile');
-                        backgroundUrl = tileAsset?.value || null;
-                      } catch (bgError) {
-                        // Background not available
-                      }
-                    }
-
-                    // Use override name if available, otherwise use API name
-                    const dungeonName = dungeonNameOverrides[dungeonId] || leaderboard.map?.name || leaderboard.name || `Dungeon ${dungeonId}`;
-
-                    return {
-                      id: dungeonId,
-                      name: dungeonName,
-                      data: leaderboard,
-                      backgroundUrl: backgroundUrl
-                    };
-                  }
                   return null;
-                } catch (error) {
-                  if (attempt < retries - 1) {
-                    await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
-                  } else {
-                    return null;
-                  }
-                }
+                })
+              );
+
+              allLeaderboards = results
+                .filter(r => r.status === 'fulfilled' && r.value !== null)
+                .map(r => r.value);
+
+              // Cache the results
+              if (allLeaderboards.length > 0) {
+                try {
+                  sessionStorage.setItem(cacheKey, JSON.stringify({
+                    timestamp: Date.now(),
+                    periodId,
+                    leaderboards: allLeaderboards
+                  }));
+                } catch (e) { /* storage full, no problem */ }
               }
-              return null;
             }
-
-            // Fetch all dungeons in parallel with Promise.allSettled to ensure all complete
-            const leaderboardPromises = dungeonIds.map(dungeonId =>
-              fetchDungeonLeaderboard(dungeonId, periodId)
-            );
-
-            const results = await Promise.allSettled(leaderboardPromises);
-
-            // Filter out failed/null results
-            allLeaderboards = results
-              .filter(result => result.status === 'fulfilled' && result.value !== null)
-              .map(result => result.value);
 
             if (allLeaderboards.length === 0) {
               html += `
@@ -369,9 +340,8 @@ document.addEventListener('DOMContentLoaded', async () => {
               return;
             }
 
-            // Only show warning if we got suspiciously few dungeons (less than 6, since a season typically has 8)
             if (allLeaderboards.length < 6 && !isHistoricalData) {
-              console.warn(`⚠️ Only found ${allLeaderboards.length} dungeons with leaderboard data. Expected around 8 for a typical season.`);
+              console.warn(`⚠️ Only found ${allLeaderboards.length} dungeons with leaderboard data.`);
               html += `
                 <div style="margin: 20px; padding: 15px; background: rgba(255,165,0,0.15); border-radius: 8px; border-left: 3px solid #FFA500;">
                   <p style="margin: 0; font-size: 14px;"><strong>⚠️ Note:</strong> Only ${allLeaderboards.length} of 8 season dungeons loaded. If not all dungeons are showing, please refresh the browser as there may have been a latency issue loading the stats.</p>
@@ -594,14 +564,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <div class="dungeon-grid">
                 ${allLeaderboards.map(lb => {
                   const topRun = lb.data.leading_groups[0];
-                  const hasBackground = !!lb.backgroundUrl;
-                  const bgStyle = hasBackground
-                    ? `background-image: url('${lb.backgroundUrl}');`
-                    : '';
 
                   return `
-                    <div class="dungeon-card ${hasBackground ? 'has-background' : ''}" style="${bgStyle}">
-                      ${hasBackground ? '<div class="dungeon-background-overlay"></div>' : ''}
+                    <div class="dungeon-card" data-journal-id="${lb.journalInstanceId || ''}">
+                      <div class="dungeon-background-overlay"></div>
                       <div class="dungeon-card-header">
                         <strong class="dungeon-name">${lb.name} +${topRun.keystone_level}</strong>
                         <div class="dungeon-stats">
@@ -663,6 +629,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
               }).catch(() => {});
 
+            // Load dungeon background images (non-blocking, after render)
+            document.querySelectorAll('.dungeon-card[data-journal-id]').forEach(async (card) => {
+              const journalId = card.dataset.journalId;
+              if (!journalId) return;
+              try {
+                const mediaData = await wowApi.getJournalInstanceMedia(parseInt(journalId));
+                const tileAsset = mediaData?.assets?.find(a => a.key === 'tile');
+                if (tileAsset?.value) {
+                  card.style.backgroundImage = `url('${tileAsset.value}')`;
+                  card.classList.add('has-background');
+                }
+              } catch (e) { /* background not available */ }
+            });
+
             // Store leaderboards and spec lookup for dropdown handler
             window.allLeaderboards = allLeaderboards;
             window.specLookup = specLookup;
@@ -670,7 +650,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Initialize custom dropdown for dungeon selection
             const dungeonDropdownContainer = document.getElementById('dungeon-dropdown-container');
             const dungeonOptions = [
-              { value: '', label: 'Dungeon leaderboard' },
+              { value: '', label: 'All Dungeons' },
               ...allLeaderboards.map(lb => ({
                 value: lb.id,
                 label: lb.name
@@ -700,15 +680,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 const lb = selectedLeaderboard.data;
                 const specLookup = window.specLookup;
-                const backgroundUrl = selectedLeaderboard.backgroundUrl;
-                const hasBackground = !!backgroundUrl;
-                const bgStyle = hasBackground ? `background-image: url('${backgroundUrl}');` : '';
+                const journalId = selectedLeaderboard.journalInstanceId;
 
                 detailedContent.innerHTML = `
                   <div class="dungeon-grid">
                     ${lb.leading_groups.slice(0, 8).map((group) => `
-                      <div class="dungeon-card ${hasBackground ? 'has-background' : ''}" style="${bgStyle}">
-                        ${hasBackground ? '<div class="dungeon-background-overlay"></div>' : ''}
+                      <div class="dungeon-card" data-journal-id="${journalId || ''}">
+                        <div class="dungeon-background-overlay"></div>
                         <div class="dungeon-card-header">
                           <strong class="dungeon-name"><span class="dungeon-ranking">#${group.ranking}</span> ${selectedLeaderboard.name} +${group.keystone_level}</strong>
                           <div class="dungeon-stats">
@@ -752,6 +730,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                     `).join('')}
                   </div>
                 `;
+
+                // Load backgrounds for detailed view cards
+                detailedContent.querySelectorAll('.dungeon-card[data-journal-id]').forEach(async (card) => {
+                  const jId = card.dataset.journalId;
+                  if (!jId) return;
+                  try {
+                    const mediaData = await wowApi.getJournalInstanceMedia(parseInt(jId));
+                    const tileAsset = mediaData?.assets?.find(a => a.key === 'tile');
+                    if (tileAsset?.value) {
+                      card.style.backgroundImage = `url('${tileAsset.value}')`;
+                      card.classList.add('has-background');
+                    }
+                  } catch (e) {}
+                });
               }
             });
 

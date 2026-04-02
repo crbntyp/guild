@@ -3,6 +3,7 @@ import PageInitializer from './utils/page-initializer.js';
 import AuthService from './services/auth.js';
 import AccountService from './services/account-service.js';
 import WoWAPI from './api/wow-api.js';
+import PageHeader from './components/page-header.js';
 import { getAllMountData } from './data/generated-mount-data.js';
 import { getMountSpellId } from './data/mount-spell-ids.js';
 
@@ -141,18 +142,16 @@ class MountsPage {
 
     // Add page header dynamically (only when authenticated)
     const mountsContainer = document.getElementById('mounts-container');
-    if (mountsContainer && !mountsContainer.querySelector('.page-header-panel')) {
-      mountsContainer.insertAdjacentHTML('afterbegin', `
-        <div class="mounts-header page-header-panel">
-          <div class="page-header-content">
-            <div class="page-header-text">
-              <h1>Mounts <span id="mount-count" class="mount-count"></span></h1>
-              <p class="page-header-desc">Track your mount collection across all expansions.</p>
-            </div>
-          </div>
-          <div class="page-header-border"></div>
-        </div>
-      `);
+    if (mountsContainer && !mountsContainer.querySelector('.page-header-hero')) {
+      mountsContainer.insertAdjacentHTML('afterbegin', PageHeader.render({
+        className: 'mounts',
+        badge: 'gld__ mounts',
+        title: 'Mounts',
+        description: 'Track your mount collection across all expansions.'
+      }));
+      // Add mount count after title
+      const heroTitle = mountsContainer.querySelector('.page-header-hero h1');
+      if (heroTitle) heroTitle.insertAdjacentHTML('beforeend', ' <span id="mount-count" class="mount-count"></span>');
       this.countElement = document.getElementById('mount-count');
     }
 
