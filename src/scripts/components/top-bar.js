@@ -136,41 +136,145 @@ class TopBar {
           <span>Home</span>
         </a>
         ${isAuthenticated ? `
-          <div class="nav-dropdown">
-            <a href="my-account.html" class="nav-link nav-dropdown-toggle${isAccountPageActive || currentPage === 'my-account.html' ? ' active' : ''}" aria-label="Your Account menu">
+          <div class="nav-mega">
+            <button class="nav-link nav-mega-toggle${isAccountPageActive || currentPage === 'my-account.html' ? ' active' : ''}" aria-label="Your Account menu">
               <i class="las la-user-circle"></i>
               <span>My Account</span>
               <i class="las la-angle-down dropdown-arrow"></i>
-            </a>
-            <div class="nav-dropdown-menu">
-              <a href="my-characters.html" class="nav-dropdown-item${getActiveClass('my-characters.html')}">
-                <i class="las la-user"></i>
-                <span>My Characters</span>
-              </a>
-              <a href="my-todos.html" class="nav-dropdown-item${getActiveClass('my-todos.html')}">
-                <i class="las la-tasks"></i>
-                <span>My Todos</span>
-              </a>
-              <a href="my-youtube.html" class="nav-dropdown-item${getActiveClass('my-youtube.html')}">
-                <i class="lab la-youtube"></i>
-                <span>My YouTube</span>
-              </a>
-              <a href="my-mounts.html" class="nav-dropdown-item${getActiveClass('my-mounts.html')}">
-                <i class="las la-horse"></i>
-                <span>My Mounts</span>
-              </a>
-              <a href="my-crafters.html" class="nav-dropdown-item${getActiveClass('my-crafters.html')}">
-                <i class="las la-hammer"></i>
-                <span>Crafters</span>
-              </a>
-              <a href="my-vault.html" class="nav-dropdown-item${getActiveClass('my-vault.html')}">
-                <i class="las la-gift"></i>
-                <span>Weekly Vault</span>
-              </a>
-              <a href="my-transmog.html" class="nav-dropdown-item${getActiveClass('my-transmog.html')}">
-                <i class="las la-tshirt"></i>
-                <span>Transmog Sets</span>
-              </a>
+            </button>
+            <div class="nav-mega-menu">
+              <div class="mega-featured">
+                <a href="my-characters.html" class="mega-card${getActiveClass('my-characters.html')}">
+                  <div class="mega-card-preview">
+                    <div class="mega-card-scene">
+                      <div class="member-card" style="pointer-events:none;width:120px">
+                        <div class="member-level">90<span class="member-ilvl">263</span></div>
+                        <div class="character-avatar-placeholder" style="height:80px"><img src="https://render.worldofwarcraft.com/eu/character/tarren-mill/58/170575674-inset.jpg" style="width:100%;height:100%;object-fit:cover;object-position:top" /></div>
+                        <div class="member-header"><div class="member-name" style="color:#A330C9;font-size:10px">Felbladë</div></div>
+                      </div>
+                      <div class="member-card" style="pointer-events:none;width:120px">
+                        <div class="member-level">90<span class="member-ilvl">258</span></div>
+                        <div class="character-avatar-placeholder" style="height:80px"><img src="https://render.worldofwarcraft.com/eu/character/tarren-mill/115/171270003-inset.jpg" style="width:100%;height:100%;object-fit:cover;object-position:top" /></div>
+                        <div class="member-header"><div class="member-name" style="color:#FFF569;font-size:10px">Fëlstriker</div></div>
+                      </div>
+                    </div>
+                    <div class="mega-card-overlay"></div>
+                  </div>
+                  <div class="mega-card-info">
+                    <span class="mega-card-title">Characters</span>
+                    <span class="mega-card-desc">All your characters, gear, and specs</span>
+                  </div>
+                </a>
+                <a href="my-vault.html" class="mega-card${getActiveClass('my-vault.html')}">
+                  <div class="mega-card-preview">
+                    <div class="mega-card-scene mega-scene-sm">
+                      <div style="display:flex;flex-direction:column;gap:4px;width:200px">
+                        <div style="display:flex;align-items:center;gap:6px;padding:4px 8px;background:rgba(0,0,0,0.3);border-radius:4px">
+                          <img src="https://render.worldofwarcraft.com/eu/character/tarren-mill/243/171270131-avatar.jpg" style="width:20px;height:20px;border-radius:50%;border:1px solid rgba(255,255,255,0.1)" />
+                          <span style="color:#F58CBA;font-size:9px;font-weight:600">Bäsics</span>
+                          <span class="vault-badge vault-raids" style="font-size:7px;padding:1px 4px">Raids</span>
+                          <span class="vault-badge vault-mplus" style="font-size:7px;padding:1px 4px">M+</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:6px;padding:4px 8px;background:rgba(0,0,0,0.3);border-radius:4px">
+                          <img src="https://render.worldofwarcraft.com/eu/character/tarren-mill/41/171269673-avatar.jpg" style="width:20px;height:20px;border-radius:50%;border:1px solid rgba(255,255,255,0.1)" />
+                          <span style="color:#8787ED;font-size:9px;font-weight:600">Blighthöund</span>
+                          <span class="vault-badge vault-mplus" style="font-size:7px;padding:1px 4px">M+</span>
+                          <span class="vault-badge vault-delves" style="font-size:7px;padding:1px 4px">Delves</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:6px;padding:4px 8px;background:rgba(0,0,0,0.3);border-radius:4px">
+                          <img src="https://render.worldofwarcraft.com/eu/character/tarren-mill/58/170575674-avatar.jpg" style="width:20px;height:20px;border-radius:50%;border:1px solid rgba(255,255,255,0.1)" />
+                          <span style="color:#A330C9;font-size:9px;font-weight:600">Felbladë</span>
+                          <span class="vault-badge vault-raids" style="font-size:7px;padding:1px 4px">Raids</span>
+                          <span class="vault-badge vault-delves" style="font-size:7px;padding:1px 4px">Delves</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="mega-card-overlay"></div>
+                  </div>
+                  <div class="mega-card-info">
+                    <span class="mega-card-title">Weekly Vault</span>
+                    <span class="mega-card-desc">Your raid, M+, and delve rewards</span>
+                  </div>
+                </a>
+                <a href="my-transmog.html" class="mega-card${getActiveClass('my-transmog.html')}">
+                  <div class="mega-card-preview">
+                    <div class="mega-card-scene mega-scene-sm">
+                      <div style="width:160px;background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.06);border-radius:6px;padding:6px">
+                        <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px">
+                          <img src="https://render.worldofwarcraft.com/eu/icons/56/inv_helm_cloth_raidwarlockmidnight_d_01.jpg" style="width:16px;height:16px;border-radius:3px" />
+                          <span style="font-size:8px;font-weight:700;color:#fff">Abyssal Immolator</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:4px;padding:2px 0"><img src="https://render.worldofwarcraft.com/eu/icons/56/inv_helm_cloth_raidwarlockmidnight_d_01.jpg" style="width:14px;height:14px;border-radius:2px;flex-shrink:0;display:block" /><span style="font-size:7px;color:rgba(255,255,255,0.3);min-width:30px">HEAD</span><span style="font-size:8px;color:rgba(255,255,255,0.7)">Hood</span><i class="las la-check" style="color:#10b981;font-size:9px;margin-left:auto"></i></div>
+                        <div style="display:flex;align-items:center;gap:4px;padding:2px 0"><img src="https://render.worldofwarcraft.com/eu/icons/56/inv_shoulder_cloth_raidwarlockmidnight_d_01.jpg" style="width:14px;height:14px;border-radius:2px;flex-shrink:0;display:block" /><span style="font-size:7px;color:rgba(255,255,255,0.3);min-width:30px">SHOULDER</span><span style="font-size:8px;color:rgba(255,255,255,0.7)">Mantle</span><i class="las la-check" style="color:#10b981;font-size:9px;margin-left:auto"></i></div>
+                        <div style="display:flex;align-items:center;gap:4px;padding:2px 0;opacity:0.4"><img src="https://render.worldofwarcraft.com/eu/icons/56/inv_chest_cloth_raidwarlockmidnight_d_01.jpg" style="width:14px;height:14px;border-radius:2px;flex-shrink:0;display:block" /><span style="font-size:7px;color:rgba(255,255,255,0.3);min-width:30px">CHEST</span><span style="font-size:8px;color:rgba(255,255,255,0.5)">Robe</span></div>
+                      </div>
+                      <div style="width:160px;background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.06);border-radius:6px;padding:6px">
+                        <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px">
+                          <img src="https://render.worldofwarcraft.com/eu/icons/56/inv_helm_plate_raidpaladinmidnight_d_01.jpg" style="width:16px;height:16px;border-radius:3px" />
+                          <span style="font-size:8px;font-weight:700;color:#fff">Luminant Verdict</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:4px;padding:2px 0"><img src="https://render.worldofwarcraft.com/eu/icons/56/inv_helm_plate_raidpaladinmidnight_d_01.jpg" style="width:14px;height:14px;border-radius:2px;flex-shrink:0;display:block" /><span style="font-size:7px;color:rgba(255,255,255,0.3);min-width:30px">HEAD</span><span style="font-size:8px;color:rgba(255,255,255,0.7)">Helm</span><i class="las la-check" style="color:#10b981;font-size:9px;margin-left:auto"></i></div>
+                        <div style="display:flex;align-items:center;gap:4px;padding:2px 0"><img src="https://render.worldofwarcraft.com/eu/icons/56/inv_shoulder_plate_raidpaladinmidnight_d_01.jpg" style="width:14px;height:14px;border-radius:2px;flex-shrink:0;display:block" /><span style="font-size:7px;color:rgba(255,255,255,0.3);min-width:30px">SHOULDER</span><span style="font-size:8px;color:rgba(255,255,255,0.7)">Pauldrons</span><i class="las la-check" style="color:#10b981;font-size:9px;margin-left:auto"></i></div>
+                        <div style="display:flex;align-items:center;gap:4px;padding:2px 0"><img src="https://render.worldofwarcraft.com/eu/icons/56/inv_chest_plate_raidpaladinmidnight_d_01.jpg" style="width:14px;height:14px;border-radius:2px;flex-shrink:0;display:block" /><span style="font-size:7px;color:rgba(255,255,255,0.3);min-width:30px">CHEST</span><span style="font-size:8px;color:rgba(255,255,255,0.7)">Breastplate</span><i class="las la-check" style="color:#10b981;font-size:9px;margin-left:auto"></i></div>
+                      </div>
+                    </div>
+                    <div class="mega-card-overlay"></div>
+                  </div>
+                  <div class="mega-card-info">
+                    <span class="mega-card-title">Your Transmogs</span>
+                    <span class="mega-card-desc">Your progress and collections</span>
+                  </div>
+                </a>
+                <a href="raids.html" class="mega-card${getActiveClass('raids.html')}">
+                  <div class="mega-card-preview">
+                    <div class="mega-card-scene mega-scene-sm">
+                      <div class="raid-card status-open" style="pointer-events:none;width:160px;min-width:160px">
+                        <div class="raid-card-banner" style="background-image:url('https://render.worldofwarcraft.com/us/zones/the-voidspire-small.jpg');height:50px">
+                          <div class="raid-card-banner-overlay"></div>
+                          <div class="raid-card-banner-content">
+                            <div class="raid-card-title"><h3 style="font-size:9px;margin:0">The Voidspire</h3><span class="raid-difficulty-badge difficulty-heroic" style="font-size:6px;padding:1px 3px">heroic</span></div>
+                          </div>
+                        </div>
+                        <div class="raid-card-body" style="padding:5px 6px">
+                          <div class="raid-card-roles" style="gap:4px">
+                            <div class="raid-role"><span class="raid-role-icon tank" style="width:14px;height:14px;display:flex;align-items:center;justify-content:center"><i class="las la-shield-alt" style="font-size:8px"></i></span><span class="raid-role-count" style="font-size:7px">2/2</span></div>
+                            <div class="raid-role"><span class="raid-role-icon healer" style="width:14px;height:14px;display:flex;align-items:center;justify-content:center"><i class="las la-plus-circle" style="font-size:8px"></i></span><span class="raid-role-count" style="font-size:7px">3/4</span></div>
+                            <div class="raid-role"><span class="raid-role-icon dps" style="width:14px;height:14px;display:flex;align-items:center;justify-content:center"><i class="las la-crosshairs" style="font-size:8px"></i></span><span class="raid-role-count" style="font-size:7px">8/14</span></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="raid-card status-full" style="pointer-events:none;width:160px;min-width:160px">
+                        <div class="raid-card-banner" style="background-image:url('https://render.worldofwarcraft.com/us/zones/march-on-queldanas-small.jpg');height:50px">
+                          <div class="raid-card-banner-overlay"></div>
+                          <div class="raid-card-banner-content">
+                            <div class="raid-card-title"><h3 style="font-size:9px;margin:0">Quel'Danas</h3><span class="raid-difficulty-badge difficulty-mythic" style="font-size:6px;padding:1px 3px">mythic</span></div>
+                          </div>
+                        </div>
+                        <div class="raid-card-body" style="padding:5px 6px">
+                          <div class="raid-card-roles" style="gap:4px">
+                            <div class="raid-role"><span class="raid-role-icon tank" style="width:14px;height:14px;display:flex;align-items:center;justify-content:center"><i class="las la-shield-alt" style="font-size:8px"></i></span><span class="raid-role-count" style="font-size:7px">1/1</span></div>
+                            <div class="raid-role"><span class="raid-role-icon healer" style="width:14px;height:14px;display:flex;align-items:center;justify-content:center"><i class="las la-plus-circle" style="font-size:8px"></i></span><span class="raid-role-count" style="font-size:7px">2/2</span></div>
+                            <div class="raid-role"><span class="raid-role-icon dps" style="width:14px;height:14px;display:flex;align-items:center;justify-content:center"><i class="las la-crosshairs" style="font-size:8px"></i></span><span class="raid-role-count" style="font-size:7px">7/7</span></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="mega-card-overlay"></div>
+                  </div>
+                  <div class="mega-card-info">
+                    <span class="mega-card-title">Discord Bot & Raid Signups</span>
+                    <span class="mega-card-desc">Use your Bnet account to sign up...here</span>
+                  </div>
+                </a>
+              </div>
+              <div class="mega-links">
+                <a href="my-crafters.html" class="mega-link${getActiveClass('my-crafters.html')}"><i class="las la-hammer"></i> Crafters</a>
+                <a href="my-mounts.html" class="mega-link${getActiveClass('my-mounts.html')}"><i class="las la-horse"></i> Mounts</a>
+                <a href="my-todos.html" class="mega-link${getActiveClass('my-todos.html')}"><i class="las la-tasks"></i> Todos</a>
+                <a href="my-youtube.html" class="mega-link${getActiveClass('my-youtube.html')}"><i class="lab la-youtube"></i> YouTube</a>
+                <span class="mega-link disabled"><i class="las la-medal"></i> Achievement Lols (TBA)</span>
+                <a href="my-account.html" class="mega-link mega-link-account${getActiveClass('my-account.html')}"><i class="las la-user-circle"></i> My Account</a>
+              </div>
             </div>
           </div>
         ` : ''}
@@ -261,30 +365,49 @@ class TopBar {
    * Setup dropdown toggle functionality
    */
   setupDropdown() {
-    const dropdown = document.querySelector('.nav-dropdown');
-    const dropdownToggle = document.querySelector('.nav-dropdown-toggle');
-    const dropdownMenu = document.querySelector('.nav-dropdown-menu');
+    const mega = document.querySelector('.nav-mega');
+    const toggle = document.querySelector('.nav-mega-toggle');
+    const menu = document.querySelector('.nav-mega-menu');
 
-    if (!dropdown || !dropdownToggle || !dropdownMenu) return;
+    if (!mega || !toggle || !menu) return;
 
-    // Toggle dropdown on click
-    dropdownToggle.addEventListener('click', (e) => {
+    // Move menu and overlay to body to escape top-bar stacking context
+    const overlay = document.createElement('div');
+    overlay.className = 'nav-mega-overlay';
+    document.body.appendChild(overlay);
+    document.body.appendChild(menu);
+
+    const openMenu = () => {
+      overlay.classList.add('active');
+      menu.classList.add('active');
+      toggle.classList.add('open');
+    };
+
+    const closeMenu = () => {
+      overlay.classList.remove('active');
+      menu.classList.remove('active');
+      toggle.classList.remove('open');
+    };
+
+    toggle.addEventListener('click', (e) => {
       e.stopPropagation();
-      dropdown.classList.toggle('open');
+      if (menu.classList.contains('active')) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
     });
 
-    // Close dropdown when clicking outside
+    overlay.addEventListener('click', closeMenu);
+
     document.addEventListener('click', (e) => {
-      if (!dropdown.contains(e.target)) {
-        dropdown.classList.remove('open');
+      if (!mega.contains(e.target) && !menu.contains(e.target)) {
+        closeMenu();
       }
     });
 
-    // Close dropdown when pressing Escape
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        dropdown.classList.remove('open');
-      }
+      if (e.key === 'Escape') closeMenu();
     });
   }
 
@@ -366,11 +489,8 @@ class TopBar {
       const stats = await res.json();
       const tooltip = document.getElementById('admin-tooltip');
       if (tooltip) {
-        tooltip.innerHTML = `
-          <div class="admin-stat">${stats.total_logins} logins</div>
-          <div class="admin-stat">${stats.unique_users} unique</div>
-          <div class="admin-stat">${stats.recent_logins} this week</div>
-        `;
+        const tags = (stats.battletags || []).map(t => `<div class="admin-stat">${t.battletag} <span style="color:rgba(255,255,255,0.2)">(${t.logins})</span></div>`).join('');
+        tooltip.innerHTML = tags;
       }
     } catch (e) {}
   }

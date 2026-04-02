@@ -87,6 +87,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <p>Curate your favourite WoW content creators with tag-based filtering and in-app playback.</p>
               </div>
             </a>
+            <div class="account-card account-card-disabled">
+              <div class="account-card-icon"><i class="las la-medal"></i></div>
+              <div class="account-card-info">
+                <h3>Achievement Lols <span style="font-size:10px;color:rgba(255,255,255,0.25);font-weight:400">— Coming Soon</span></h3>
+                <p>Track ridiculous achievement progress across your account. Critter Kill Squad, loremaster, and other grinds — with live progress bars and how far you've still got to go.</p>
+              </div>
+            </div>
           </div>
         </div>
       `;

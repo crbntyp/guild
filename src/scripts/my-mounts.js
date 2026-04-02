@@ -147,7 +147,7 @@ class MountsPage {
         className: 'mounts',
         badge: 'gld__ mounts',
         title: 'Mounts',
-        description: 'Track your mount collection across all expansions.'
+        description: 'Track your mount collection across all expansions. While there are more mounts available this list will give you the farmable options!'
       }));
       // Add mount count after title
       const heroTitle = mountsContainer.querySelector('.page-header-hero h1');
