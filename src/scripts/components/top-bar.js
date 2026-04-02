@@ -143,6 +143,7 @@ class TopBar {
               <i class="las la-angle-down dropdown-arrow"></i>
             </button>
             <div class="nav-mega-menu">
+              <div class="void-cinders"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
               <div class="mega-featured">
                 <a href="my-characters.html" class="mega-card${getActiveClass('my-characters.html')}">
                   <div class="mega-card-preview">
