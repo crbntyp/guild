@@ -428,7 +428,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </div>
               `;
 
-              document.body.appendChild(modal);
+              document.body.appendChild(modal); document.body.classList.add('modal-open');
 
               // Add to todo handler
               const todoBtn = modal.querySelector('#tmog-add-todo');
@@ -456,7 +456,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               }
 
               // Close handlers
-              modal.querySelector('.tmog-modal-close').addEventListener('click', () => modal.remove());
+              modal.querySelector('.tmog-modal-close').addEventListener('click', () => { modal.remove(); document.body.classList.remove('modal-open'); });
               modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
               document.addEventListener('keydown', function handler(e) {
                 if (e.key === 'Escape') { modal.remove(); document.removeEventListener('keydown', handler); }
@@ -692,7 +692,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                   </div>
                 </div>
               `;
-              document.body.appendChild(modal);
+              document.body.appendChild(modal); document.body.classList.add('modal-open');
 
               const todoBtn = modal.querySelector('#tmog-add-todo');
               if (todoBtn) {
@@ -713,7 +713,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
               }
 
-              modal.querySelector('.tmog-modal-close').addEventListener('click', () => modal.remove());
+              modal.querySelector('.tmog-modal-close').addEventListener('click', () => { modal.remove(); document.body.classList.remove('modal-open'); });
               modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
               document.addEventListener('keydown', function handler(e) { if (e.key === 'Escape') { modal.remove(); document.removeEventListener('keydown', handler); } });
             });
@@ -973,8 +973,8 @@ document.addEventListener('DOMContentLoaded', async () => {
               const modal = document.createElement('div');
               modal.className = 'tmog-modal-overlay';
               modal.innerHTML = '<div class=\"tmog-modal\"><button class=\"tmog-modal-close\"><i class=\"las la-times\"></i></button><div class=\"tmog-modal-content\"><a href=\"'+wowheadUrl+'\" onclick=\"event.preventDefault()\" class=\"tmog-modal-icon-link\"><img src=\"'+icon+'\" class=\"tmog-modal-icon\" /></a><div class=\"tmog-modal-info\"><span class=\"tmog-modal-slot\">'+slot+'</span><h3 class=\"tmog-modal-name\">'+itemName+'</h3><span class=\"tmog-modal-status '+(owned?'owned':'missing')+'\">'+(owned?'Collected':'Missing')+'</span></div></div>'+(boss?'<div class=\"tmog-modal-source\"><div class=\"tmog-modal-source-row\"><i class=\"las la-skull\"></i><span>'+boss+'</span></div><div class=\"tmog-modal-source-row\"><i class=\"las la-dungeon\"></i><span>'+instance+'</span></div></div>':'')+'<div class=\"tmog-modal-actions\">'+ (!owned?'<button class=\"tmog-modal-todo\" id=\"tmog-add-todo\"><i class=\"las la-plus\"></i> Add to Todos</button>':'') +'<a href=\"'+wowheadUrl+'\" target=\"_blank\" rel=\"noopener\" class=\"tmog-modal-wowhead\">Wowhead <i class=\"las la-external-link-alt\"></i></a></div></div>';
-              document.body.appendChild(modal);
-              modal.querySelector('.tmog-modal-close').addEventListener('click', () => modal.remove());
+              document.body.appendChild(modal); document.body.classList.add('modal-open');
+              modal.querySelector('.tmog-modal-close').addEventListener('click', () => { modal.remove(); document.body.classList.remove('modal-open'); });
               modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
               document.addEventListener('keydown', function handler(e) { if (e.key === 'Escape') { modal.remove(); document.removeEventListener('keydown', handler); } });
 
@@ -1176,8 +1176,8 @@ document.addEventListener('DOMContentLoaded', async () => {
               const modal = document.createElement('div');
               modal.className = 'tmog-modal-overlay';
               modal.innerHTML = '<div class="tmog-modal"><button class="tmog-modal-close"><i class="las la-times"></i></button><div class="tmog-modal-content"><a href="'+wowheadUrl+'" onclick="event.preventDefault()" class="tmog-modal-icon-link"><img src="'+icon+'" class="tmog-modal-icon" /></a><div class="tmog-modal-info"><span class="tmog-modal-slot">'+slot+'</span><h3 class="tmog-modal-name">'+itemName+'</h3><span class="tmog-modal-status '+(owned?'owned':'missing')+'">'+(owned?'Collected':'Missing')+'</span></div></div>'+(boss?'<div class="tmog-modal-source"><div class="tmog-modal-source-row"><i class="las la-skull"></i><span>'+boss+'</span></div><div class="tmog-modal-source-row"><i class="las la-dungeon"></i><span>'+instance+'</span></div></div>':'')+'<div class="tmog-modal-actions">'+(!owned?'<button class="tmog-modal-todo" id="tmog-add-todo"><i class="las la-plus"></i> Add to Todos</button>':'')+'<a href="'+wowheadUrl+'" target="_blank" rel="noopener" class="tmog-modal-wowhead">Wowhead <i class="las la-external-link-alt"></i></a></div></div>';
-              document.body.appendChild(modal);
-              modal.querySelector('.tmog-modal-close').addEventListener('click', () => modal.remove());
+              document.body.appendChild(modal); document.body.classList.add('modal-open');
+              modal.querySelector('.tmog-modal-close').addEventListener('click', () => { modal.remove(); document.body.classList.remove('modal-open'); });
               modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
               document.addEventListener('keydown', function handler(e) { if (e.key === 'Escape') { modal.remove(); document.removeEventListener('keydown', handler); } });
               const todoBtn = modal.querySelector('#tmog-add-todo');

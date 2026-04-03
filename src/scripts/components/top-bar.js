@@ -138,32 +138,38 @@ class TopBar {
         ${isAuthenticated ? `
           <div class="nav-mega">
             <button class="nav-link nav-mega-toggle${isAccountPageActive || currentPage === 'my-account.html' ? ' active' : ''}" aria-label="Your Account menu">
-              <i class="las la-user-circle"></i>
               <span>My Account</span>
               <i class="las la-angle-down dropdown-arrow"></i>
             </button>
             <div class="nav-mega-menu">
               <div class="void-cinders"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
               <div class="mega-featured">
-                <a href="my-characters.html" class="mega-card${getActiveClass('my-characters.html')}">
+                <a href="groups.html" class="mega-card${getActiveClass('groups.html')}">
                   <div class="mega-card-preview">
-                    <div class="mega-card-scene">
-                      <div class="member-card" style="pointer-events:none;width:120px">
-                        <div class="member-level">90<span class="member-ilvl">263</span></div>
-                        <div class="character-avatar-placeholder" style="height:80px"><img src="https://render.worldofwarcraft.com/eu/character/tarren-mill/58/170575674-inset.jpg" style="width:100%;height:100%;object-fit:cover;object-position:top" /></div>
-                        <div class="member-header"><div class="member-name" style="color:#A330C9;font-size:10px">Felbladë</div></div>
-                      </div>
-                      <div class="member-card" style="pointer-events:none;width:120px">
-                        <div class="member-level">90<span class="member-ilvl">258</span></div>
-                        <div class="character-avatar-placeholder" style="height:80px"><img src="https://render.worldofwarcraft.com/eu/character/tarren-mill/115/171270003-inset.jpg" style="width:100%;height:100%;object-fit:cover;object-position:top" /></div>
-                        <div class="member-header"><div class="member-name" style="color:#FFF569;font-size:10px">Fëlstriker</div></div>
+                    <div class="mega-card-scene mega-scene-sm">
+                      <div style="display:flex;flex-direction:column;gap:4px;width:180px">
+                        <div style="display:flex;align-items:center;gap:4px;padding:3px 6px;background:rgba(163,53,238,0.1);border-radius:3px"><span style="font-size:8px;font-weight:700;color:#a335ee">Cosmic Badgers</span><span style="font-size:7px;color:rgba(255,255,255,0.25);margin-left:auto">5/5</span></div>
+                        <div style="display:flex;gap:3px;padding:0 6px">
+                          <img src="https://wow.zamimg.com/images/wow/icons/large/classicon_warrior.jpg" style="width:14px;height:14px;border-radius:50%" />
+                          <img src="https://wow.zamimg.com/images/wow/icons/large/classicon_priest.jpg" style="width:14px;height:14px;border-radius:50%" />
+                          <img src="https://wow.zamimg.com/images/wow/icons/large/classicon_mage.jpg" style="width:14px;height:14px;border-radius:50%" />
+                          <img src="https://wow.zamimg.com/images/wow/icons/large/classicon_rogue.jpg" style="width:14px;height:14px;border-radius:50%" />
+                          <img src="https://wow.zamimg.com/images/wow/icons/large/classicon_demonhunter.jpg" style="width:14px;height:14px;border-radius:50%" />
+                        </div>
+                        <div style="display:flex;align-items:center;gap:4px;padding:3px 6px;background:rgba(163,53,238,0.1);border-radius:3px"><span style="font-size:8px;font-weight:700;color:#a335ee">Void Llamas</span><span style="font-size:7px;color:rgba(255,255,255,0.25);margin-left:auto">4/5</span></div>
+                        <div style="display:flex;gap:3px;padding:0 6px">
+                          <img src="https://wow.zamimg.com/images/wow/icons/large/classicon_deathknight.jpg" style="width:14px;height:14px;border-radius:50%" />
+                          <img src="https://wow.zamimg.com/images/wow/icons/large/classicon_druid.jpg" style="width:14px;height:14px;border-radius:50%" />
+                          <img src="https://wow.zamimg.com/images/wow/icons/large/classicon_hunter.jpg" style="width:14px;height:14px;border-radius:50%" />
+                          <img src="https://wow.zamimg.com/images/wow/icons/large/classicon_warlock.jpg" style="width:14px;height:14px;border-radius:50%" />
+                        </div>
                       </div>
                     </div>
                     <div class="mega-card-overlay"></div>
                   </div>
                   <div class="mega-card-info">
-                    <span class="mega-card-title">Characters</span>
-                    <span class="mega-card-desc">All your characters, gear, and specs</span>
+                    <span class="mega-card-title">Group Builder</span>
+                    <span class="mega-card-desc">Sign up and get assigned to a team</span>
                   </div>
                 </a>
                 <a href="my-vault.html" class="mega-card${getActiveClass('my-vault.html')}">
@@ -269,6 +275,7 @@ class TopBar {
                 </a>
               </div>
               <div class="mega-links">
+                <a href="my-characters.html" class="mega-link${getActiveClass('my-characters.html')}"><i class="las la-user"></i> Characters</a>
                 <a href="my-crafters.html" class="mega-link${getActiveClass('my-crafters.html')}"><i class="las la-hammer"></i> Crafters</a>
                 <a href="my-mounts.html" class="mega-link${getActiveClass('my-mounts.html')}"><i class="las la-horse"></i> Mounts</a>
                 <a href="my-todos.html" class="mega-link${getActiveClass('my-todos.html')}"><i class="las la-tasks"></i> Todos</a>
@@ -280,19 +287,18 @@ class TopBar {
           </div>
         ` : ''}
         <a href="raids.html" class="nav-link${getActiveClass('raids.html')}">
-          <i class="las la-dungeon"></i>
           <span>Raids</span>
         </a>
+        <a href="groups.html" class="nav-link${getActiveClass('groups.html')}">
+          <span>Groups</span>
+        </a>
         <a href="mythic-plus.html" class="nav-link${getActiveClass('mythic-plus.html')}">
-          <i class="las la-trophy"></i>
           <span>Mythic+</span>
         </a>
         <a href="events.html" class="nav-link${getActiveClass('events.html')}">
-          <i class="las la-calendar"></i>
           <span>Events</span>
         </a>
         <a href="gallery.html" class="nav-link${getActiveClass('gallery.html')}">
-          <i class="las la-images"></i>
           <span>Gallery</span>
         </a>
       </nav>
@@ -341,6 +347,10 @@ class TopBar {
           <i class="las la-dungeon"></i>
           <span>Raids</span>
         </a>
+        <a href="groups.html" class="mobile-nav-link${getActiveClass('groups.html')}">
+          <i class="las la-users"></i>
+          <span>Groups</span>
+        </a>
         <a href="mythic-plus.html" class="mobile-nav-link${getActiveClass('mythic-plus.html')}">
           <i class="las la-trophy"></i>
           <span>Mythic+</span>
@@ -382,12 +392,14 @@ class TopBar {
       overlay.classList.add('active');
       menu.classList.add('active');
       toggle.classList.add('open');
+      document.body.classList.add('modal-open');
     };
 
     const closeMenu = () => {
       overlay.classList.remove('active');
       menu.classList.remove('active');
       toggle.classList.remove('open');
+      document.body.classList.remove('modal-open');
     };
 
     toggle.addEventListener('click', (e) => {

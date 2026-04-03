@@ -1,0 +1,468 @@
+// M+ Group Builder Page
+
+.mplus-server-group {
+  margin-bottom: 24px;
+}
+
+.mplus-server-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+  i {
+    font-size: 18px;
+    color: #5865F2;
+  }
+
+  span {
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+  }
+}
+
+.mplus-sessions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+
+  @media (max-width: 500px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mplus-session-card {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  transition: border-color 0.2s ease;
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+}
+
+.mplus-card-admin-icons {
+  position: absolute;
+  top: 10px;
+  right: 72px;
+  display: flex;
+  gap: 4px;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+
+  .mplus-session-card:hover & {
+    opacity: 1;
+  }
+}
+
+.btn-mplus-build-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  background: rgba(163, 53, 238, 0.15);
+  border: 1px solid rgba(163, 53, 238, 0.3);
+  border-radius: 4px;
+  color: #a335ee;
+  height: 28px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Muli', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &:hover {
+    background: rgba(163, 53, 238, 0.3);
+    color: #fff;
+  }
+}
+
+.btn-mplus-delete {
+  background: rgba(255, 50, 50, 0.15);
+  border: 1px solid rgba(255, 50, 50, 0.3);
+  border-radius: 4px;
+  color: rgba(255, 50, 50, 0.7);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 50, 50, 0.3);
+    color: #fff;
+  }
+}
+
+.mplus-card-header {
+  padding: 16px;
+}
+
+.mplus-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+
+  h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+  }
+}
+
+.mplus-card-status {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  border-radius: 10px;
+
+  &.status-open {
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.15);
+  }
+
+  &.status-closed {
+    color: #f59e0b;
+    background: rgba(245, 158, 11, 0.15);
+  }
+}
+
+.mplus-card-date {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 6px;
+
+  .mplus-countdown {
+    color: #a335ee;
+    font-weight: 600;
+  }
+}
+
+.mplus-card-description {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.35);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.mplus-card-stats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.mplus-stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mplus-stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  i { font-size: 14px; }
+
+  &.tank { color: #0070DE; }
+  &.healer { color: #10b981; }
+  &.dps { color: #ff5050; }
+}
+
+.mplus-stat-count {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.mplus-stat-groups {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.3);
+  margin-left: auto;
+}
+
+.mplus-card-roster {
+  padding: 8px 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.mplus-signups-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.mplus-signup-group {
+  padding: 4px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 12px;
+}
+
+.mplus-signup-role-label {
+  display: block;
+  width: 100%;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0;
+
+  &.tank { color: #0070DE; }
+  &.healer { color: #10b981; }
+  &.dps { color: #ff5050; }
+}
+
+.mplus-signup-member {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 0;
+}
+
+.mplus-signup-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+}
+
+.mplus-signup-name {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.mplus-signup-rating {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+
+  i { font-size: 8px; margin-right: 1px; }
+}
+
+.mplus-signups-empty {
+  padding: 16px;
+  text-align: center;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.25);
+}
+
+.mplus-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  margin-top: auto;
+}
+
+.btn-mplus-signup,
+.btn-mplus-build {
+  padding: 8px 16px;
+  background: rgba(163, 53, 238, 0.15);
+  border: 1px solid rgba(163, 53, 238, 0.3);
+  border-radius: 6px;
+  color: #fff;
+  font-family: 'Muli', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  i { font-size: 14px; color: #a335ee; }
+
+  &:hover {
+    background: rgba(163, 53, 238, 0.25);
+    border-color: rgba(163, 53, 238, 0.5);
+  }
+}
+
+.btn-mplus-withdraw {
+  padding: 8px 16px;
+  background: rgba(255, 50, 50, 0.1);
+  border: 1px solid rgba(255, 50, 50, 0.2);
+  border-radius: 6px;
+  color: rgba(255, 50, 50, 0.7);
+  font-family: 'Muli', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 50, 50, 0.2);
+    color: #fff;
+  }
+}
+
+.mplus-signed-up {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  flex: 1;
+}
+
+.mplus-empty {
+  text-align: center;
+  padding: 80px 20px;
+  color: rgba(255, 255, 255, 0.4);
+
+  p { margin: 4px 0; }
+  .mplus-empty-sub { font-size: 13px; color: rgba(255, 255, 255, 0.25); }
+}
+
+.mplus-admin-bar {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.mplus-create-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: rgba(163, 53, 238, 0.15);
+  border: 1px solid rgba(163, 53, 238, 0.3);
+  border-radius: 6px;
+  color: #fff;
+  font-family: 'Muli', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  i { font-size: 14px; color: #a335ee; }
+
+  &:hover {
+    background: rgba(163, 53, 238, 0.25);
+  }
+}
+
+// Create session form overlay
+.mplus-create-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.mplus-create-form {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(163, 53, 238, 0.2);
+  border-radius: 5px;
+  position: relative;
+  padding: 24px;
+  width: 100%;
+  max-width: 420px;
+
+  h3 {
+    margin: 0 0 16px;
+    font-size: 18px;
+    color: #fff;
+  }
+}
+
+.mplus-form-field {
+  margin-bottom: 12px;
+
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.4);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  input {
+    width: 100%;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: #fff;
+    font-family: 'Muli', sans-serif;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s ease;
+
+    &:focus {
+      border-color: rgba(163, 53, 238, 0.4);
+    }
+  }
+}
+
+.mplus-form-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.mplus-form-cancel {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: 'Muli', sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.mplus-form-submit {
+  padding: 8px 16px;
+  background: rgba(163, 53, 238, 0.2);
+  border: 1px solid rgba(163, 53, 238, 0.4);
+  border-radius: 6px;
+  color: #fff;
+  font-family: 'Muli', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(163, 53, 238, 0.35);
+  }
+}
+
+.tentative-icon {
+  color: rgba(245, 158, 11, 0.6);
+  font-size: 12px;
+  margin-left: 2px;
+}

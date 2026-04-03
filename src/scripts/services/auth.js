@@ -62,8 +62,15 @@ class AuthService {
           window.close();
         }, 100);
       } else {
-        // If not in popup (direct redirect), dispatch event for current window
+        // Check if we need to redirect back to a specific page (e.g. claim flow)
+        const returnUrl = sessionStorage.getItem('gld_claim_return');
+        if (returnUrl) {
+          sessionStorage.removeItem('gld_claim_return');
+          window.location.href = returnUrl;
+          return;
+        }
 
+        // If not in popup (direct redirect), dispatch event for current window
         window.dispatchEvent(new CustomEvent('auth-state-changed'));
       }
     }

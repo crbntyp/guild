@@ -1,3 +1,5 @@
+import { addVoidCinders } from '../utils/void-cinders.js';
+
 /**
  * FormModal - Reusable form modal component
  * Handles modal display, form rendering, and validation
@@ -137,6 +139,11 @@ class FormModal {
       cancelBtn.addEventListener('click', () => this.close());
     }
 
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && this.modalElement.classList.contains('active')) this.close();
+    });
+
     // Form submit
     this.formElement.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -180,8 +187,13 @@ class FormModal {
       this.populateForm(data);
     }
 
+    // Add void cinders
+    const content = this.modalElement.querySelector('.form-modal-content');
+    if (content) addVoidCinders(content);
+
     // Show modal
     this.modalElement.classList.add('active');
+    document.body.classList.add('modal-open');
 
     // Focus first input
     const firstInput = this.formElement.querySelector('input, textarea');
@@ -197,6 +209,7 @@ class FormModal {
     if (!this.modalElement) return;
 
     this.modalElement.classList.remove('active');
+    document.body.classList.remove('modal-open');
     this.formElement.reset();
     this.editMode = false;
     this.editData = null;

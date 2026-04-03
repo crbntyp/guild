@@ -1,12 +1,15 @@
 import accountService from '../services/account-service.js';
 import characterService from '../services/character-service.js';
+import wowAPI from '../api/wow-api.js';
 import { getClassColor, getClassName, getSpecRole, CLASS_POSSIBLE_ROLES } from '../utils/wow-constants.js';
 import { getClassIconUrl } from '../utils/wow-icons.js';
+import { addVoidCinders } from '../utils/void-cinders.js';
 
 class SignupModal {
-  constructor(authService, onSubmit) {
+  constructor(authService, onSubmit, mode = 'raid') {
     this.authService = authService;
     this.onSubmit = onSubmit;
+    this.mode = mode;
     this.modal = null;
     this.currentRaid = null;
     this.selectedCharacter = null;
@@ -18,7 +21,7 @@ class SignupModal {
       <div class="signup-modal-overlay" id="signup-modal-overlay" style="display: none;">
         <div class="signup-modal">
           <div class="signup-modal-header">
-            <h3>Sign Up for Raid</h3>
+            <h3>Sign Up${this.mode === 'mplus' ? '' : ' for Raid'}</h3>
             <button class="signup-modal-close" id="signup-modal-close"><i class="las la-times"></i></button>
           </div>
           <div class="signup-modal-body" id="signup-modal-body">
@@ -37,11 +40,9 @@ class SignupModal {
       closeBtn.addEventListener('click', () => this.close());
     }
 
-    if (overlay) {
-      overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) this.close();
-      });
-    }
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && overlay?.style.display === 'flex') this.close();
+    });
   }
 
   async open(raid) {
@@ -55,6 +56,11 @@ class SignupModal {
     if (!overlay || !body) return;
 
     overlay.style.display = 'flex';
+    document.body.classList.add('modal-open');
+
+    // Add void cinders to modal
+    const modal = overlay.querySelector('.signup-modal');
+    if (modal) addVoidCinders(modal);
 
     // Show loading
     body.innerHTML = `
@@ -140,12 +146,18 @@ class SignupModal {
     // Fetch profile for spec and ilvl
     let spec = null;
     let ilvl = 0;
+    let mplusRating = 0;
 
     try {
       const profile = await characterService.fetchCharacterProfile(realm, name);
       this.characterProfile = profile;
       spec = profile?.active_spec?.name || null;
       ilvl = profile?.equipped_item_level || profile?.average_item_level || 0;
+      // Fetch M+ rating from separate endpoint
+      try {
+        const mplusProfile = await wowAPI.getCharacterMythicKeystoneProfile(realm, name);
+        mplusRating = Math.round(mplusProfile?.current_mythic_rating?.rating || 0);
+      } catch (e) {}
     } catch (error) {
       // Profile fetch failed, continue without spec/ilvl
     }
@@ -227,6 +239,7 @@ class SignupModal {
           character_spec: spec,
           character_level: level,
           character_ilvl: ilvl,
+          mplus_rating: mplusRating,
           role: selectedRole,
           status: selectedStatus,
           note: note || null
@@ -241,6 +254,7 @@ class SignupModal {
   close() {
     const overlay = document.getElementById('signup-modal-overlay');
     if (overlay) overlay.style.display = 'none';
+    document.body.classList.remove('modal-open');
     this.currentRaid = null;
     this.selectedCharacter = null;
     this.characterProfile = null;

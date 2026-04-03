@@ -1,0 +1,358 @@
+// M+ Group Builder Modal
+
+.mplus-builder-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-y: auto;
+  opacity: 0;
+  visibility: hidden;
+
+  &.active {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.mplus-builder {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(163, 53, 238, 0.2);
+  border-radius: 5px;
+  width: 100%;
+  max-width: 1200px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+  position: relative;
+}
+
+.mplus-builder-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+  h2 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+  }
+}
+
+.mplus-builder-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mplus-builder-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: rgba(163, 53, 238, 0.12);
+  border: 1px solid rgba(163, 53, 238, 0.25);
+  border-radius: 5px;
+  color: #fff;
+  font-family: 'Muli', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  i { font-size: 12px; color: #a335ee; }
+
+  &:hover {
+    background: rgba(163, 53, 238, 0.2);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  &.mplus-btn-danger {
+    background: rgba(255, 50, 50, 0.1);
+    border-color: rgba(255, 50, 50, 0.2);
+
+    i { color: rgba(255, 50, 50, 0.7); }
+
+    &:hover {
+      background: rgba(255, 50, 50, 0.2);
+    }
+  }
+}
+
+.mplus-builder-close {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px;
+  margin-left: 8px;
+
+  &:hover { color: #fff; }
+}
+
+.mplus-builder-body {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  flex: 1;
+  overflow: hidden;
+  max-height: calc(90vh - 60px);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Pool (left column)
+.mplus-builder-pool {
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 16px;
+  overflow-y: auto;
+
+  h3 {
+    margin: 0 0 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+
+    .mplus-pool-count {
+      color: rgba(255, 255, 255, 0.25);
+    }
+  }
+}
+
+.mplus-pool-role {
+  margin-bottom: 12px;
+}
+
+.mplus-pool-role-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 6px;
+
+  i { font-size: 12px; }
+
+  &.tank { color: #0070DE; }
+  &.healer { color: #10b981; }
+  &.dps { color: #ff5050; }
+}
+
+.mplus-pool-card {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: 5px;
+  cursor: grab;
+  transition: all 0.15s ease;
+  margin-bottom: 3px;
+  background: rgba(255, 255, 255, 0.03);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  &.dragging {
+    opacity: 0.3;
+  }
+
+  &.tentative {
+    border-left: 2px dashed rgba(245, 158, 11, 0.4);
+  }
+}
+
+.mplus-pool-card-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.mplus-pool-card-name {
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.mplus-pool-card-spec {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.25);
+}
+
+.mplus-pool-card-stats {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+}
+
+.mplus-pool-empty {
+  text-align: center;
+  padding: 20px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.25);
+}
+
+// Groups (right column)
+.mplus-builder-groups {
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-content: flex-start;
+}
+
+.mplus-groups-empty {
+  width: 100%;
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.25);
+}
+
+.mplus-group {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  width: calc(50% - 6px);
+  min-width: 260px;
+  flex-shrink: 0;
+
+  @media (max-width: 900px) {
+    width: 100%;
+  }
+}
+
+.mplus-group-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.mplus-group-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #a335ee;
+  outline: none;
+  border: none;
+  background: none;
+  cursor: text;
+  min-width: 40px;
+
+  &:focus {
+    border-bottom: 1px solid rgba(163, 53, 238, 0.4);
+  }
+}
+
+.mplus-reroll-name {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px;
+
+  &:hover { color: #a335ee; }
+}
+
+.mplus-group-ilvl {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.25);
+  margin-left: auto;
+}
+
+.mplus-group-count {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.3);
+  font-weight: 600;
+}
+
+.mplus-remove-group {
+  background: none;
+  border: none;
+  color: rgba(255, 50, 50, 0.4);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px;
+
+  &:hover { color: rgba(255, 50, 50, 0.8); }
+}
+
+.mplus-group-slots {
+  padding: 6px;
+}
+
+.mplus-group-slot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 5px;
+  margin-bottom: 3px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.15);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  border: 1px dashed rgba(255, 255, 255, 0.06);
+  transition: all 0.15s ease;
+
+  i { font-size: 14px; }
+
+  &.drag-over {
+    border-color: rgba(163, 53, 238, 0.4);
+    background: rgba(163, 53, 238, 0.08);
+    color: rgba(163, 53, 238, 0.6);
+  }
+}
+
+.mplus-group-member {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 5px;
+  margin-bottom: 3px;
+  background: rgba(255, 255, 255, 0.03);
+  cursor: grab;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  &.dragging {
+    opacity: 0.3;
+  }
+}
+
+.mplus-remove-member {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px;
+  margin-left: auto;
+
+  &:hover { color: rgba(255, 50, 50, 0.7); }
+}

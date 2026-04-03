@@ -1,5 +1,6 @@
 const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
 const mysql = require('mysql2/promise');
+const crypto = require('crypto');
 const config = require('./config');
 
 const client = new Client({
@@ -158,9 +159,133 @@ async function postWithdrawNotification(raidId, characterName, role) {
   );
 }
 
+/**
+ * Post an M+ session embed to the channel
+ */
+async function postSessionEmbed(session, title, description) {
+  const channel = client.channels.cache.get(config.channelId);
+  if (!channel) return;
+
+  const sessionDate = new Date(session.session_date);
+  const timestamp = Math.floor(sessionDate.getTime() / 1000);
+
+  const sessionDescription = session.description
+    ? `${description}\n\n> ${session.description}`
+    : description;
+
+  const embed = new EmbedBuilder()
+    .setTitle(title)
+    .setDescription(sessionDescription)
+    .setColor(0xA335EE)
+    .addFields(
+      { name: 'Date', value: `<t:${timestamp}:F>`, inline: true },
+      { name: 'Countdown', value: `<t:${timestamp}:R>`, inline: true },
+      { name: '\u200b', value: `**[SIGN UP!](${config.appUrl}/groups.html?server=${session.discord_guild_id || ''}&name=${encodeURIComponent(session.discord_guild_name || '')})**`, inline: false }
+    )
+    .setFooter({ text: 'gld__ M+ Group Builder' })
+    .setTimestamp();
+
+  try {
+    const message = await channel.send({ embeds: [embed] });
+    const pool = await getDb();
+    await pool.execute(
+      'UPDATE mplus_sessions SET discord_message_id = ? WHERE id = ?',
+      [message.id, session.id]
+    );
+    return message;
+  } catch (error) {
+    console.error('Error posting session embed:', error);
+  }
+}
+
 // Handle slash commands
 client.on('interactionCreate', async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
+
+  if (interaction.commandName === 'group') {
+    const title = interaction.options.getString('title');
+    const dateStr = interaction.options.getString('date');
+    const description = interaction.options.getString('description') || null;
+
+    const sessionDate = new Date(dateStr);
+    if (isNaN(sessionDate.getTime())) {
+      await interaction.reply({ content: 'Invalid date format. Use: `YYYY-MM-DD HH:MM` (e.g. `2026-04-10 20:00`)', ephemeral: true });
+      return;
+    }
+
+    try {
+      await interaction.deferReply();
+
+      const pool = await getDb();
+      const utcDate = sessionDate.toISOString().slice(0, 19).replace('T', ' ');
+      const guildId = interaction.guildId;
+      const guildName = interaction.guild?.name || '';
+
+      const discordUserId = interaction.user.id;
+
+      // Check if Discord account is linked to BNet
+      const [links] = await pool.execute('SELECT bnet_user_id FROM discord_bnet_links WHERE discord_id = ?', [discordUserId]);
+      const linkedBnetId = links.length > 0 ? links[0].bnet_user_id : null;
+
+      const [result] = await pool.execute(
+        `INSERT INTO mplus_sessions (title, description, session_date, status, created_by_battletag, created_by_discord_id, owner_bnet_id, discord_guild_id, discord_guild_name, discord_message_id)
+         VALUES (?, ?, ?, 'open', ?, ?, ?, ?, ?, NULL)`,
+        [title, description, utcDate, `Discord:${interaction.user.tag}`, discordUserId, linkedBnetId, guildId, guildName]
+      );
+
+      const sessionId = result.insertId;
+      const [sessions] = await pool.execute('SELECT * FROM mplus_sessions WHERE id = ?', [sessionId]);
+      const session = sessions[0];
+      session.discord_guild_name = guildName;
+
+      await postSessionEmbed(session, `Group Session: ${title}`, 'Sign up and let the GM build groups!');
+
+      // If not linked, DM them a one-time link to pair Discord + BNet
+      if (!linkedBnetId) {
+        const linkToken = crypto.randomBytes(32).toString('hex');
+        const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 19).replace('T', ' ');
+
+        await pool.execute(
+          `INSERT INTO pending_discord_links (discord_id, token, expires_at) VALUES (?, ?, ?)
+           ON DUPLICATE KEY UPDATE token = VALUES(token), expires_at = VALUES(expires_at)`,
+          [discordUserId, linkToken, expiresAt]
+        );
+
+        const linkUrl = `${config.appUrl}/groups.html?link_discord=${discordUserId}&link_token=${linkToken}`;
+        try {
+          await interaction.user.send({
+            embeds: [
+              new EmbedBuilder()
+                .setTitle('One quick thing before you go!')
+                .setDescription(
+                  `Hey! You just created **${title}** — nice one.\n\n` +
+                  `To build and manage your groups on the web (drag players into teams, auto-assign, the fun stuff), ` +
+                  `we need to know your Discord account and your Battle.net account belong to the same person.\n\n` +
+                  `**Why?** So only *you* can manage the sessions you create. Nobody else gets access to your created group.\n\n` +
+                  `**What happens?** You click the link below, log in with Battle.net (the same way you log into the app), ` +
+                  `and we pair the two accounts together. That's it — one time only. Every group or raid you create from Discord after this will just work.\n\n` +
+                  `**What do we store?** Just your Discord ID and Battle.net ID side by side. No passwords, no personal data, no funny business. ` +
+                  `You can read the full privacy policy at crbntyp.com/gld/privacy.html`
+                )
+                .setColor(0xA335EE)
+                .addFields({ name: '\u200b', value: `**[Link my accounts](${linkUrl})**` })
+                .setFooter({ text: 'This link is unique to you and expires in 7 days.' })
+            ]
+          });
+        } catch (dmError) {
+          console.log('Could not DM user:', dmError.message);
+        }
+
+        await interaction.editReply(`Group session **${title}** created for <t:${Math.floor(sessionDate.getTime() / 1000)}:F>. Posted to <#${config.channelId}>. **Check your DMs** to link your Battle.net account for group management.`);
+      } else {
+        await interaction.editReply(`Group session **${title}** created for <t:${Math.floor(sessionDate.getTime() / 1000)}:F>. Posted to <#${config.channelId}>.`);
+      }
+    } catch (error) {
+      console.error('Error creating session:', error);
+      const reply = interaction.deferred ? interaction.editReply : interaction.reply;
+      await reply.call(interaction, { content: 'Failed to create session. Check the logs.', ephemeral: true });
+    }
+  }
 
   if (interaction.commandName === 'raid') {
     const title = interaction.options.getString('title');

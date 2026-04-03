@@ -47,6 +47,23 @@ const commands = [
       option.setName('dps')
         .setDescription('Max DPS (default: 14)')
         .setRequired(false))
+    .toJSON(),
+
+  new SlashCommandBuilder()
+    .setName('group')
+    .setDescription('Create a group session (M+ keys, timewalking, dungeons, etc.)')
+    .addStringOption(option =>
+      option.setName('title')
+        .setDescription('Session name (e.g. Wednesday M+ Push)')
+        .setRequired(true))
+    .addStringOption(option =>
+      option.setName('date')
+        .setDescription('Date and time (e.g. 2026-04-10 20:00)')
+        .setRequired(true))
+    .addStringOption(option =>
+      option.setName('description')
+        .setDescription('Optional notes (e.g. High keys, bring consumes)')
+        .setRequired(false))
     .toJSON()
 ];
 

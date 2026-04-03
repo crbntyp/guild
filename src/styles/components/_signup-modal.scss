@@ -2,23 +2,22 @@
 
 .signup-modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(4px);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 10000;
   padding: 20px;
+  overflow-y: auto;
 }
 
 .signup-modal {
-  background: #1e1e1e;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(163, 53, 238, 0.2);
+  border-radius: 5px;
+  position: relative;
   width: 100%;
   max-width: 500px;
   max-height: 80vh;
@@ -188,8 +187,11 @@
   label {
     display: block;
     font-size: 11px;
-    color: rgba(255, 255, 255, 0.5);
-    margin-bottom: 6px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.4);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
   }
 }
 
@@ -226,38 +228,40 @@
 .signup-note-input {
   width: 100%;
   padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
+  border-radius: 6px;
   color: #fff;
-  font-size: 12px;
-  font-family: inherit;
+  font-size: 13px;
+  font-family: 'Muli', sans-serif;
   box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s ease;
 
   &::placeholder {
     color: rgba(255, 255, 255, 0.3);
   }
 
   &:focus {
-    outline: none;
-    border-color: rgba(163, 53, 238, 0.5);
+    border-color: rgba(163, 53, 238, 0.4);
   }
 }
 
 .btn-signup-confirm {
   width: 100%;
   padding: 10px;
-  background: rgba(163, 53, 238, 0.3);
-  border: 1px solid rgba(163, 53, 238, 0.5);
+  background: rgba(163, 53, 238, 0.2);
+  border: 1px solid rgba(163, 53, 238, 0.4);
   border-radius: 6px;
   color: #fff;
   font-size: 14px;
   font-weight: 600;
+  font-family: 'Muli', sans-serif;
   cursor: pointer;
   transition: all 0.2s ease;
   margin-top: 4px;
 
   &:hover {
-    background: rgba(163, 53, 238, 0.5);
+    background: rgba(163, 53, 238, 0.35);
   }
 }

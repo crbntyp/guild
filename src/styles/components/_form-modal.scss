@@ -3,11 +3,9 @@
 
 .form-modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  backdrop-filter: blur(10px);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
   display: none;
   align-items: center;
   justify-content: center;
@@ -18,12 +16,13 @@
   }
 
   .form-modal-content {
-    background: rgba(black, 0.4);
-    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(163, 53, 238, 0.2);
+    border-radius: 5px;
     padding: 32px;
+    position: relative;
     max-width: 500px;
     width: 90%;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 
     h2 {
       font-size: 24px;
@@ -36,29 +35,29 @@
 
       label {
         display: block;
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 600;
-        color: rgba(255, 255, 255, 0.7);
-        margin-bottom: 8px;
+        color: rgba(255, 255, 255, 0.4);
+        margin-bottom: 4px;
         text-transform: uppercase;
+        letter-spacing: 0.3px;
       }
 
       input,
       textarea {
         width: 100%;
-        padding: 12px;
-        background: rgba(255, 255, 255, 0.05);
+        padding: 8px 12px;
+        background: rgba(255, 255, 255, 0.06);
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 6px;
         color: #fff;
         font-family: 'Muli', sans-serif;
-        font-size: 14px;
-        transition: all 0.3s ease;
+        font-size: 13px;
+        transition: border-color 0.2s ease;
+        outline: none;
 
         &:focus {
-          outline: none;
-          border-color: #e12e2c;
-          background: rgba(255, 255, 255, 0.08);
+          border-color: rgba(163, 53, 238, 0.4);
         }
 
         &::placeholder {
@@ -78,7 +77,6 @@
         color: rgba(255, 255, 255, 0.5);
       }
 
-      // Checkbox styling
       .form-checkbox {
         display: flex;
         align-items: center;
@@ -89,7 +87,7 @@
           width: 18px;
           height: 18px;
           cursor: pointer;
-          accent-color: #e12e2c;
+          accent-color: #a335ee;
           border-radius: 4px;
         }
 
@@ -104,18 +102,17 @@
         }
       }
 
-      // Field status (for URL validation, loading states, etc.)
       .field-status {
         margin-top: 8px;
         font-size: 12px;
         color: rgba(255, 255, 255, 0.5);
 
         &.loading {
-          color: #e12e2c;
+          color: #a335ee;
         }
 
         &.success {
-          color: #00ff96;
+          color: #10b981;
         }
 
         &.error {
@@ -138,8 +135,7 @@
         font-size: 14px;
         font-weight: 600;
         cursor: pointer;
-        transition: all 0.3s ease;
-        text-transform: uppercase;
+        transition: all 0.2s ease;
 
         &.btn-cancel {
           background: rgba(255, 255, 255, 0.1);
@@ -151,15 +147,16 @@
         }
 
         &.btn-save {
-          background: #e12e2c;
+          background: rgba(163, 53, 238, 0.2);
+          border: 1px solid rgba(163, 53, 238, 0.4);
           color: white;
 
           &:hover {
-            background: #c82826;
+            background: rgba(163, 53, 238, 0.35);
           }
 
           &:disabled {
-            background: rgba(225, 46, 44, 0.5);
+            opacity: 0.5;
             cursor: not-allowed;
           }
         }
@@ -168,7 +165,6 @@
   }
 }
 
-// Responsive adjustments
 @media (max-width: 768px) {
   .form-modal {
     .form-modal-content {

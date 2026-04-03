@@ -17,6 +17,61 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       <div class="changelog-entry">
         <div class="changelog-date">April 2026</div>
+        <h3 class="changelog-title">Mega Menu Navigation</h3>
+        <p>The My Account dropdown has been replaced with a full mega menu. Four featured sections — Characters, Weekly Vault, Transmog, and Raid Signups — each with live markup previews showing what the page actually looks like. Smaller links for Crafters, Mounts, Todos, YouTube, and a placeholder for Achievement Lols (coming soon). Opens as a centred modal with a blurred backdrop and void cinder effect rising from the top edge.</p>
+        <div class="changelog-tags">
+          <span class="changelog-tag">New Feature</span>
+          <span class="changelog-tag">UX</span>
+        </div>
+      </div>
+
+      <div class="changelog-entry">
+        <div class="changelog-date">April 2026</div>
+        <h3 class="changelog-title">Unified Hero Headers</h3>
+        <p>Every page now uses a consistent hero-style header with a gld__ badge, large title, and subtitle. Covers all account pages, public pages, and the changelog. Consistent branding across the whole app.</p>
+        <div class="changelog-tags">
+          <span class="changelog-tag">UX</span>
+        </div>
+      </div>
+
+      <div class="changelog-entry">
+        <div class="changelog-date">April 2026</div>
+        <h3 class="changelog-title">Mythic+ Performance Overhaul</h3>
+        <p>The Mythic+ leaderboard page now loads near-instantly on repeat visits. Leaderboard data is cached in session storage for 30 minutes, redundant API calls removed, and dungeon background images load asynchronously after the page renders instead of blocking it.</p>
+        <div class="changelog-tags">
+          <span class="changelog-tag">Performance</span>
+        </div>
+      </div>
+
+      <div class="changelog-entry">
+        <div class="changelog-date">April 2026</div>
+        <h3 class="changelog-title">Homepage Transmog Showcase</h3>
+        <p>The homepage now features a transmog collection carousel showing raid tier sets from Midnight, The War Within, and Dragonflight — with real set icons, difficulty tabs, and piece lists. Demonstrates the depth of the transmog tracker to new visitors.</p>
+        <div class="changelog-tags">
+          <span class="changelog-tag">Homepage</span>
+        </div>
+      </div>
+
+      <div class="changelog-entry">
+        <div class="changelog-date">April 2026</div>
+        <h3 class="changelog-title">Character Avatar Improvements</h3>
+        <p>Top bar avatar now uses the Blizzard character media API for reliable renders. Cache-busting added to character renders across roster cards and the character modal to ensure fresh images after gear or appearance changes.</p>
+        <div class="changelog-tags">
+          <span class="changelog-tag">Fix</span>
+        </div>
+      </div>
+
+      <div class="changelog-entry">
+        <div class="changelog-date">April 2026</div>
+        <h3 class="changelog-title">Analytics Integration</h3>
+        <p>Added stts analytics tracking across all 14 pages. Cookieless, privacy-friendly page view and interaction tracking.</p>
+        <div class="changelog-tags">
+          <span class="changelog-tag">Infrastructure</span>
+        </div>
+      </div>
+
+      <div class="changelog-entry">
+        <div class="changelog-date">April 2026</div>
         <h3 class="changelog-title">Raid & Dungeon Loot Browser</h3>
         <p>Browse every piece of loot from every raid and dungeon across all expansions. Over 15,000 items with icons, boss names, and collection tracking. Filter by expansion, instance, and armor type. Click any item for details and add missing pieces to your todo list.</p>
         <div class="changelog-tags">

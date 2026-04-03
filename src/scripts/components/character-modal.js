@@ -83,7 +83,7 @@ class CharacterModal {
    */
   async open(characterName, realmSlug, region = 'eu') {
     this.modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
+    document.body.classList.add('modal-open');
 
     // Show loading state
     const modalBody = this.modal.querySelector('.character-modal-body');
@@ -120,7 +120,7 @@ class CharacterModal {
    */
   close() {
     this.modal.classList.remove('active');
-    document.body.style.overflow = '';
+    document.body.classList.remove('modal-open');
     this.currentCharacter = null;
   }
 

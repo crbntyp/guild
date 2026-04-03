@@ -26,7 +26,8 @@ class Footer {
       </section>
 
       <footer class="footer">
-        <p>Powered by Battle.net API | Engineered & Designed by <a href="https://crbntyp.com" target="_blank" rel="noopener" class="footer-link">crbntyp.com</a> | <a href="changelog.html" class="footer-link">Changelog</a></p>
+        <p>Powered by Battle.net API | Engineered & Designed by <a href="https://crbntyp.com" target="_blank" rel="noopener" class="footer-link">crbntyp.com</a></p>
+        <p><a href="changelog.html" class="footer-link">Changelog</a> | <a href="privacy.html" class="footer-link">Privacy</a> | <a href="terms.html" class="footer-link">Terms</a></p>
       </footer>
     `;
   }
