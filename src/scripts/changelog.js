@@ -17,6 +17,41 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       <div class="changelog-entry">
         <div class="changelog-date">April 2026</div>
+        <h3 class="changelog-title">Group Builder — The Big One</h3>
+        <p>Discord's built-in events give you an RSVP button and a headcount. That's it. No roles, no character data, no team composition, no balance. You're left copy-pasting names into a spreadsheet and hoping you have enough healers.</p>
+        <p>gld__ Group Builder changes the game. Create an event from Discord with <code>/group</code>, and a signup link drops into your channel. Players click through, log in with Battle.net, pick their character, choose their role — and their ilvl and M+ rating come with them automatically.</p>
+        <p>Once everyone's signed up, hit <strong>Auto-Assign</strong> and watch balanced 5-man groups get built instantly. The algorithm uses a snake draft across ilvl to make sure no group is stacked and no group gets shafted. Every team gets a randomly generated name — Cosmic Badgers, Void Llamas, Shadow Krakens — re-roll until you find one that sticks.</p>
+        <p>Not happy with auto-assign? Drag and drop players between groups manually. Move a tank from one team to another, swap DPS around, put your mates together — whatever works. Save when you're done and every player sees their assigned group on the event card with a "you" badge next to their name.</p>
+        <p>Events are grouped by Discord server, so if you're in multiple guilds you see everything organised. Signups and withdrawals post notifications back to your Discord channel in real time. The person who creates the event owns it — they link their Discord and Battle.net accounts once (via a DM from the bot) and from then on every event they create just works.</p>
+        <p>Works for M+ keys, timewalking, dungeons, delves, world bosses — anything that needs a group.</p>
+        <div class="changelog-tags">
+          <span class="changelog-tag">New Feature</span>
+          <span class="changelog-tag">Discord Bot</span>
+          <span class="changelog-tag">Database</span>
+        </div>
+      </div>
+
+      <div class="changelog-entry">
+        <div class="changelog-date">April 2026</div>
+        <h3 class="changelog-title">Discord-BNet Account Linking</h3>
+        <p>First time you create an event via <code>/group</code> in Discord, the bot sends you a friendly DM with a one-time link. Click it, log in with Battle.net, and your Discord and BNet accounts are permanently paired. After that, every event you create automatically knows you're the owner — no extra steps, no claim links, no hassle. Only you can build groups for your events.</p>
+        <div class="changelog-tags">
+          <span class="changelog-tag">New Feature</span>
+          <span class="changelog-tag">Security</span>
+        </div>
+      </div>
+
+      <div class="changelog-entry">
+        <div class="changelog-date">April 2026</div>
+        <h3 class="changelog-title">Privacy Policy & Terms of Service</h3>
+        <p>Added proper privacy and terms pages. No cookies, no third-party tracking, no password storage, no data selling. OAuth tokens live in your browser only. The full breakdown of what we store and why is now at the bottom of every page.</p>
+        <div class="changelog-tags">
+          <span class="changelog-tag">Legal</span>
+        </div>
+      </div>
+
+      <div class="changelog-entry">
+        <div class="changelog-date">April 2026</div>
         <h3 class="changelog-title">Mega Menu Navigation</h3>
         <p>The My Account dropdown has been replaced with a full mega menu. Four featured sections — Characters, Weekly Vault, Transmog, and Raid Signups — each with live markup previews showing what the page actually looks like. Smaller links for Crafters, Mounts, Todos, YouTube, and a placeholder for Achievement Lols (coming soon). Opens as a centred modal with a blurred backdrop and void cinder effect rising from the top edge.</p>
         <div class="changelog-tags">
