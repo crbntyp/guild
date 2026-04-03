@@ -82,6 +82,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                   <h3>Discord Notifications</h3>
                   <p>Every signup, withdrawal, and full roster triggers a message back to your Discord channel in real time.</p>
                 </div>
+
+                <div class="raids-landing-feature">
+                  <div class="raids-landing-feature-icon">
+                    <i class="las la-lock"></i>
+                  </div>
+                  <h3>Role Permissions</h3>
+                  <p>Server owners control who can create raids with <code>/settings</code>. Set a minimum Discord role and only members at that rank or above can create.</p>
+                </div>
               </div>
 
               <div class="raids-landing-how">
@@ -250,6 +258,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                   </div>
                   <h3>Discord Notifications</h3>
                   <p>Every signup, withdrawal, and full roster triggers a message back to your Discord channel in real time.</p>
+                </div>
+
+                <div class="raids-landing-feature">
+                  <div class="raids-landing-feature-icon">
+                    <i class="las la-lock"></i>
+                  </div>
+                  <h3>Role Permissions</h3>
+                  <p>Server owners control who can create raids with <code>/settings</code>. Set a minimum Discord role and only members at that rank or above can create.</p>
                 </div>
               </div>
 

@@ -1,4 +1,4 @@
-const { REST, Routes, SlashCommandBuilder } = require('discord.js');
+const { REST, Routes, SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const config = require('./config');
 
 const commands = [
@@ -51,10 +51,10 @@ const commands = [
 
   new SlashCommandBuilder()
     .setName('group')
-    .setDescription('Create a group session (M+ keys, timewalking, dungeons, etc.)')
+    .setDescription('Create a group event (M+ keys, timewalking, dungeons, etc.)')
     .addStringOption(option =>
       option.setName('title')
-        .setDescription('Session name (e.g. Wednesday M+ Push)')
+        .setDescription('Event name (e.g. Wednesday M+ Push)')
         .setRequired(true))
     .addStringOption(option =>
       option.setName('date')
@@ -68,7 +68,24 @@ const commands = [
 
   new SlashCommandBuilder()
     .setName('link')
-    .setDescription('Link your Discord account to Battle.net for raid signups and group building')
+    .setDescription('Link your Discord account to Battle.net')
+    .toJSON(),
+
+  new SlashCommandBuilder()
+    .setName('settings')
+    .setDescription('Configure bot settings for this server')
+    .addStringOption(option =>
+      option.setName('type')
+        .setDescription('What to configure')
+        .setRequired(true)
+        .addChoices(
+          { name: 'Raid creation role', value: 'raid' },
+          { name: 'Group creation role', value: 'group' }
+        ))
+    .addRoleOption(option =>
+      option.setName('min-role')
+        .setDescription('Minimum role required')
+        .setRequired(true))
     .toJSON()
 ];
 
@@ -77,12 +94,18 @@ const rest = new REST({ version: '10' }).setToken(config.botToken);
 (async () => {
   try {
     console.log('Registering slash commands...');
+    const appId = Buffer.from(config.botToken.split('.')[0], 'base64').toString();
+
+    // Register globally (works on all servers the bot is in)
     await rest.put(
-      Routes.applicationGuildCommands(
-        Buffer.from(config.botToken.split('.')[0], 'base64').toString(),
-        config.guildId
-      ),
+      Routes.applicationCommands(appId),
       { body: commands }
+    );
+
+    // Clean up old guild-specific commands
+    await rest.put(
+      Routes.applicationGuildCommands(appId, config.guildId),
+      { body: [] }
     );
     console.log('Slash commands registered successfully!');
   } catch (error) {

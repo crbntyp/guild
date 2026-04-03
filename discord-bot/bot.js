@@ -4,7 +4,7 @@ const crypto = require('crypto');
 const config = require('./config');
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds]
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers]
 });
 
 let db;
@@ -198,11 +198,84 @@ async function postSessionEmbed(session, title, description) {
   }
 }
 
+/**
+ * Check if a member can create raids or groups based on server settings
+ * @param {string} type - 'raid' or 'group'
+ */
+async function canCreate(interaction, type) {
+  const guildId = interaction.guildId;
+  const member = interaction.member;
+
+  // Server owner can always create
+  if (member.id === interaction.guild?.ownerId) return true;
+
+  // Check for drpd-help role
+  if (member.roles.cache.some(r => r.name.toLowerCase() === 'drpd-help')) return true;
+
+  // Check server settings for min role
+  const pool = await getDb();
+  const [settings] = await pool.execute('SELECT raid_min_role_position, group_min_role_position FROM server_settings WHERE guild_id = ?', [guildId]);
+
+  if (settings.length === 0) return false;
+
+  const minPosition = type === 'raid' ? settings[0].raid_min_role_position : settings[0].group_min_role_position;
+  if (!minPosition) return false;
+
+  const highestRole = member.roles.cache.reduce((max, r) => r.position > max ? r.position : max, 0);
+  return highestRole >= minPosition;
+}
+
 // Handle slash commands
 client.on('interactionCreate', async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
+  if (interaction.commandName === 'settings') {
+    const member = interaction.member;
+    const isOwner = member.id === interaction.guild?.ownerId;
+    const hasDrpdHelp = member.roles.cache.some(r => r.name.toLowerCase() === 'drpd-help');
+
+    if (!isOwner && !hasDrpdHelp) {
+      await interaction.reply({ content: 'Only the server owner or members with the **drpd-help** role can change settings.', ephemeral: true });
+      return;
+    }
+
+    const type = interaction.options.getString('type');
+    const role = interaction.options.getRole('min-role');
+    const pool = await getDb();
+
+    if (type === 'raid') {
+      await pool.execute(
+        `INSERT INTO server_settings (guild_id, raid_min_role_id, raid_min_role_name, raid_min_role_position)
+         VALUES (?, ?, ?, ?)
+         ON DUPLICATE KEY UPDATE raid_min_role_id = VALUES(raid_min_role_id), raid_min_role_name = VALUES(raid_min_role_name), raid_min_role_position = VALUES(raid_min_role_position)`,
+        [interaction.guildId, role.id, role.name, role.position]
+      );
+      await interaction.reply({
+        content: `Raid settings updated. Members with **${role.name}** or higher can now create raids.`,
+        ephemeral: true
+      });
+    } else {
+      await pool.execute(
+        `INSERT INTO server_settings (guild_id, group_min_role_id, group_min_role_name, group_min_role_position)
+         VALUES (?, ?, ?, ?)
+         ON DUPLICATE KEY UPDATE group_min_role_id = VALUES(group_min_role_id), group_min_role_name = VALUES(group_min_role_name), group_min_role_position = VALUES(group_min_role_position)`,
+        [interaction.guildId, role.id, role.name, role.position]
+      );
+      await interaction.reply({
+        content: `Group settings updated. Members with **${role.name}** or higher can now create groups.`,
+        ephemeral: true
+      });
+    }
+    return;
+  }
+
   if (interaction.commandName === 'group') {
+    // Check permissions
+    if (!(await canCreate(interaction, 'group'))) {
+      await interaction.reply({ content: 'You don\'t have permission to create groups. Ask your server owner to run `/settings` to configure permissions.', ephemeral: true });
+      return;
+    }
+
     const title = interaction.options.getString('title');
     const dateStr = interaction.options.getString('date');
     const description = interaction.options.getString('description') || null;
@@ -342,6 +415,12 @@ client.on('interactionCreate', async (interaction) => {
   }
 
   if (interaction.commandName === 'raid') {
+    // Check permissions
+    if (!(await canCreate(interaction, 'raid'))) {
+      await interaction.reply({ content: 'You don\'t have permission to create raids. Ask your server owner to run `/settings` to configure permissions.', ephemeral: true });
+      return;
+    }
+
     const title = interaction.options.getString('title');
     const dateStr = interaction.options.getString('date');
     const difficulty = interaction.options.getString('difficulty') || 'heroic';

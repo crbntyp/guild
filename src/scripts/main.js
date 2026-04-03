@@ -80,8 +80,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       const guildSearch = new GuildSearch('guild-search-container');
       await guildSearch.render();
 
-      // Load critter progress bar (non-blocking, after auth)
-      loadCritterTracker();
 
 
   // Create guild roster instance (initially hidden)

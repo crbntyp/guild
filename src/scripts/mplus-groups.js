@@ -79,6 +79,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                   <h3>Your Team</h3>
                   <p>Every group gets a randomly generated team name. Drag and drop to fine-tune, then save and go.</p>
                 </div>
+
+                <div class="raids-landing-feature">
+                  <div class="raids-landing-feature-icon">
+                    <i class="las la-lock"></i>
+                  </div>
+                  <h3>Role Permissions</h3>
+                  <p>Server owners control who can create groups with <code>/settings</code>. Set a minimum Discord role and only members at that rank or above can create.</p>
+                </div>
               </div>
 
               <div class="raids-landing-cta">
@@ -292,11 +300,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                   <h3>Drag & Drop</h3>
                   <p>Manually adjust groups by dragging players between teams. Save when done.</p>
                 </div>
+
+                <div class="raids-landing-feature">
+                  <div class="raids-landing-feature-icon">
+                    <i class="las la-lock"></i>
+                  </div>
+                  <h3>Role Permissions</h3>
+                  <p>Server owners control who can create groups with <code>/settings</code>. Set a minimum Discord role and only members at that rank or above can create.</p>
+                </div>
               </div>
 
               <div class="raids-landing-cta">
                 <p class="raids-landing-cta-text">Click a signup link from your Discord server to get started.</p>
-                <p class="raids-landing-cta-sub">Anyone can create events via the <code>/group</code> command in Discord.</p>
+                <p class="raids-landing-cta-sub">Events are created via the <code>/group</code> command in Discord by members with the right role.</p>
                 <span class="btn-add-bot disabled">
                   <i class="lab la-discord"></i>
                   Discord Bot — Coming Soon
