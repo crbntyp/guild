@@ -60,7 +60,7 @@ class MplusManager {
       ${headerHTML}
       ${this.isAdmin ? `
         <div class="ec-create-bar">
-          <button class="ec-create-trigger" id="ec-trigger-groups"><i class="las la-plus"></i> Create</button>
+          <button class="ec-create-trigger" id="ec-trigger-groups"><i class="las la-plus"></i> Create a new Group</button>
         </div>
       ` : ''}
       <div id="mplus-sessions-content">

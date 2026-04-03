@@ -49,7 +49,7 @@ class RaidManager {
       ${headerHTML}
       ${this.isAdmin ? `
         <div class="ec-create-bar">
-          <button class="ec-create-trigger" id="ec-trigger-raids"><i class="las la-plus"></i> Create</button>
+          <button class="ec-create-trigger" id="ec-trigger-raids"><i class="las la-plus"></i> Create a new Raid</button>
         </div>
       ` : ''}
       <div id="raids-content">
