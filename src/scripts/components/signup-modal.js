@@ -104,7 +104,7 @@ class SignupModal {
     container.innerHTML = `
       <div class="signup-raid-info">
         <strong>${raidTitle}</strong>
-        <span class="signup-raid-difficulty ${this.currentRaid?.difficulty || 'heroic'}">${this.currentRaid?.difficulty || 'heroic'}</span>
+        ${this.mode === 'raid' && this.currentRaid?.difficulty ? `<span class="signup-raid-difficulty ${this.currentRaid.difficulty}">${this.currentRaid.difficulty}</span>` : ''}
       </div>
       <p class="signup-step-label">Select a character:</p>
       <div class="signup-character-grid">

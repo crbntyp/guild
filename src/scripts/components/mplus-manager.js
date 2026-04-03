@@ -81,7 +81,16 @@ class MplusManager {
       const sessions = await mplusService.getSessions(false, this.guildId);
 
       this.sessions = await Promise.all(
-        sessions.map(s => mplusService.getSession(s.id).catch(() => s))
+        sessions.map(async s => {
+          const session = await mplusService.getSession(s.id).catch(() => s);
+          // Load groups for this session
+          try {
+            session.groups = await mplusService.getGroups(s.id);
+          } catch (e) {
+            session.groups = [];
+          }
+          return session;
+        })
       );
 
       this.renderSessionList();

@@ -91,6 +91,8 @@ class MplusSessionCard {
 
         <div class="mplus-card-roster">${signupListHTML}</div>
 
+        ${this.renderUserGroup(session, userId)}
+
         <div class="mplus-card-actions">
           ${userSignup && !isPast && session.status === 'open' ? `
             <span class="mplus-signed-up">Signed up as ${userSignup.character_name}</span>
@@ -98,6 +100,71 @@ class MplusSessionCard {
           ` : !userSignup && !isPast && session.status === 'open' ? `
             <button class="btn-mplus-signup" data-session-id="${session.id}">Sign Up</button>
           ` : ''}
+        </div>
+      </div>
+    `;
+  }
+
+  static renderUserGroup(session, userId) {
+    const groups = session.groups || [];
+    if (!groups.length || !userId) return '';
+
+    // Find the user's battletag from signups
+    const userSignup = (session.signups || []).find(s => s.bnet_user_id === userId);
+    const userBattletag = userSignup?.battletag;
+
+    // Find the group the user is in
+    let userGroup = null;
+    for (const group of groups) {
+      const inGroup = (group.members || []).find(m => m.battletag === userBattletag);
+      if (inGroup) {
+        userGroup = group;
+        break;
+      }
+    }
+
+    // If user isn't in a group but groups exist, show all groups summary
+    if (!userGroup) {
+      if (groups.length > 0) {
+        return `
+          <div class="mplus-groups-summary">
+            <div class="mplus-groups-summary-label">${groups.length} group${groups.length !== 1 ? 's' : ''} built</div>
+            ${groups.map(g => `
+              <div class="mplus-group-pill">
+                <span class="mplus-group-pill-name">${g.team_name}</span>
+                <span class="mplus-group-pill-count">${(g.members || []).length}/5</span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+      return '';
+    }
+
+    // Render the user's group
+    const members = userGroup.members || [];
+    const avgIlvl = members.length > 0 ? Math.round(members.reduce((sum, m) => sum + (m.character_ilvl || 0), 0) / members.length) : 0;
+
+    return `
+      <div class="mplus-your-group">
+        <div class="mplus-your-group-header">
+          <span class="mplus-your-group-label">Your Group</span>
+          ${avgIlvl ? `<span class="mplus-your-group-ilvl">${avgIlvl} ilvl</span>` : ''}
+        </div>
+        <div class="mplus-your-group-name">${userGroup.team_name}</div>
+        <div class="mplus-your-group-members">
+          ${members.map(m => {
+            const classColor = getClassColor(m.character_class_id);
+            const classIconUrl = getClassIconUrl(m.character_class_id);
+            const isYou = m.battletag === userBattletag;
+            return `
+              <div class="mplus-your-group-member ${isYou ? 'is-you' : ''}">
+                ${classIconUrl ? `<img src="${classIconUrl}" alt="" class="mplus-signup-icon" />` : ''}
+                <span style="color: ${classColor}">${m.character_name}</span>
+                ${isYou ? '<span class="mplus-you-badge">you</span>' : ''}
+              </div>
+            `;
+          }).join('')}
         </div>
       </div>
     `;
@@ -119,7 +186,7 @@ class MplusSessionCard {
         <div class="mplus-signup-member" title="${s.character_name} - ${s.character_spec || getClassName(s.character_class_id)} (${s.character_ilvl} ilvl, ${rating} io)">
           ${classIconUrl ? `<img src="${classIconUrl}" alt="" class="mplus-signup-icon" />` : ''}
           <span class="mplus-signup-name" style="color: ${classColor}">${s.character_name}</span>
-          <span class="mplus-signup-rating"><i class="las la-star"></i> (${rating})</span>
+          <span class="mplus-signup-rating">(${rating}/${s.character_ilvl})</span>
           ${tentativeIcon}
         </div>
       `;
