@@ -16,9 +16,10 @@ class MplusService {
     return headers;
   }
 
-  async getSessions(past = false) {
+  async getSessions(past = false, guildId = null) {
     const params = new URLSearchParams();
     if (past) params.set('past', '1');
+    if (guildId) params.set('guild', guildId);
     const response = await fetch(`${this.baseUrl}/mplus-sessions.php?${params.toString()}`);
     if (!response.ok) throw new Error('Failed to fetch sessions');
     const data = await response.json();

@@ -452,12 +452,8 @@
 .home-demo-track {
   display: flex;
   gap: 12px;
-  justify-content: center;
+  justify-content: flex-start;
   padding-bottom: 8px;
-
-  @media (max-width: 1100px) {
-    justify-content: flex-start;
-  }
 }
 
 .demo-card-char {

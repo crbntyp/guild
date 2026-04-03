@@ -1,7 +1,19 @@
 import { getClassColor, getClassName } from '../utils/wow-constants.js';
 import { getClassIconUrl } from '../utils/wow-icons.js';
 
+// Pool of dungeon journal instance IDs for random backgrounds
+const DUNGEON_INSTANCE_IDS = [
+  476, 945, 1201, 278, 1299, 1300, 1316, 1315, // Midnight S1
+  1196, 1197, 1198, 1199, 1200, 1202, 1203, 1204, // Dragonflight
+  1182, 1183, 1184, 1185, 1186, 1187, 1188, 1189, // Shadowlands
+];
+
 class MplusSessionCard {
+  // Deterministic "random" based on session ID so it's consistent
+  static getBackgroundId(sessionId) {
+    return DUNGEON_INSTANCE_IDS[sessionId % DUNGEON_INSTANCE_IDS.length];
+  }
+
   static render(session, userSignup = null, isAdmin = false, userId = null) {
     const isOwner = userId && parseInt(session.owner_bnet_id) === userId;
     const canManage = isAdmin || isOwner;
@@ -38,24 +50,27 @@ class MplusSessionCard {
 
 
     return `
-      <div class="mplus-session-card" data-session-id="${session.id}">
+      <div class="mplus-session-card" data-session-id="${session.id}" data-instance-id="${this.getBackgroundId(session.id)}">
         ${canManage ? `<button class="btn-mplus-build-icon" data-session-id="${session.id}" title="Build Groups">Build</button>` : ''}
         ${isAdmin ? `
           <div class="mplus-card-admin-icons">
             <button class="btn-mplus-delete" data-session-id="${session.id}" title="Delete session"><i class="las la-trash-alt"></i></button>
           </div>
         ` : ''}
-        <div class="mplus-card-header">
-          <div class="mplus-card-title">
-            <h3>${session.title}</h3>
-            <span class="mplus-card-status status-${session.status}">${session.status}</span>
+        <div class="mplus-card-banner">
+          <div class="mplus-card-banner-overlay"></div>
+          <div class="mplus-card-banner-content">
+            <div class="mplus-card-title">
+              <h3>${session.title}</h3>
+              <span class="mplus-card-status status-${session.status}">${session.status}</span>
+            </div>
+            <div class="mplus-card-date">
+              <span class="mplus-date">${dateStr}</span>
+              <span class="mplus-time">${timeStr}</span>
+              <span class="mplus-countdown">${countdownStr}</span>
+            </div>
+            ${session.description ? `<p class="mplus-card-description">${session.description}</p>` : ''}
           </div>
-          <div class="mplus-card-date">
-            <span class="mplus-date">${dateStr}</span>
-            <span class="mplus-time">${timeStr}</span>
-            <span class="mplus-countdown">${countdownStr}</span>
-          </div>
-          ${session.description ? `<p class="mplus-card-description">${session.description}</p>` : ''}
         </div>
 
         <div class="mplus-card-stats">

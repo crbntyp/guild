@@ -3,6 +3,7 @@ import MplusSessionCard from './mplus-session-card.js';
 import MplusGroupBuilder from './mplus-group-builder.js';
 import SignupModal from './signup-modal.js';
 import PageHeader from './page-header.js';
+import wowAPI from '../api/wow-api.js';
 import { addVoidCinders } from '../utils/void-cinders.js';
 
 class MplusManager {
@@ -13,6 +14,15 @@ class MplusManager {
     this.signupModal = null;
     this.groupBuilder = new MplusGroupBuilder();
     this.isAdmin = false;
+
+    // Read server context from URL or localStorage
+    const urlParams = new URLSearchParams(window.location.search);
+    const serverParam = urlParams.get('server');
+    if (serverParam) {
+      this.guildId = serverParam;
+    } else {
+      this.guildId = localStorage.getItem('gld_groups_server') || null;
+    }
   }
 
   async init() {
@@ -42,7 +52,7 @@ class MplusManager {
       className: 'mplus-groups',
       badge: 'gld__ groups',
       title: 'Group Builder',
-      description: 'Sign up for sessions, and let the GM build balanced 5-man groups from the signup pool.'
+      description: 'Sign up for events and build balanced 5-man groups from the signup pool.'
     });
 
     this.container.innerHTML = `
@@ -50,7 +60,7 @@ class MplusManager {
       <div id="mplus-sessions-content">
         <div class="loading-spinner">
           <i class="las la-circle-notch la-spin la-4x"></i>
-          <p>Loading sessions...</p>
+          <p>Loading events...</p>
         </div>
       </div>
     `;
@@ -68,7 +78,7 @@ class MplusManager {
     const content = document.getElementById('mplus-sessions-content');
 
     try {
-      const sessions = await mplusService.getSessions();
+      const sessions = await mplusService.getSessions(false, this.guildId);
 
       this.sessions = await Promise.all(
         sessions.map(s => mplusService.getSession(s.id).catch(() => s))
@@ -80,7 +90,7 @@ class MplusManager {
       content.innerHTML = `
         <div class="mplus-empty">
           <i class="las la-dungeon la-3x"></i>
-          <p>Failed to load sessions</p>
+          <p>Failed to load events</p>
         </div>
       `;
     }
@@ -92,11 +102,12 @@ class MplusManager {
     const userId = user?.id;
 
     if (this.sessions.length === 0) {
+      const message = this.guildId
+        ? '<p>No upcoming events</p><p class="mplus-empty-sub">Create one via the <code>/group</code> command in Discord</p>'
+        : '<p>No events found</p><p class="mplus-empty-sub">Click a signup link from your Discord server to get started</p>';
       content.innerHTML = `
         <div class="mplus-empty">
-          <i class="las la-trophy la-3x" style="color: #a335ee; margin-bottom: 16px"></i>
-          <p>No upcoming sessions</p>
-          <p class="mplus-empty-sub">Check back later or ask your GM to create one via <code>/group</code> in Discord</p>
+          ${message}
         </div>
       `;
       return;
@@ -155,6 +166,7 @@ class MplusManager {
     content.innerHTML = html;
 
     this.attachSessionListeners();
+    this.loadCardBackgrounds();
   }
 
   attachSessionListeners() {
@@ -207,6 +219,23 @@ class MplusManager {
           this.groupBuilder.open(session, () => this.loadSessions());
         }
       });
+    });
+  }
+
+  loadCardBackgrounds() {
+    this.container.querySelectorAll('.mplus-session-card[data-instance-id]').forEach(async (card) => {
+      const instanceId = card.dataset.instanceId;
+      if (!instanceId) return;
+      try {
+        const mediaData = await wowAPI.getJournalInstanceMedia(parseInt(instanceId));
+        const tileAsset = mediaData?.assets?.find(a => a.key === 'tile');
+        if (tileAsset?.value) {
+          const banner = card.querySelector('.mplus-card-banner');
+          if (banner) {
+            banner.style.backgroundImage = `url('${tileAsset.value}')`;
+          }
+        }
+      } catch (e) {}
     });
   }
 

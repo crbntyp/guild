@@ -166,8 +166,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>
 
         <div class="home-demo-section">
-          <h2 class="home-section-title">Raid Signups</h2>
-          <p class="home-demo-desc">Discord-powered raid creation with role-based signups, reserves, and real-time notifications back to your server.</p>
+          <h2 class="home-section-title">Raid Signups & Group Builder</h2>
+          <p class="home-demo-desc">Discord's built-in events let you RSVP. That's it. No roles, no roster caps, no reserve system, no character data. gld__ gives you proper raid signups with tank/healer/DPS roles, automatic reserves when slots fill, and a group builder that auto-assigns balanced 5-man teams from your signup pool using ilvl and M+ rating. All powered by your Battle.net characters — not just a Discord username.</p>
           <div class="home-demo-carousel">
             <div class="home-demo-track">
               <div class="raid-card status-open demo-card" style="min-width: 300px; max-width: 300px;">
@@ -250,6 +250,56 @@ document.addEventListener('DOMContentLoaded', async () => {
                   </div>
                   <div class="raid-card-actions"><span class="raid-signed-up">Signed up as Thunderbolt</span><button class="btn-raid-withdraw" disabled>Withdraw</button></div>
                 </div>
+              </div>
+              <div class="demo-card" style="min-width: 600px; max-width: 600px; height: 380px; pointer-events: none; background: rgba(0,0,0,0.2); border: 1px solid rgba(163,53,238,0.2); border-radius: 5px; padding: 16px; overflow: hidden">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.06)">
+                  <span style="font-size:14px;font-weight:700;color:#fff">Group Builder</span>
+                  <div style="display:flex;gap:6px;margin-left:auto">
+                    <span style="font-size:10px;padding:4px 10px;background:rgba(163,53,238,0.12);border:1px solid rgba(163,53,238,0.25);border-radius:4px;color:#fff;font-weight:600">Auto-Assign</span>
+                    <span style="font-size:10px;padding:4px 10px;background:rgba(163,53,238,0.12);border:1px solid rgba(163,53,238,0.25);border-radius:4px;color:#fff;font-weight:600">Save</span>
+                  </div>
+                </div>
+                <div style="display:flex;gap:12px">
+                  <div style="width:140px;flex-shrink:0;border-right:1px solid rgba(255,255,255,0.06);padding-right:12px">
+                    <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:8px">Pool (6)</div>
+                    <div style="font-size:9px;color:#0070DE;font-weight:700;margin-bottom:4px">TANKS (1)</div>
+                    <div style="display:flex;align-items:center;gap:5px;padding:4px 6px;margin-bottom:3px;background:rgba(255,255,255,0.03);border-radius:4px"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_deathknight.jpg" style="width:18px;height:18px;border-radius:50%" /><span style="font-size:11px;font-weight:600;color:#C41F3B">Nocturn</span></div>
+                    <div style="font-size:9px;color:#ff5050;font-weight:700;margin:8px 0 4px">DPS (5)</div>
+                    <div style="display:flex;align-items:center;gap:5px;padding:4px 6px;margin-bottom:3px;background:rgba(255,255,255,0.03);border-radius:4px"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_monk.jpg" style="width:18px;height:18px;border-radius:50%" /><span style="font-size:11px;font-weight:600;color:#00FF96">Ashveil</span></div>
+                    <div style="display:flex;align-items:center;gap:5px;padding:4px 6px;margin-bottom:3px;background:rgba(255,255,255,0.03);border-radius:4px"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_paladin.jpg" style="width:18px;height:18px;border-radius:50%" /><span style="font-size:11px;font-weight:600;color:#F58CBA">Cinderstrike</span></div>
+                    <div style="display:flex;align-items:center;gap:5px;padding:4px 6px;margin-bottom:3px;background:rgba(255,255,255,0.03);border-radius:4px;border-left:2px dashed rgba(245,158,11,0.4)"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_shaman.jpg" style="width:18px;height:18px;border-radius:50%" /><span style="font-size:11px;font-weight:600;color:#0070DE">Stormhoof</span></div>
+                    <div style="display:flex;align-items:center;gap:5px;padding:4px 6px;margin-bottom:3px;background:rgba(255,255,255,0.03);border-radius:4px"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_warrior.jpg" style="width:18px;height:18px;border-radius:50%" /><span style="font-size:11px;font-weight:600;color:#C79C6E">Thornblade</span></div>
+                    <div style="display:flex;align-items:center;gap:5px;padding:4px 6px;margin-bottom:3px;background:rgba(255,255,255,0.03);border-radius:4px"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_mage.jpg" style="width:18px;height:18px;border-radius:50%" /><span style="font-size:11px;font-weight:600;color:#40C7EB">Pyroblast</span></div>
+                  </div>
+                  <div style="flex:1;display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start">
+                    <div style="width:calc(50% - 4px);background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:6px;padding:8px">
+                      <div style="display:flex;align-items:center;gap:4px;margin-bottom:6px"><span style="font-size:12px;font-weight:700;color:#a335ee">Cosmic Badgers</span><span style="font-size:9px;color:rgba(255,255,255,0.2);margin-left:auto">5/5</span></div>
+                      <div style="display:flex;align-items:center;gap:5px;padding:2px 0"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_demonhunter.jpg" style="width:16px;height:16px;border-radius:50%" /><span style="font-size:11px;font-weight:600;color:#A330C9">Felbladë</span></div>
+                      <div style="display:flex;align-items:center;gap:5px;padding:2px 0"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_priest.jpg" style="width:16px;height:16px;border-radius:50%" /><span style="font-size:11px;font-weight:600;color:#FFFFFF">Solstice</span></div>
+                      <div style="display:flex;align-items:center;gap:5px;padding:2px 0"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_mage.jpg" style="width:16px;height:16px;border-radius:50%" /><span style="font-size:11px;font-weight:600;color:#40C7EB">Scorch</span></div>
+                      <div style="display:flex;align-items:center;gap:5px;padding:2px 0"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_demonhunter.jpg" style="width:16px;height:16px;border-radius:50%" /><span style="font-size:11px;font-weight:600;color:#A330C9">Havok</span></div>
+                      <div style="display:flex;align-items:center;gap:5px;padding:2px 0"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_rogue.jpg" style="width:16px;height:16px;border-radius:50%" /><span style="font-size:11px;font-weight:600;color:#FFF569">Bladesong</span></div>
+                    </div>
+                    <div style="width:calc(50% - 4px);background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:6px;padding:8px">
+                      <div style="display:flex;align-items:center;gap:4px;margin-bottom:6px"><span style="font-size:12px;font-weight:700;color:#a335ee">Void Llamas</span><span style="font-size:9px;color:rgba(255,255,255,0.2);margin-left:auto">5/5</span></div>
+                      <div style="display:flex;align-items:center;gap:5px;padding:2px 0"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_druid.jpg" style="width:16px;height:16px;border-radius:50%" /><span style="font-size:11px;font-weight:600;color:#FF7D0A">Slothinator</span></div>
+                      <div style="display:flex;align-items:center;gap:5px;padding:2px 0"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_druid.jpg" style="width:16px;height:16px;border-radius:50%" /><span style="font-size:11px;font-weight:600;color:#FF7D0A">Verdant</span></div>
+                      <div style="display:flex;align-items:center;gap:5px;padding:2px 0"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_hunter.jpg" style="width:16px;height:16px;border-radius:50%" /><span style="font-size:11px;font-weight:600;color:#ABD473">Grimshot</span></div>
+                      <div style="display:flex;align-items:center;gap:5px;padding:2px 0"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_warlock.jpg" style="width:16px;height:16px;border-radius:50%" /><span style="font-size:11px;font-weight:600;color:#8787ED">Voidcaller</span></div>
+                      <div style="display:flex;align-items:center;gap:5px;padding:2px 0"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_shaman.jpg" style="width:16px;height:16px;border-radius:50%" /><span style="font-size:11px;font-weight:600;color:#0070DE">Tidecaller</span></div>
+                    </div>
+                    <div style="width:calc(50% - 4px);background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:6px;padding:8px">
+                      <div style="display:flex;align-items:center;gap:4px;margin-bottom:6px"><span style="font-size:12px;font-weight:700;color:#a335ee">Neon Warlords</span><span style="font-size:9px;color:rgba(255,255,255,0.2);margin-left:auto">4/5</span></div>
+                      <div style="display:flex;align-items:center;gap:5px;padding:2px 0"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_evoker.jpg" style="width:16px;height:16px;border-radius:50%" /><span style="font-size:11px;font-weight:600;color:#33937F">Emberwing</span></div>
+                      <div style="display:flex;align-items:center;gap:5px;padding:2px 0"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_evoker.jpg" style="width:16px;height:16px;border-radius:50%" /><span style="font-size:11px;font-weight:600;color:#33937F">Lifespark</span></div>
+                      <div style="display:flex;align-items:center;gap:5px;padding:2px 0"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_warlock.jpg" style="width:16px;height:16px;border-radius:50%" /><span style="font-size:11px;font-weight:600;color:#8787ED">Felfire</span></div>
+                      <div style="display:flex;align-items:center;gap:5px;padding:2px 0"><img src="https://wow.zamimg.com/images/wow/icons/large/classicon_paladin.jpg" style="width:16px;height:16px;border-radius:50%" /><span style="font-size:11px;font-weight:600;color:#F58CBA">Retbull</span></div>
+                      <div style="display:flex;align-items:center;gap:5px;padding:3px 6px;border:1px dashed rgba(255,255,255,0.06);border-radius:4px;color:rgba(255,255,255,0.12)"><i class="las la-crosshairs" style="font-size:11px"></i><span style="font-size:9px">DPS</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               </div>
             </div>
           </div>

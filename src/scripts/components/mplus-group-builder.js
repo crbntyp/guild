@@ -349,6 +349,12 @@ class MplusGroupBuilder {
     this.unassigned = [...this.signups];
     this.groups = [];
 
+    const totalPlayers = this.unassigned.length;
+    if (totalPlayers === 0) {
+      this.refreshUI();
+      return;
+    }
+
     // Separate by role, confirmed first then tentative, sorted by ilvl
     const sortByPriority = (a, b) => {
       if (a.status !== b.status) return a.status === 'confirmed' ? -1 : 1;
@@ -359,28 +365,33 @@ class MplusGroupBuilder {
     const healers = this.unassigned.filter(s => s.role === 'healer').sort(sortByPriority);
     const dps = this.unassigned.filter(s => s.role === 'dps').sort(sortByPriority);
 
-    const groupCount = Math.min(tanks.length, healers.length, Math.floor(dps.length / 3));
-
-    if (groupCount === 0) {
-      this.refreshUI();
-      return;
-    }
+    // Work out how many groups we can make — at least 1 if we have players
+    // Ideal: each group gets 1 tank, 1 healer, 3 DPS
+    // Flexible: make as many groups as possible, fill what we can
+    const groupCount = Math.max(1, Math.ceil(totalPlayers / 5));
 
     const existingNames = [];
     for (let i = 0; i < groupCount; i++) {
       const name = generateTeamName(existingNames);
       existingNames.push(name);
-      this.groups.push({
-        team_name: name,
-        members: [tanks[i], healers[i]]
-      });
+      this.groups.push({ team_name: name, members: [] });
     }
 
-    // Snake draft DPS
+    // Distribute tanks round-robin
+    tanks.forEach((t, i) => {
+      this.groups[i % groupCount].members.push(t);
+    });
+
+    // Distribute healers round-robin
+    healers.forEach((h, i) => {
+      this.groups[i % groupCount].members.push(h);
+    });
+
+    // Snake draft DPS for ilvl balance
     let forward = true;
     let gi = 0;
-    for (let d = 0; d < groupCount * 3; d++) {
-      this.groups[gi].members.push(dps[d]);
+    dps.forEach(d => {
+      this.groups[gi].members.push(d);
       if (forward) {
         gi++;
         if (gi >= groupCount) { gi = groupCount - 1; forward = false; }
@@ -388,9 +399,12 @@ class MplusGroupBuilder {
         gi--;
         if (gi < 0) { gi = 0; forward = true; }
       }
-    }
+    });
 
-    // Update unassigned
+    // Remove any empty groups (shouldn't happen but just in case)
+    this.groups = this.groups.filter(g => g.members.length > 0);
+
+    // Update unassigned (should be empty now)
     const assignedIds = new Set(this.groups.flatMap(g => g.members.map(m => m.id)));
     this.unassigned = this.signups.filter(s => !assignedIds.has(s.id));
 

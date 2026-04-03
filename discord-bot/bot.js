@@ -238,7 +238,7 @@ client.on('interactionCreate', async (interaction) => {
       const session = sessions[0];
       session.discord_guild_name = guildName;
 
-      await postSessionEmbed(session, `Group Session: ${title}`, 'Sign up and let the GM build groups!');
+      await postSessionEmbed(session, `${title}`, 'Sign up and get assigned to a group!');
 
       // If not linked, DM them a one-time link to pair Discord + BNet
       if (!linkedBnetId) {
@@ -261,7 +261,7 @@ client.on('interactionCreate', async (interaction) => {
                   `Hey! You just created **${title}** — nice one.\n\n` +
                   `To build and manage your groups on the web (drag players into teams, auto-assign, the fun stuff), ` +
                   `we need to know your Discord account and your Battle.net account belong to the same person.\n\n` +
-                  `**Why?** So only *you* can manage the sessions you create. Nobody else gets access to your created group.\n\n` +
+                  `**Why?** So only *you* can manage the events you create. Nobody else gets access to your created group.\n\n` +
                   `**What happens?** You click the link below, log in with Battle.net (the same way you log into the app), ` +
                   `and we pair the two accounts together. That's it — one time only. Every group or raid you create from Discord after this will just work.\n\n` +
                   `**What do we store?** Just your Discord ID and Battle.net ID side by side. No passwords, no personal data, no funny business. ` +
@@ -276,14 +276,14 @@ client.on('interactionCreate', async (interaction) => {
           console.log('Could not DM user:', dmError.message);
         }
 
-        await interaction.editReply(`Group session **${title}** created for <t:${Math.floor(sessionDate.getTime() / 1000)}:F>. Posted to <#${config.channelId}>. **Check your DMs** to link your Battle.net account for group management.`);
+        await interaction.editReply(`**${title}** created for <t:${Math.floor(sessionDate.getTime() / 1000)}:F>. Posted to <#${config.channelId}>. **Check your DMs** to link your Battle.net account for group management.`);
       } else {
-        await interaction.editReply(`Group session **${title}** created for <t:${Math.floor(sessionDate.getTime() / 1000)}:F>. Posted to <#${config.channelId}>.`);
+        await interaction.editReply(`**${title}** created for <t:${Math.floor(sessionDate.getTime() / 1000)}:F>. Posted to <#${config.channelId}>.`);
       }
     } catch (error) {
       console.error('Error creating session:', error);
       const reply = interaction.deferred ? interaction.editReply : interaction.reply;
-      await reply.call(interaction, { content: 'Failed to create session. Check the logs.', ephemeral: true });
+      await reply.call(interaction, { content: 'Failed to create event. Check the logs.', ephemeral: true });
     }
   }
 
@@ -343,6 +343,50 @@ client.once('ready', () => {
 
 client.login(config.botToken);
 
+/**
+ * Post M+ signup notification
+ */
+async function postMplusSignupNotification(sessionId, characterName, role) {
+  const channel = client.channels.cache.get(config.channelId);
+  if (!channel) return;
+
+  const pool = await getDb();
+  const [sessions] = await pool.execute('SELECT * FROM mplus_sessions WHERE id = ?', [sessionId]);
+  if (sessions.length === 0) return;
+
+  const session = sessions[0];
+  const [signups] = await pool.execute(
+    'SELECT COUNT(*) as count FROM mplus_signups WHERE session_id = ?',
+    [sessionId]
+  );
+  const count = signups[0].count;
+
+  const roleEmoji = role === 'tank' ? '🛡️' : role === 'healer' ? '💚' : '⚔️';
+
+  await channel.send(
+    `${roleEmoji} **${characterName}** signed up for **${session.title}** — ${count} signed up`
+  );
+}
+
+/**
+ * Post M+ withdraw notification
+ */
+async function postMplusWithdrawNotification(sessionId, characterName, role) {
+  const channel = client.channels.cache.get(config.channelId);
+  if (!channel) return;
+
+  const pool = await getDb();
+  const [sessions] = await pool.execute('SELECT * FROM mplus_sessions WHERE id = ?', [sessionId]);
+  if (sessions.length === 0) return;
+
+  const session = sessions[0];
+  const roleEmoji = role === 'tank' ? '🛡️' : role === 'healer' ? '💚' : '⚔️';
+
+  await channel.send(
+    `${roleEmoji} **${characterName}** withdrew from **${session.title}**`
+  );
+}
+
 // Internal HTTP server for PHP webhook notifications
 const http = require('http');
 
@@ -365,6 +409,10 @@ const webhookServer = http.createServer(async (req, res) => {
         await postRaidFullNotification(data.raid_id);
       } else if (data.event === 'withdraw') {
         await postWithdrawNotification(data.raid_id, data.character_name, data.role);
+      } else if (data.event === 'mplus_signup') {
+        await postMplusSignupNotification(data.session_id, data.character_name, data.role);
+      } else if (data.event === 'mplus_withdraw') {
+        await postMplusWithdrawNotification(data.session_id, data.character_name, data.role);
       }
 
       res.writeHead(200, { 'Content-Type': 'application/json' });

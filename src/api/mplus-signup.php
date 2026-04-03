@@ -71,6 +71,14 @@ if ($method === 'POST') {
         ':note' => $data['note'] ?? null
     ]);
 
+    // Notify Discord
+    notifyDiscord([
+        'event' => 'mplus_signup',
+        'session_id' => $sessionId,
+        'character_name' => $data['character_name'],
+        'role' => $data['role']
+    ]);
+
     echo json_encode(['success' => true]);
 
 } elseif ($method === 'PUT') {
@@ -128,8 +136,22 @@ if ($method === 'POST') {
         exit;
     }
 
+    // Get character name before deleting
+    $stmt = $db->prepare("SELECT character_name, role FROM mplus_signups WHERE session_id = :session_id AND bnet_user_id = :uid");
+    $stmt->execute([':session_id' => $sessionId, ':uid' => (int)$user['id']]);
+    $withdrawing = $stmt->fetch();
+
     $stmt = $db->prepare("DELETE FROM mplus_signups WHERE session_id = :session_id AND bnet_user_id = :uid");
     $stmt->execute([':session_id' => $sessionId, ':uid' => (int)$user['id']]);
+
+    if ($withdrawing) {
+        notifyDiscord([
+            'event' => 'mplus_withdraw',
+            'session_id' => $sessionId,
+            'character_name' => $withdrawing['character_name'],
+            'role' => $withdrawing['role']
+        ]);
+    }
 
     echo json_encode(['success' => true]);
 
