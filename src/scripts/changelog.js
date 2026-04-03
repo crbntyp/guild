@@ -17,13 +17,57 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       <div class="changelog-entry">
         <div class="changelog-date">April 2026</div>
-        <h3 class="changelog-title">Group Builder — The Big One</h3>
+        <h3 class="changelog-title">Just Type What You Want</h3>
+        <p>No forms. No dropdowns. No clicking through five screens to make a raid. Just type it.</p>
+        <p><code>I want to make a raid, The Voidspire wednesday 8pm heroic 2 tanks 4 healers 14 dps alt run everyone welcome</code></p>
+        <p>That's it. The app reads what you typed, figures out the raid name, the difficulty, the date, the time, the role breakdown, and the description. It shows you a live preview of exactly what it understood. Hit create and it's done, posted to your Discord server instantly.</p>
+        <p>Works for groups too. <code>I want to make a group, Key push tonight 9pm bring consumes</code> creates a group event with a title, date, and description. No role caps, no form fields, just words.</p>
+        <p>The parser handles shorthand ("vs" for The Voidspire, "qd" for Quel'Danas), misspellings ("voidspier", "queldanes"), natural dates ("tonight", "tomorrow", "wednesday", "august 8th"), and flexible time formats ("8pm", "20:00", "8:30pm"). Everything after the last role count becomes the description automatically, no commas needed.</p>
+        <p>If you're in multiple Discord servers, a dropdown lets you pick which one to post to. If you're only in one, it picks it for you. Raids created from the web app push a full embed back to Discord with the signup link, just like creating one from the bot.</p>
+        <div class="changelog-tags">
+          <span class="changelog-tag">New Feature</span>
+          <span class="changelog-tag">UX</span>
+        </div>
+      </div>
+
+      <div class="changelog-entry">
+        <div class="changelog-date">April 2026</div>
+        <h3 class="changelog-title">Discord /link Command</h3>
+        <p>Type <code>/link</code> in your Discord server and the bot DMs you a one-time link to pair your Discord and Battle.net accounts. Takes 10 seconds, only needs to happen once. After that, everything you create from Discord or the web app knows who you are across both platforms.</p>
+        <div class="changelog-tags">
+          <span class="changelog-tag">New Feature</span>
+          <span class="changelog-tag">Discord Bot</span>
+        </div>
+      </div>
+
+      <div class="changelog-entry">
+        <div class="changelog-date">April 2026</div>
+        <h3 class="changelog-title">Two-Way Sync: Web to Discord</h3>
+        <p>Raids and groups created from the web app now push embeds back to your Discord channel automatically. Previously this only worked when creating from Discord. Now it works both ways. Create from anywhere, see it everywhere.</p>
+        <div class="changelog-tags">
+          <span class="changelog-tag">New Feature</span>
+          <span class="changelog-tag">Discord Bot</span>
+        </div>
+      </div>
+
+      <div class="changelog-entry">
+        <div class="changelog-date">April 2026</div>
+        <h3 class="changelog-title">Raids Grouped by Server</h3>
+        <p>The raids page now groups raids by Discord server, same as the groups page. If you're in multiple guilds you see each server's raids under their own header with the Discord icon and server name.</p>
+        <div class="changelog-tags">
+          <span class="changelog-tag">UX</span>
+        </div>
+      </div>
+
+      <div class="changelog-entry">
+        <div class="changelog-date">April 2026</div>
+        <h3 class="changelog-title">Group Builder: The Big One</h3>
         <p>Discord's built-in events give you an RSVP button and a headcount. That's it. No roles, no character data, no team composition, no balance. You're left copy-pasting names into a spreadsheet and hoping you have enough healers.</p>
-        <p>gld__ Group Builder changes the game. Create an event from Discord with <code>/group</code>, and a signup link drops into your channel. Players click through, log in with Battle.net, pick their character, choose their role — and their ilvl and M+ rating come with them automatically.</p>
-        <p>Once everyone's signed up, hit <strong>Auto-Assign</strong> and watch balanced 5-man groups get built instantly. The algorithm uses a snake draft across ilvl to make sure no group is stacked and no group gets shafted. Every team gets a randomly generated name — Cosmic Badgers, Void Llamas, Shadow Krakens — re-roll until you find one that sticks.</p>
-        <p>Not happy with auto-assign? Drag and drop players between groups manually. Move a tank from one team to another, swap DPS around, put your mates together — whatever works. Save when you're done and every player sees their assigned group on the event card with a "you" badge next to their name.</p>
-        <p>Events are grouped by Discord server, so if you're in multiple guilds you see everything organised. Signups and withdrawals post notifications back to your Discord channel in real time. The person who creates the event owns it — they link their Discord and Battle.net accounts once (via a DM from the bot) and from then on every event they create just works.</p>
-        <p>Works for M+ keys, timewalking, dungeons, delves, world bosses — anything that needs a group.</p>
+        <p>gld__ Group Builder changes the game. Create an event from Discord with <code>/group</code>, and a signup link drops into your channel. Players click through, log in with Battle.net, pick their character, choose their role, and their ilvl and M+ rating come with them automatically.</p>
+        <p>Once everyone's signed up, hit <strong>Auto-Assign</strong> and watch balanced 5-man groups get built instantly. The algorithm uses a snake draft across ilvl to make sure no group is stacked and no group gets shafted. Every team gets a randomly generated name like Cosmic Badgers, Void Llamas, or Shadow Krakens. Re-roll until you find one that sticks.</p>
+        <p>Not happy with auto-assign? Drag and drop players between groups manually. Move a tank from one team to another, swap DPS around, put your mates together, whatever works. Save when you're done and every player sees their assigned group on the event card with a "you" badge next to their name.</p>
+        <p>Events are grouped by Discord server, so if you're in multiple guilds you see everything organised. Signups and withdrawals post notifications back to your Discord channel in real time. The person who creates the event owns it, and they link their Discord and Battle.net accounts once (via a DM from the bot) and from then on every event they create just works.</p>
+        <p>Works for M+ keys, timewalking, dungeons, delves, world bosses, anything that needs a group.</p>
         <div class="changelog-tags">
           <span class="changelog-tag">New Feature</span>
           <span class="changelog-tag">Discord Bot</span>
@@ -34,7 +78,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <div class="changelog-entry">
         <div class="changelog-date">April 2026</div>
         <h3 class="changelog-title">Discord-BNet Account Linking</h3>
-        <p>First time you create an event via <code>/group</code> in Discord, the bot sends you a friendly DM with a one-time link. Click it, log in with Battle.net, and your Discord and BNet accounts are permanently paired. After that, every event you create automatically knows you're the owner — no extra steps, no claim links, no hassle. Only you can build groups for your events.</p>
+        <p>First time you create an event via <code>/group</code> in Discord, the bot sends you a friendly DM with a one-time link. Click it, log in with Battle.net, and your Discord and BNet accounts are permanently paired. After that, every event you create automatically knows you're the owner, no extra steps, no claim links, no hassle. Only you can build groups for your events.</p>
         <div class="changelog-tags">
           <span class="changelog-tag">New Feature</span>
           <span class="changelog-tag">Security</span>
@@ -53,7 +97,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <div class="changelog-entry">
         <div class="changelog-date">April 2026</div>
         <h3 class="changelog-title">Mega Menu Navigation</h3>
-        <p>The My Account dropdown has been replaced with a full mega menu. Four featured sections — Characters, Weekly Vault, Transmog, and Raid Signups — each with live markup previews showing what the page actually looks like. Smaller links for Crafters, Mounts, Todos, YouTube, and a placeholder for Achievement Lols (coming soon). Opens as a centred modal with a blurred backdrop and void cinder effect rising from the top edge.</p>
+        <p>The My Account dropdown has been replaced with a full mega menu. Four featured sections (Characters, Weekly Vault, Transmog, and Raid Signups) each with live markup previews showing what the page actually looks like. Smaller links for Crafters, Mounts, Todos, YouTube, and a placeholder for Achievement Lols (coming soon). Opens as a centred modal with a blurred backdrop and void cinder effect rising from the top edge.</p>
         <div class="changelog-tags">
           <span class="changelog-tag">New Feature</span>
           <span class="changelog-tag">UX</span>
@@ -81,7 +125,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <div class="changelog-entry">
         <div class="changelog-date">April 2026</div>
         <h3 class="changelog-title">Homepage Transmog Showcase</h3>
-        <p>The homepage now features a transmog collection carousel showing raid tier sets from Midnight, The War Within, and Dragonflight — with real set icons, difficulty tabs, and piece lists. Demonstrates the depth of the transmog tracker to new visitors.</p>
+        <p>The homepage now features a transmog collection carousel showing raid tier sets from Midnight, The War Within, and Dragonflight, with real set icons, difficulty tabs, and piece lists. Demonstrates the depth of the transmog tracker to new visitors.</p>
         <div class="changelog-tags">
           <span class="changelog-tag">Homepage</span>
         </div>
@@ -117,7 +161,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <div class="changelog-entry">
         <div class="changelog-date">March 2026</div>
         <h3 class="changelog-title">Transmog Set Collection Tracker</h3>
-        <p>Track every class tier set across every expansion. See which pieces you own, which you're missing, and exactly where to farm them — boss names, raid locations, and direct Wowhead tooltips on every item. Four tabs: Raid Sets, Armor Sets, Raid Loot, and Dungeon Loot. Reputation items show faction and standing required. Add missing pieces to your todo list with one click.</p>
+        <p>Track every class tier set across every expansion. See which pieces you own, which you're missing, and exactly where to farm them, including boss names, raid locations, and direct Wowhead tooltips on every item. Four tabs: Raid Sets, Armor Sets, Raid Loot, and Dungeon Loot. Reputation items show faction and standing required. Add missing pieces to your todo list with one click.</p>
         <div class="changelog-tags">
           <span class="changelog-tag">New Feature</span>
           <span class="changelog-tag">Database</span>
@@ -127,7 +171,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <div class="changelog-entry">
         <div class="changelog-date">March 2026</div>
         <h3 class="changelog-title">My Account Hub</h3>
-        <p>A new landing page for all your account features. See your characters, crafters, vault, mounts, todos, and YouTube in one place — with live stats like character count and vault rewards. The navigation dropdown now opens on hover for quicker access.</p>
+        <p>A new landing page for all your account features. See your characters, crafters, vault, mounts, todos, and YouTube in one place, with live stats like character count and vault rewards. The navigation dropdown now opens on hover for quicker access.</p>
         <div class="changelog-tags">
           <span class="changelog-tag">New Feature</span>
         </div>
@@ -135,7 +179,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       <div class="changelog-entry">
         <div class="changelog-date">March 2026</div>
-        <h3 class="changelog-title">Railway Removed — Full VPS Migration</h3>
+        <h3 class="changelog-title">Railway Removed: Full VPS Migration</h3>
         <p>Moved all backend services to a single server. Authentication, data storage, and API proxies now run on one machine. Removed an external dependency and simplified the entire stack.</p>
         <div class="changelog-tags">
           <span class="changelog-tag">Infrastructure</span>
@@ -155,7 +199,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <div class="changelog-entry">
         <div class="changelog-date">March 2026</div>
         <h3 class="changelog-title">Weekly Vault Tracker</h3>
-        <p>See which of your characters have vault rewards ready — without logging into each one. Tracks raids, M+ keys, and delves across all your alts. Shows progress towards each vault slot with colour-coded badges and a progress bar.</p>
+        <p>See which of your characters have vault rewards ready without logging into each one. Tracks raids, M+ keys, and delves across all your alts. Shows progress towards each vault slot with colour-coded badges and a progress bar.</p>
         <div class="changelog-tags">
           <span class="changelog-tag">New Feature</span>
           <span class="changelog-tag">Database</span>
@@ -183,7 +227,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <div class="changelog-entry">
         <div class="changelog-date">March 2026</div>
         <h3 class="changelog-title">Raid Signup System</h3>
-        <p>Organise raids through Discord. A bot creates events with a slash command, and guild members sign up on the website — choosing their character, spec, and role. Includes a reserve bench that auto-promotes when spots open. Real-time notifications back to Discord when people sign up or withdraw.</p>
+        <p>Organise raids through Discord. A bot creates events with a slash command, and guild members sign up on the website, choosing their character, spec, and role. Includes a reserve bench that auto-promotes when spots open. Real-time notifications back to Discord when people sign up or withdraw.</p>
         <div class="changelog-tags">
           <span class="changelog-tag">New Feature</span>
           <span class="changelog-tag">Discord</span>
@@ -239,7 +283,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <div class="changelog-entry">
         <div class="changelog-date">October 2025</div>
         <h3 class="changelog-title">Mythic+ Leaderboards</h3>
-        <p>Real-time leaderboards showing the top runs for every dungeon. Includes a meta composition breakdown — which specs are dominating tanks, healers, and DPS. Filter by dungeon, see full group compositions, and track what's popular this season.</p>
+        <p>Real-time leaderboards showing the top runs for every dungeon. Includes a meta composition breakdown showing which specs are dominating tanks, healers, and DPS. Filter by dungeon, see full group compositions, and track what's popular this season.</p>
         <div class="changelog-tags">
           <span class="changelog-tag">New Feature</span>
         </div>
@@ -275,7 +319,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <div class="changelog-entry">
         <div class="changelog-date">August 2025</div>
         <h3 class="changelog-title">My Characters</h3>
-        <p>View all your characters across every realm in one place. See class, race, spec, item level, and guild rank. Same filtering and sorting as the guild roster — but for your entire account.</p>
+        <p>View all your characters across every realm in one place. See class, race, spec, item level, and guild rank. Same filtering and sorting as the guild roster, but for your entire account.</p>
         <div class="changelog-tags">
           <span class="changelog-tag">New Feature</span>
         </div>
@@ -284,7 +328,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <div class="changelog-entry">
         <div class="changelog-date">July 2025</div>
         <h3 class="changelog-title">Battle.net Login</h3>
-        <p>Secure login through Battle.net. No passwords stored — authentication handled entirely through Blizzard's official system. Unlocks personal features like character lists, mounts, todos, and YouTube channels.</p>
+        <p>Secure login through Battle.net. No passwords stored, authentication handled entirely through Blizzard's official system. Unlocks personal features like character lists, mounts, todos, and YouTube channels.</p>
         <div class="changelog-tags">
           <span class="changelog-tag">Foundation</span>
         </div>
@@ -292,7 +336,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       <div class="changelog-entry">
         <div class="changelog-date">July 2025</div>
-        <h3 class="changelog-title">Guild Roster — Where It All Started</h3>
+        <h3 class="changelog-title">Guild Roster.Where It All Started</h3>
         <p>The original feature. Search any guild on EU or US servers and browse their roster. Character cards show avatars, class colours, specs, races, and item levels. Click any character for a detailed breakdown of their gear.</p>
         <div class="changelog-tags">
           <span class="changelog-tag">Foundation</span>

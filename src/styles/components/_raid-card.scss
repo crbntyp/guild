@@ -346,14 +346,15 @@
 
   .raid-signed-up {
     font-size: 12px;
-    color: rgba(16, 185, 129, 0.8);
+    color: rgba(255, 255, 255, 0.5);
+    flex: 1;
   }
 
   .btn-raid-signup,
   .btn-raid-withdraw {
-    padding: 6px 16px;
-    border: none;
-    border-radius: 4px;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-family: 'Muli', sans-serif;
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
@@ -361,22 +362,24 @@
   }
 
   .btn-raid-signup {
-    background: rgba(163, 53, 238, 0.3);
-    color: #a335ee;
-    border: 1px solid rgba(163, 53, 238, 0.4);
+    background: rgba(163, 53, 238, 0.15);
+    color: #fff;
+    border: 1px solid rgba(163, 53, 238, 0.3);
 
     &:hover {
-      background: rgba(163, 53, 238, 0.5);
+      background: rgba(163, 53, 238, 0.25);
+      border-color: rgba(163, 53, 238, 0.5);
     }
   }
 
   .btn-raid-withdraw {
-    background: rgba(239, 68, 68, 0.2);
-    color: rgba(239, 68, 68, 0.8);
-    border: 1px solid rgba(239, 68, 68, 0.3);
+    background: rgba(255, 50, 50, 0.1);
+    color: rgba(255, 50, 50, 0.7);
+    border: 1px solid rgba(255, 50, 50, 0.2);
 
     &:hover {
-      background: rgba(239, 68, 68, 0.4);
+      background: rgba(255, 50, 50, 0.2);
+      color: #fff;
     }
   }
 }

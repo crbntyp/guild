@@ -64,6 +64,11 @@ const commands = [
       option.setName('description')
         .setDescription('Optional notes (e.g. High keys, bring consumes)')
         .setRequired(false))
+    .toJSON(),
+
+  new SlashCommandBuilder()
+    .setName('link')
+    .setDescription('Link your Discord account to Battle.net for raid signups and group building')
     .toJSON()
 ];
 

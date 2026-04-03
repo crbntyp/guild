@@ -5,6 +5,7 @@ import SignupModal from './signup-modal.js';
 import PageHeader from './page-header.js';
 import wowAPI from '../api/wow-api.js';
 import { addVoidCinders } from '../utils/void-cinders.js';
+import eventCreator from './event-creator.js';
 
 class MplusManager {
   constructor(containerId, authService) {
@@ -57,6 +58,11 @@ class MplusManager {
 
     this.container.innerHTML = `
       ${headerHTML}
+      ${this.isAdmin ? `
+        <div class="ec-create-bar">
+          <button class="ec-create-trigger" id="ec-trigger-groups"><i class="las la-plus"></i> Create</button>
+        </div>
+      ` : ''}
       <div id="mplus-sessions-content">
         <div class="loading-spinner">
           <i class="las la-circle-notch la-spin la-4x"></i>
@@ -64,6 +70,13 @@ class MplusManager {
         </div>
       </div>
     `;
+
+    document.getElementById('ec-trigger-groups')?.addEventListener('click', () => {
+      eventCreator.open((type) => {
+        if (type === 'group') this.loadSessions();
+        else window.location.href = 'raids.html';
+      });
+    });
 
     // Signup modal (reuse raid signup modal with mplus mode)
     this.signupModal = new SignupModal(this.authService, async (signupData) => {

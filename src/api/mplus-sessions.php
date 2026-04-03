@@ -72,19 +72,46 @@ if ($method === 'GET') {
         }
     }
 
+    $guildId = $data['discord_guild_id'] ?? null;
+    $guildName = null;
+    if ($guildId) {
+        $stmt = $db->prepare("SELECT discord_guild_name FROM mplus_sessions WHERE discord_guild_id = :gid AND discord_guild_name IS NOT NULL LIMIT 1");
+        $stmt->execute([':gid' => $guildId]);
+        $row = $stmt->fetch();
+        if ($row) $guildName = $row['discord_guild_name'];
+        if (!$guildName) {
+            $stmt = $db->prepare("SELECT discord_guild_name FROM raids WHERE discord_guild_id = :gid AND discord_guild_name IS NOT NULL LIMIT 1");
+            $stmt->execute([':gid' => $guildId]);
+            $row = $stmt->fetch();
+            if ($row) $guildName = $row['discord_guild_name'];
+        }
+    }
+
     $stmt = $db->prepare("
-        INSERT INTO mplus_sessions (title, description, session_date, created_by_battletag)
-        VALUES (:title, :description, :session_date, :battletag)
+        INSERT INTO mplus_sessions (title, description, session_date, created_by_battletag, owner_bnet_id, discord_guild_id, discord_guild_name)
+        VALUES (:title, :description, :session_date, :battletag, :owner_bnet_id, :guild_id, :guild_name)
     ");
 
     $stmt->execute([
         ':title' => $data['title'],
         ':description' => $data['description'] ?? null,
         ':session_date' => $data['session_date'],
-        ':battletag' => $user['battletag']
+        ':battletag' => $user['battletag'],
+        ':owner_bnet_id' => (int)$user['id'],
+        ':guild_id' => $guildId,
+        ':guild_name' => $guildName
     ]);
 
     $sessionId = (int)$db->lastInsertId();
+
+    // Notify Discord bot
+    if ($guildId) {
+        notifyDiscord([
+            'event' => 'session_created',
+            'session_id' => $sessionId
+        ]);
+    }
+
     echo json_encode(['success' => true, 'session_id' => $sessionId]);
 
 } elseif ($method === 'DELETE') {

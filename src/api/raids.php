@@ -83,9 +83,25 @@ if ($method === 'GET') {
         }
     }
 
+    // Get guild name from guild ID if provided
+    $guildId = $data['discord_guild_id'] ?? null;
+    $guildName = null;
+    if ($guildId) {
+        $stmt = $db->prepare("SELECT discord_guild_name FROM raids WHERE discord_guild_id = :gid AND discord_guild_name IS NOT NULL LIMIT 1");
+        $stmt->execute([':gid' => $guildId]);
+        $row = $stmt->fetch();
+        if ($row) $guildName = $row['discord_guild_name'];
+        if (!$guildName) {
+            $stmt = $db->prepare("SELECT discord_guild_name FROM mplus_sessions WHERE discord_guild_id = :gid AND discord_guild_name IS NOT NULL LIMIT 1");
+            $stmt->execute([':gid' => $guildId]);
+            $row = $stmt->fetch();
+            if ($row) $guildName = $row['discord_guild_name'];
+        }
+    }
+
     $stmt = $db->prepare("
-        INSERT INTO raids (title, description, raid_date, max_players, max_tanks, max_healers, max_dps, difficulty, created_by_battletag)
-        VALUES (:title, :description, :raid_date, :max_players, :max_tanks, :max_healers, :max_dps, :difficulty, :battletag)
+        INSERT INTO raids (title, description, raid_date, max_players, max_tanks, max_healers, max_dps, difficulty, created_by_battletag, owner_bnet_id, discord_guild_id, discord_guild_name)
+        VALUES (:title, :description, :raid_date, :max_players, :max_tanks, :max_healers, :max_dps, :difficulty, :battletag, :owner_bnet_id, :guild_id, :guild_name)
     ");
 
     $stmt->execute([
@@ -97,10 +113,23 @@ if ($method === 'GET') {
         ':max_healers' => $data['max_healers'] ?? 4,
         ':max_dps' => $data['max_dps'] ?? 14,
         ':difficulty' => $data['difficulty'] ?? 'heroic',
-        ':battletag' => $user['battletag']
+        ':battletag' => $user['battletag'],
+        ':owner_bnet_id' => (int)$user['id'],
+        ':guild_id' => $guildId,
+        ':guild_name' => $guildName
     ]);
 
     $raidId = (int)$db->lastInsertId();
+
+    // Notify Discord bot
+    if ($guildId) {
+        notifyDiscord([
+            'event' => 'raid_created',
+            'raid_id' => $raidId,
+            'title' => $data['title'],
+            'difficulty' => $data['difficulty'] ?? 'heroic'
+        ]);
+    }
 
     echo json_encode(['success' => true, 'raid_id' => $raidId]);
 

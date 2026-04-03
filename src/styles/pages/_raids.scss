@@ -9,6 +9,30 @@
     padding: 20px 0;
   }
 
+  .raids-server-group {
+    margin-bottom: 24px;
+  }
+
+  .raids-server-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+    i {
+      font-size: 18px;
+      color: #5865F2;
+    }
+
+    span {
+      font-size: 14px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.7);
+    }
+  }
+
   .no-raids {
     text-align: center;
     padding: 60px 20px;
@@ -33,10 +57,14 @@
 
   .raids-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 16px;
 
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 600px) {
       grid-template-columns: 1fr;
     }
   }

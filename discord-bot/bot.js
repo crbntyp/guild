@@ -287,6 +287,60 @@ client.on('interactionCreate', async (interaction) => {
     }
   }
 
+  if (interaction.commandName === 'link') {
+    const discordUserId = interaction.user.id;
+    const pool = await getDb();
+
+    // Check if already linked
+    const [existing] = await pool.execute('SELECT bnet_user_id, battletag FROM discord_bnet_links WHERE discord_id = ?', [discordUserId]);
+    if (existing.length > 0) {
+      await interaction.reply({
+        content: `You're already linked to **${existing[0].battletag}**. You're all set!`,
+        ephemeral: true
+      });
+      return;
+    }
+
+    // Create pending link
+    const linkToken = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 19).replace('T', ' ');
+
+    await pool.execute(
+      `INSERT INTO pending_discord_links (discord_id, token, expires_at) VALUES (?, ?, ?)
+       ON DUPLICATE KEY UPDATE token = VALUES(token), expires_at = VALUES(expires_at)`,
+      [discordUserId, linkToken, expiresAt]
+    );
+
+    const linkUrl = `${config.appUrl}/groups.html?link_discord=${discordUserId}&link_token=${linkToken}`;
+
+    try {
+      await interaction.user.send({
+        embeds: [
+          new EmbedBuilder()
+            .setTitle('Link your Battle.net account')
+            .setDescription(
+              `Hey! To get the most out of gld__, link your Discord and Battle.net accounts.\n\n` +
+              `This lets you:\n` +
+              `• Sign up for raids and groups from the web app\n` +
+              `• Create and manage events you own\n` +
+              `• See server-specific content\n\n` +
+              `Click the link below and log in with Battle.net. One time only, takes 10 seconds.`
+            )
+            .setColor(0xA335EE)
+            .addFields({ name: '\u200b', value: `**[Link my accounts](${linkUrl})**` })
+            .setFooter({ text: 'This link is unique to you and expires in 7 days.' })
+        ]
+      });
+      await interaction.reply({ content: 'Check your DMs for the link!', ephemeral: true });
+    } catch (dmError) {
+      await interaction.reply({
+        content: 'I couldn\'t DM you. Make sure your DMs are open and try again.',
+        ephemeral: true
+      });
+    }
+    return;
+  }
+
   if (interaction.commandName === 'raid') {
     const title = interaction.options.getString('title');
     const dateStr = interaction.options.getString('date');
@@ -387,6 +441,36 @@ async function postMplusWithdrawNotification(sessionId, characterName, role) {
   );
 }
 
+/**
+ * Post session created notification (from web app)
+ */
+async function postSessionCreatedNotification(sessionId) {
+  const channel = client.channels.cache.get(config.channelId);
+  if (!channel) return;
+
+  const pool = await getDb();
+  const [sessions] = await pool.execute('SELECT * FROM mplus_sessions WHERE id = ?', [sessionId]);
+  if (sessions.length === 0) return;
+
+  const session = sessions[0];
+  await postSessionEmbed(session, `${session.title}`, 'Sign up and get assigned to a group!');
+}
+
+/**
+ * Post raid created notification (from web app)
+ */
+async function postRaidCreatedNotification(raidId) {
+  const channel = client.channels.cache.get(config.channelId);
+  if (!channel) return;
+
+  const pool = await getDb();
+  const [raids] = await pool.execute('SELECT * FROM raids WHERE id = ?', [raidId]);
+  if (raids.length === 0) return;
+
+  const raid = raids[0];
+  await postRaidEmbed(raid, `New Raid: ${raid.title}`, `A new ${raid.difficulty} raid has been scheduled. Sign up now!`);
+}
+
 // Internal HTTP server for PHP webhook notifications
 const http = require('http');
 
@@ -409,6 +493,10 @@ const webhookServer = http.createServer(async (req, res) => {
         await postRaidFullNotification(data.raid_id);
       } else if (data.event === 'withdraw') {
         await postWithdrawNotification(data.raid_id, data.character_name, data.role);
+      } else if (data.event === 'session_created') {
+        await postSessionCreatedNotification(data.session_id);
+      } else if (data.event === 'raid_created') {
+        await postRaidCreatedNotification(data.raid_id);
       } else if (data.event === 'mplus_signup') {
         await postMplusSignupNotification(data.session_id, data.character_name, data.role);
       } else if (data.event === 'mplus_withdraw') {

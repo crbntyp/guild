@@ -2,6 +2,7 @@ import raidService from '../services/raid-service.js';
 import RaidCard from './raid-card.js';
 import SignupModal from './signup-modal.js';
 import PageHeader from './page-header.js';
+import eventCreator from './event-creator.js';
 import wowAPI from '../api/wow-api.js';
 
 class RaidManager {
@@ -46,6 +47,11 @@ class RaidManager {
 
     this.container.innerHTML = `
       ${headerHTML}
+      ${this.isAdmin ? `
+        <div class="ec-create-bar">
+          <button class="ec-create-trigger" id="ec-trigger-raids"><i class="las la-plus"></i> Create</button>
+        </div>
+      ` : ''}
       <div id="raids-content">
         <div class="loading-spinner">
           <i class="las la-circle-notch la-spin la-4x"></i>
@@ -53,6 +59,13 @@ class RaidManager {
         </div>
       </div>
     `;
+
+    document.getElementById('ec-trigger-raids')?.addEventListener('click', () => {
+      eventCreator.open((type) => {
+        if (type === 'raid') this.loadRaids();
+        else window.location.href = 'groups.html';
+      });
+    });
 
     // Create signup modal
     this.signupModal = new SignupModal(this.authService, async (signupData) => {
@@ -106,15 +119,55 @@ class RaidManager {
       return;
     }
 
-    const raidsHTML = this.raids.map(raid => {
-      const signups = raid.signups || [];
-      const userSignup = userId
-        ? signups.find(s => s.bnet_user_id === userId)
-        : null;
-      return RaidCard.render(raid, userSignup, this.isAdmin);
-    }).join('');
+    // Group raids by Discord server
+    const serverGroups = {};
+    const noServer = [];
 
-    content.innerHTML = `<div class="raids-grid">${raidsHTML}</div>`;
+    this.raids.forEach(raid => {
+      if (raid.discord_guild_id) {
+        if (!serverGroups[raid.discord_guild_id]) {
+          serverGroups[raid.discord_guild_id] = {
+            name: raid.discord_guild_name || 'Unknown Server',
+            raids: []
+          };
+        }
+        serverGroups[raid.discord_guild_id].raids.push(raid);
+      } else {
+        noServer.push(raid);
+      }
+    });
+
+    let html = '';
+
+    Object.values(serverGroups).forEach(group => {
+      const cardsHTML = group.raids.map(raid => {
+        const signups = raid.signups || [];
+        const userSignup = userId ? signups.find(s => s.bnet_user_id === userId) : null;
+        return RaidCard.render(raid, userSignup, this.isAdmin);
+      }).join('');
+
+      html += `
+        <div class="raids-server-group">
+          <div class="raids-server-header">
+            <i class="lab la-discord"></i>
+            <span>${group.name}</span>
+          </div>
+          <div class="raids-grid">${cardsHTML}</div>
+        </div>
+      `;
+    });
+
+    if (noServer.length > 0) {
+      const cardsHTML = noServer.map(raid => {
+        const signups = raid.signups || [];
+        const userSignup = userId ? signups.find(s => s.bnet_user_id === userId) : null;
+        return RaidCard.render(raid, userSignup, this.isAdmin);
+      }).join('');
+
+      html += `<div class="raids-grid">${cardsHTML}</div>`;
+    }
+
+    content.innerHTML = html;
 
     this.attachRaidListeners();
     this.loadRaidBackgrounds();
