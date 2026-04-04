@@ -17,6 +17,15 @@ const RAID_IMAGES = {
 
 const DIFFICULTY_COLORS = { normal: 0x1EFF00, heroic: 0xA335EE, mythic: 0xFF8000 };
 
+const DUNGEON_IMAGES = [
+  'https://render.worldofwarcraft.com/eu/zones/windrunner-spire-small.jpg',
+  'https://render.worldofwarcraft.com/eu/zones/magisters-terrace-small.jpg',
+  'https://render.worldofwarcraft.com/eu/zones/nexus-point-xenas-small.jpg',
+  'https://render.worldofwarcraft.com/eu/zones/maisara-caverns-small.jpg',
+  'https://render.worldofwarcraft.com/eu/zones/skyreach-small.jpg',
+  'https://render.worldofwarcraft.com/eu/zones/seat-of-the-triumvirate-small.jpg'
+];
+
 async function getDb() {
   if (!db) {
     db = await mysql.createPool({
@@ -108,6 +117,7 @@ async function postSessionEmbed(session, title, description) {
       { name: '\u200b', value: `**[SIGN UP!](${config.appUrl}/groups.html?server=${session.discord_guild_id || ''}&name=${encodeURIComponent(session.discord_guild_name || '')})**`, inline: false }
     )
     .setFooter({ text: 'gld__ Group Builder' })
+    .setImage(DUNGEON_IMAGES[Math.floor(Math.random() * DUNGEON_IMAGES.length)])
     .setTimestamp();
 
   try {
@@ -296,7 +306,7 @@ client.on('interactionCreate', async (interaction) => {
       [discordUserId, linkToken, expiresAt]
     );
 
-    const linkUrl = `${config.appUrl}/groups.html?link_discord=${discordUserId}&link_token=${linkToken}`;
+    const linkUrl = `${config.appUrl}/link.html?link_discord=${discordUserId}&link_token=${linkToken}`;
     try {
       await interaction.user.send({
         embeds: [new EmbedBuilder()
@@ -357,7 +367,7 @@ client.on('interactionCreate', async (interaction) => {
         const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 19).replace('T', ' ');
         await pool.execute(`INSERT INTO pending_discord_links (discord_id, token, expires_at) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE token = VALUES(token), expires_at = VALUES(expires_at)`, [discordUserId, linkToken, expiresAt]);
 
-        const linkUrl = `${config.appUrl}/groups.html?link_discord=${discordUserId}&link_token=${linkToken}`;
+        const linkUrl = `${config.appUrl}/link.html?link_discord=${discordUserId}&link_token=${linkToken}`;
         try {
           await interaction.user.send({
             embeds: [new EmbedBuilder()

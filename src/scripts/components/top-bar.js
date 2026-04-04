@@ -429,6 +429,7 @@ class TopBar {
    */
   renderLoginButton() {
     this.rightContainer.innerHTML = `
+      <a href="link.html" class="btn-link-accounts" title="Link Discord & Battle.net"><i class="lab la-discord"></i></a>
       <button class="btn-login" id="bnet-login-btn">
         <i class="las la-user"></i>
         <span>Login with Battle.net</span>
