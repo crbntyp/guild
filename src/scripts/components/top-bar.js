@@ -168,8 +168,8 @@ class TopBar {
                     <div class="mega-card-overlay"></div>
                   </div>
                   <div class="mega-card-info">
-                    <span class="mega-card-title">Group Builder</span>
-                    <span class="mega-card-desc">Sign up and get assigned to a team</span>
+                    <div class="mega-card-text"><span class="mega-card-title">Group Builder</span><span class="mega-card-desc">Sign up and get assigned to a team</span></div>
+                    <i class="las la-angle-right mega-card-arrow"></i>
                   </div>
                 </a>
                 <a href="my-vault.html" class="mega-card${getActiveClass('my-vault.html')}">
@@ -199,8 +199,8 @@ class TopBar {
                     <div class="mega-card-overlay"></div>
                   </div>
                   <div class="mega-card-info">
-                    <span class="mega-card-title">Weekly Vault</span>
-                    <span class="mega-card-desc">Your raid, M+, and delve rewards</span>
+                    <div class="mega-card-text"><span class="mega-card-title">Weekly Vault</span><span class="mega-card-desc">Your raid, M+, and delve rewards</span></div>
+                    <i class="las la-angle-right mega-card-arrow"></i>
                   </div>
                 </a>
                 <a href="my-transmog.html" class="mega-card${getActiveClass('my-transmog.html')}">
@@ -228,8 +228,8 @@ class TopBar {
                     <div class="mega-card-overlay"></div>
                   </div>
                   <div class="mega-card-info">
-                    <span class="mega-card-title">Your Transmogs</span>
-                    <span class="mega-card-desc">Your progress and collections</span>
+                    <div class="mega-card-text"><span class="mega-card-title">Your Transmogs</span><span class="mega-card-desc">Your progress and collections</span></div>
+                    <i class="las la-angle-right mega-card-arrow"></i>
                   </div>
                 </a>
                 <a href="raids.html" class="mega-card${getActiveClass('raids.html')}">
@@ -269,8 +269,8 @@ class TopBar {
                     <div class="mega-card-overlay"></div>
                   </div>
                   <div class="mega-card-info">
-                    <span class="mega-card-title">Discord Bot & Raid Signups</span>
-                    <span class="mega-card-desc">Use your Bnet account to sign up...here</span>
+                    <div class="mega-card-text"><span class="mega-card-title">Raid & Group Signups</span><span class="mega-card-desc">Use your Bnet account to sign up...here</span></div>
+                    <i class="las la-angle-right mega-card-arrow"></i>
                   </div>
                 </a>
               </div>
@@ -465,9 +465,9 @@ class TopBar {
       <div class="user-info">
         <div class="user-avatar-container">
           <i class="las la-circle-notch la-spin"></i>
-          <div class="admin-tooltip" id="admin-tooltip"></div>
         </div>
         <a href="my-characters.html" class="user-battletag">${user.battletag || 'User'}</a>
+        <div class="admin-tooltip" id="admin-tooltip"></div>
         <button class="btn-logout" id="bnet-logout-btn">
           Logout
         </button>
@@ -520,36 +520,27 @@ class TopBar {
       const avatarContainer = this.rightContainer.querySelector('.user-avatar-container');
       if (!avatarContainer) return;
 
-      const setAvatarContent = (container, html) => {
-        const tooltip = container.querySelector('.admin-tooltip');
-        container.innerHTML = html;
-        if (tooltip) container.appendChild(tooltip);
-      };
-
       if (mainChar) {
-        // Use the character media API for reliable avatar URLs
         try {
           const wowApi = (await import('../api/wow-api.js')).default;
           const mediaData = await wowApi.getCharacterMedia(mainChar.realm.slug, mainChar.name);
           const avatarAsset = mediaData?.assets?.find(a => a.key === 'avatar');
           if (avatarAsset?.value) {
-            setAvatarContent(avatarContainer, `<img src="${avatarAsset.value}" alt="${mainChar.name}" class="user-avatar" />`);
+            avatarContainer.innerHTML = `<img src="${avatarAsset.value}" alt="${mainChar.name}" class="user-avatar" />`;
           } else {
-            setAvatarContent(avatarContainer, `<i class="las la-user"></i>`);
+            avatarContainer.innerHTML = `<i class="las la-user"></i>`;
           }
         } catch (e) {
-          setAvatarContent(avatarContainer, `<i class="las la-user"></i>`);
+          avatarContainer.innerHTML = `<i class="las la-user"></i>`;
         }
       } else {
-        setAvatarContent(avatarContainer, `<i class="las la-user"></i>`);
+        avatarContainer.innerHTML = `<i class="las la-user"></i>`;
       }
     } catch (error) {
       console.error('Error loading user avatar:', error);
       const avatarContainer = this.rightContainer.querySelector('.user-avatar-container');
       if (avatarContainer) {
-        const tooltip = avatarContainer.querySelector('.admin-tooltip');
         avatarContainer.innerHTML = `<i class="las la-user"></i>`;
-        if (tooltip) avatarContainer.appendChild(tooltip);
       }
     }
   }

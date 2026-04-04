@@ -51,8 +51,8 @@ class MplusManager {
   render() {
     const headerHTML = PageHeader.render({
       className: 'mplus-groups',
-      badge: 'gld__ groups',
-      title: 'Group Builder',
+      badge: 'gld__ Lienkies Group Builder',
+      title: 'Lienkie\s Group Builder',
       description: 'Sign up for events and build balanced 5-man groups from the signup pool.'
     });
 

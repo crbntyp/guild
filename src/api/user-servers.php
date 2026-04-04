@@ -52,9 +52,13 @@ $stmt = $db->prepare("
 $stmt->execute([':bnet_id' => $bnetId, ':bnet_id2' => $bnetId]);
 $signupServers = $stmt->fetchAll();
 
+// Also include any servers with settings (bot has been used there)
+$stmt = $db->query("SELECT guild_id as discord_guild_id, COALESCE(guild_name, 'Unknown Server') as discord_guild_name FROM server_settings WHERE guild_id IS NOT NULL");
+$settingsServers = $stmt->fetchAll();
+
 // Merge and deduplicate
 $merged = [];
-foreach (array_merge($servers, $signupServers) as $s) {
+foreach (array_merge($servers, $signupServers, $settingsServers) as $s) {
     if ($s['discord_guild_id']) {
         $merged[$s['discord_guild_id']] = [
             'guild_id' => $s['discord_guild_id'],

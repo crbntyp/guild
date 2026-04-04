@@ -236,14 +236,15 @@ async function canCreate(interaction, type) {
 client.on('interactionCreate', async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
-  // Auto-set default channel for server if not already set
+  // Auto-set default channel and guild name for server if not already set
   if (interaction.guildId && interaction.channelId) {
     try {
       const pool = await getDb();
+      const guildName = interaction.guild?.name || null;
       await pool.execute(
-        `INSERT INTO server_settings (guild_id, default_channel_id) VALUES (?, ?)
-         ON DUPLICATE KEY UPDATE default_channel_id = COALESCE(default_channel_id, VALUES(default_channel_id))`,
-        [interaction.guildId, interaction.channelId]
+        `INSERT INTO server_settings (guild_id, guild_name, default_channel_id) VALUES (?, ?, ?)
+         ON DUPLICATE KEY UPDATE default_channel_id = COALESCE(default_channel_id, VALUES(default_channel_id)), guild_name = COALESCE(VALUES(guild_name), guild_name)`,
+        [interaction.guildId, guildName, interaction.channelId]
       );
     } catch (e) {}
   }

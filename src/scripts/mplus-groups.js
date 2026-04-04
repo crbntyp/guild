@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div class="raids-landing">
               <div class="raids-landing-hero">
                 <div class="raids-landing-badge">gld__ groups</div>
-                <h1>Group Builder</h1>
+                <h1>Lienkie's Group Builder</h1>
                 <p class="raids-landing-subtitle">A smart group builder for M+ keys, timewalking, dungeons, and more. Sign up, get assigned to a balanced 5-man team, and go.</p>
               </div>
 
@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                   <div class="demo-card" style="min-width: 600px; max-width: 600px; height: 380px; pointer-events: none; background: rgba(0,0,0,0.2); border: 1px solid rgba(163,53,238,0.2); border-radius: 5px; padding: 16px; overflow: hidden">
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.06)">
-                  <span style="font-size:14px;font-weight:700;color:#fff">Group Builder</span>
+                  <span style="font-size:14px;font-weight:700;color:#fff">Lienkie's Group Builder</span>
                   <div style="display:flex;gap:6px;margin-left:auto">
                     <span style="font-size:10px;padding:4px 10px;background:rgba(163,53,238,0.12);border:1px solid rgba(163,53,238,0.25);border-radius:4px;color:#fff;font-weight:600">Auto-Assign</span>
                     <span style="font-size:10px;padding:4px 10px;background:rgba(163,53,238,0.12);border:1px solid rgba(163,53,238,0.25);border-radius:4px;color:#fff;font-weight:600">Save</span>
