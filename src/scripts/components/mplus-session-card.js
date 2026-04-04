@@ -51,7 +51,6 @@ class MplusSessionCard {
 
     return `
       <div class="mplus-session-card" data-session-id="${session.id}" data-instance-id="${this.getBackgroundId(session.id)}">
-        ${canManage ? `<button class="btn-mplus-build-icon" data-session-id="${session.id}" title="Build Groups">Build</button>` : ''}
         ${isAdmin ? `
           <div class="mplus-card-admin-icons">
             <button class="btn-mplus-delete" data-session-id="${session.id}" title="Delete session"><i class="las la-trash-alt"></i></button>
@@ -70,6 +69,15 @@ class MplusSessionCard {
               <span class="mplus-countdown">${countdownStr}</span>
             </div>
             ${session.description ? `<p class="mplus-card-description">${session.description}</p>` : ''}
+            ${canManage ? `
+              <div class="mplus-make-groups-row">
+                <div class="mplus-configure-wrap">
+                  <button class="btn-mplus-make-groups" data-session-id="${session.id}">Configure Group</button>
+                  <span class="mplus-configure-tip">Best for push nights and high keys where comp matters</span>
+                </div>
+                <span class="mplus-stat-groups">${possibleGroups} group${possibleGroups !== 1 ? 's' : ''} possible</span>
+              </div>
+            ` : ''}
           </div>
         </div>
 
@@ -86,7 +94,7 @@ class MplusSessionCard {
             <span class="mplus-stat-icon dps"><i class="las la-crosshairs"></i></span>
             <span class="mplus-stat-count">${dpsCount}</span>
           </div>
-          <span class="mplus-stat-groups">${possibleGroups} group${possibleGroups !== 1 ? 's' : ''} possible</span>
+          ${!canManage ? `<span class="mplus-stat-groups">${possibleGroups} group${possibleGroups !== 1 ? 's' : ''} possible</span>` : ''}
         </div>
 
         <div class="mplus-card-roster">${signupListHTML}</div>

@@ -233,7 +233,7 @@ class MplusManager {
     });
 
     // Build groups (admin)
-    this.container.querySelectorAll('.btn-mplus-build-icon').forEach(btn => {
+    this.container.querySelectorAll('.btn-mplus-make-groups').forEach(btn => {
       btn.addEventListener('click', async (e) => {
         const sessionId = parseInt(e.currentTarget.dataset.sessionId);
         const session = this.sessions.find(s => s.id === sessionId);

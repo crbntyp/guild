@@ -174,7 +174,9 @@ class EventCreator {
     const serverSelect = document.getElementById('ec-server-select');
     const guildId = serverSelect?.value || (this.servers.length === 1 ? this.servers[0].guild_id : null);
 
-    const dateStr = parsed.date.toISOString().slice(0, 19).replace('T', ' ');
+    // Store exactly what the user asked for — no timezone conversion
+    const d = parsed.date;
+    const dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:00`;
 
     try {
       if (parsed.type === 'raid') {

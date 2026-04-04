@@ -441,7 +441,139 @@ client.on('interactionCreate', async (interaction) => {
 
 client.once('ready', () => {
   console.log(`🤖 gld bot online as ${client.user.tag}`);
+
+  // Start reminder system
+  startReminders();
 });
+
+/**
+ * Reminder system — checks every 5 minutes for upcoming events
+ */
+async function startReminders() {
+  // Run immediately then every 5 minutes
+  setInterval(checkReminders, 5 * 60 * 1000);
+  setTimeout(checkReminders, 10000); // first check 10s after boot
+}
+
+async function checkReminders() {
+  try {
+    const pool = await getDb();
+    const now = new Date();
+    const hours = now.getHours();
+
+    // Morning reminders — between 9:00 and 9:10 (catch within the 5min interval)
+    if (hours === 9 && now.getMinutes() < 10) {
+      await sendMorningReminders(pool);
+    }
+
+    // 30 minute reminders — anything starting in 25-35 minutes
+    await sendSoonReminders(pool);
+  } catch (e) {
+    console.error('Reminder check error:', e);
+  }
+}
+
+async function sendMorningReminders(pool) {
+  // Find raids happening today that haven't had a morning reminder
+  const [raids] = await pool.execute(`
+    SELECT r.*, COUNT(s.id) as signup_count
+    FROM raids r
+    LEFT JOIN raid_signups s ON r.id = s.raid_id AND s.status != 'declined'
+    WHERE DATE(r.raid_date) = CURDATE() AND r.status IN ('open', 'full') AND r.morning_reminder_sent = 0
+    GROUP BY r.id
+  `);
+
+  for (const raid of raids) {
+    const channel = await getChannel(raid);
+    if (!channel) continue;
+
+    const timestamp = Math.floor(new Date(raid.raid_date).getTime() / 1000);
+    const embed = new EmbedBuilder()
+      .setTitle(`📅 ${raid.title} is tonight!`)
+      .setDescription(`${raid.difficulty.charAt(0).toUpperCase() + raid.difficulty.slice(1)} raid at <t:${timestamp}:t>. ${raid.signup_count} signed up so far.`)
+      .setColor(DIFFICULTY_COLORS[raid.difficulty] || 0xA335EE)
+      .addFields({ name: '\u200b', value: `**[Sign up or check the roster](${config.appUrl}/raids.html?server=${raid.discord_guild_id || ''})**` })
+      .setTimestamp();
+
+    await channel.send({ embeds: [embed] });
+    await pool.execute('UPDATE raids SET morning_reminder_sent = 1 WHERE id = ?', [raid.id]);
+  }
+
+  // Find group sessions happening today
+  const [sessions] = await pool.execute(`
+    SELECT s.*, COUNT(su.id) as signup_count
+    FROM mplus_sessions s
+    LEFT JOIN mplus_signups su ON s.id = su.session_id
+    WHERE DATE(s.session_date) = CURDATE() AND s.status = 'open' AND s.morning_reminder_sent = 0
+    GROUP BY s.id
+  `);
+
+  for (const session of sessions) {
+    const channel = await getChannel(session);
+    if (!channel) continue;
+
+    const timestamp = Math.floor(new Date(session.session_date).getTime() / 1000);
+    const embed = new EmbedBuilder()
+      .setTitle(`📅 ${session.title} is tonight!`)
+      .setDescription(`Kicking off at <t:${timestamp}:t>. ${session.signup_count} signed up so far.`)
+      .setColor(0xA335EE)
+      .addFields({ name: '\u200b', value: `**[Sign up](${config.appUrl}/groups.html?server=${session.discord_guild_id || ''})**` })
+      .setTimestamp();
+
+    await channel.send({ embeds: [embed] });
+    await pool.execute('UPDATE mplus_sessions SET morning_reminder_sent = 1 WHERE id = ?', [session.id]);
+  }
+}
+
+async function sendSoonReminders(pool) {
+  // Find raids starting in 25-35 minutes that haven't had a soon reminder
+  const [raids] = await pool.execute(`
+    SELECT r.*, COUNT(s.id) as signup_count
+    FROM raids r
+    LEFT JOIN raid_signups s ON r.id = s.raid_id AND s.status != 'declined'
+    WHERE r.raid_date BETWEEN DATE_ADD(NOW(), INTERVAL 25 MINUTE) AND DATE_ADD(NOW(), INTERVAL 35 MINUTE)
+      AND r.status IN ('open', 'full') AND r.soon_reminder_sent = 0
+    GROUP BY r.id
+  `);
+
+  for (const raid of raids) {
+    const channel = await getChannel(raid);
+    if (!channel) continue;
+
+    const embed = new EmbedBuilder()
+      .setTitle(`⚡ ${raid.title} starts in 30 minutes!`)
+      .setDescription(`${raid.difficulty.charAt(0).toUpperCase() + raid.difficulty.slice(1)} — ${raid.signup_count} signed up. Get ready!`)
+      .setColor(0xFF8000)
+      .setTimestamp();
+
+    await channel.send({ embeds: [embed] });
+    await pool.execute('UPDATE raids SET soon_reminder_sent = 1 WHERE id = ?', [raid.id]);
+  }
+
+  // Find sessions starting in 25-35 minutes
+  const [sessions] = await pool.execute(`
+    SELECT s.*, COUNT(su.id) as signup_count
+    FROM mplus_sessions s
+    LEFT JOIN mplus_signups su ON s.id = su.session_id
+    WHERE s.session_date BETWEEN DATE_ADD(NOW(), INTERVAL 25 MINUTE) AND DATE_ADD(NOW(), INTERVAL 35 MINUTE)
+      AND s.status = 'open' AND s.soon_reminder_sent = 0
+    GROUP BY s.id
+  `);
+
+  for (const session of sessions) {
+    const channel = await getChannel(session);
+    if (!channel) continue;
+
+    const embed = new EmbedBuilder()
+      .setTitle(`⚡ ${session.title} starts in 30 minutes!`)
+      .setDescription(`${session.signup_count} signed up. Get ready!`)
+      .setColor(0xFF8000)
+      .setTimestamp();
+
+    await channel.send({ embeds: [embed] });
+    await pool.execute('UPDATE mplus_sessions SET soon_reminder_sent = 1 WHERE id = ?', [session.id]);
+  }
+}
 
 client.login(config.botToken);
 
