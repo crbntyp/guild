@@ -2,6 +2,7 @@
 import PageInitializer from './utils/page-initializer.js';
 import RaidManager from './components/raid-manager.js';
 import authService from './services/auth.js';
+import { applyBotAccessToButtons } from './utils/bot-access.js';
 
 console.log('⚡ Raids Page initialized');
 
@@ -130,6 +131,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           document.getElementById('btn-login-raids').addEventListener('click', () => {
             authService.login();
           });
+          applyBotAccessToButtons(container);
         } else {
           // No Discord context — show full marketing landing
           container.innerHTML = `
@@ -306,6 +308,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               </div>
             </div>
           `;
+          applyBotAccessToButtons(container);
         }
       }
     }

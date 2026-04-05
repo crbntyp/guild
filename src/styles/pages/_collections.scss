@@ -1,0 +1,134 @@
+// Collections page — shared transmog looks + housing blueprints
+
+.collections-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding: 0 20px 48px;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.collections-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 48px 20px;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 13px;
+}
+
+.collection-card {
+  background: rgba(10, 10, 10, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: rgba(163, 53, 238, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .collection-card-preview {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    background: rgba(163, 53, 238, 0.08);
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+  }
+
+  .collection-card-type {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 10px;
+    background: rgba(0, 0, 0, 0.6);
+    color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(4px);
+
+    i {
+      font-size: 11px;
+    }
+
+    &.collection-card-type-transmog {
+      color: #a335ee;
+    }
+
+    &.collection-card-type-blueprint {
+      color: #ffd100;
+    }
+  }
+
+  .collection-card-body {
+    padding: 14px 16px;
+  }
+
+  .collection-card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 2px;
+  }
+
+  .collection-card-author {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.35);
+    margin-bottom: 12px;
+  }
+
+  .collection-card-copy {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: rgba(163, 53, 238, 0.1);
+    border: 1px solid rgba(163, 53, 238, 0.3);
+    border-radius: 4px;
+    color: #a335ee;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: inherit;
+    text-transform: none;
+    letter-spacing: inherit;
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    i {
+      font-size: 13px;
+    }
+
+    &:hover {
+      background: rgba(163, 53, 238, 0.2);
+      color: #fff;
+    }
+
+    &.copied {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: rgba(16, 185, 129, 0.4);
+      color: #10b981;
+    }
+  }
+}

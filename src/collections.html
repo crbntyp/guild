@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>gld__ My Account</title>
+    <title>gld__ Collections</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,14 +15,25 @@
     <div id="top-bar-root"></div>
 
     <div class="container">
-        <main>
-            <div id="account-container"></div>
-        </main>
+        <main id="collections-container">
+            <div class="raids-landing-hero collections-hero">
+                <div class="raids-landing-badge">gld__ collections</div>
+                <h1>Collections</h1>
+                <p class="raids-landing-subtitle">Shared transmog looks and housing blueprints. Copy the ingame link straight into your chatbox.</p>
+            </div>
 
+            <div class="ec-create-bar" id="add-collection-bar" style="display:none">
+                <button class="ec-create-trigger" id="add-collection-btn">
+                    <i class="las la-plus"></i> Add a collection
+                </button>
+            </div>
+
+            <div class="collections-grid" id="collections-grid"></div>
+        </main>
         <div id="footer-root"></div>
     </div>
 
-    <script type="module" src="scripts/my-account.js"></script>
+    <script type="module" src="scripts/collections.js"></script>
 <script src="/stts/tracker/stts.min.js" data-site="gld" async defer></script>
 </body>
 </html>

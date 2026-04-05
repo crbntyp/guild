@@ -1,6 +1,32 @@
 // Raid card component styles
 
+// Reusable difficulty badge (used by raid cards + anywhere encounter difficulty is shown)
+.raid-difficulty-badge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 3px;
+  letter-spacing: 0.5px;
 
+  &.difficulty-normal {
+    background: rgba(30, 255, 0, 0.15);
+    color: #1eff00;
+    border: 1px solid rgba(30, 255, 0, 0.3);
+  }
+
+  &.difficulty-heroic {
+    background: rgba(163, 53, 238, 0.15);
+    color: #a335ee;
+    border: 1px solid rgba(163, 53, 238, 0.3);
+  }
+
+  &.difficulty-mythic {
+    background: rgba(255, 128, 0, 0.15);
+    color: #ff8000;
+    border: 1px solid rgba(255, 128, 0, 0.3);
+  }
+}
 
 .raid-card {
   background: rgba(0, 0, 0, 0.6);
@@ -113,33 +139,6 @@
       font-size: 15px;
       font-weight: 600;
       color: #fff;
-    }
-  }
-
-  .raid-difficulty-badge {
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    padding: 2px 8px;
-    border-radius: 3px;
-    letter-spacing: 0.5px;
-
-    &.difficulty-normal {
-      background: rgba(30, 255, 0, 0.15);
-      color: #1eff00;
-      border: 1px solid rgba(30, 255, 0, 0.3);
-    }
-
-    &.difficulty-heroic {
-      background: rgba(163, 53, 238, 0.15);
-      color: #a335ee;
-      border: 1px solid rgba(163, 53, 238, 0.3);
-    }
-
-    &.difficulty-mythic {
-      background: rgba(255, 128, 0, 0.15);
-      color: #ff8000;
-      border: 1px solid rgba(255, 128, 0, 0.3);
     }
   }
 

@@ -64,12 +64,20 @@ class RaidCard {
     if (isPast) {
       countdownStr = 'Passed';
     } else {
+      // Compare calendar days (midnight-to-midnight) rather than raw duration,
+      // so e.g. 23:30 today vs 20:00 tomorrow is "Tomorrow", not "Today".
+      const raidMidnight = new Date(raidDate);
+      raidMidnight.setHours(0, 0, 0, 0);
+      const todayMidnight = new Date(now);
+      todayMidnight.setHours(0, 0, 0, 0);
+      const dayDiff = Math.round((raidMidnight - todayMidnight) / (1000 * 60 * 60 * 24));
+
       const diff = raidDate - now;
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
       const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      if (days > 1) countdownStr = `${days}d ${hours}h`;
-      else if (days === 1) countdownStr = 'Tomorrow';
-      else if (hours > 0) countdownStr = 'Today';
+
+      if (dayDiff > 1) countdownStr = `${dayDiff}d ${hours}h`;
+      else if (dayDiff === 1) countdownStr = 'Tomorrow';
+      else if (dayDiff === 0) countdownStr = 'Today';
       else countdownStr = 'Soon';
     }
 

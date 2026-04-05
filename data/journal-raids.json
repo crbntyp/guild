@@ -1,0 +1,114 @@
+[
+  {
+    "id": 516,
+    "name": "Midnight",
+    "raids": [
+      {
+        "id": 1312,
+        "name": "Midnight",
+        "slug": "midnight",
+        "encounters": [
+          {
+            "id": 2827,
+            "name": "Lu'ashal",
+            "slug": "luashal",
+            "wowheadSlug": null
+          },
+          {
+            "id": 2829,
+            "name": "Thorm'belan",
+            "slug": "thormbelan",
+            "wowheadSlug": null
+          },
+          {
+            "id": 2828,
+            "name": "Predaxas",
+            "slug": "predaxas",
+            "wowheadSlug": null
+          },
+          {
+            "id": 2782,
+            "name": "Cragpine",
+            "slug": "cragpine",
+            "wowheadSlug": null
+          }
+        ]
+      },
+      {
+        "id": 1314,
+        "name": "The Dreamrift",
+        "slug": "the-dreamrift",
+        "encounters": [
+          {
+            "id": 2795,
+            "name": "Chimaerus the Undreamt God",
+            "slug": "chimaerus-the-undreamt-god",
+            "wowheadSlug": "malformed-manifestation"
+          }
+        ]
+      },
+      {
+        "id": 1307,
+        "name": "The Voidspire",
+        "slug": "the-voidspire",
+        "encounters": [
+          {
+            "id": 2733,
+            "name": "Imperator Averzian",
+            "slug": "imperator-averzian",
+            "wowheadSlug": "host-general"
+          },
+          {
+            "id": 2734,
+            "name": "Vorasius",
+            "slug": "vorasius",
+            "wowheadSlug": "kaiju"
+          },
+          {
+            "id": 2736,
+            "name": "Fallen-King Salhadaar",
+            "slug": "fallen-king-salhadaar",
+            "wowheadSlug": "salhadaar"
+          },
+          {
+            "id": 2735,
+            "name": "Vaelgor & Ezzorak",
+            "slug": "vaelgor-ezzorak",
+            "wowheadSlug": "dragon-duo"
+          },
+          {
+            "id": 2737,
+            "name": "Lightblinded Vanguard",
+            "slug": "lightblinded-vanguard",
+            "wowheadSlug": "paladin-trio"
+          },
+          {
+            "id": 2738,
+            "name": "Crown of the Cosmos",
+            "slug": "crown-of-the-cosmos",
+            "wowheadSlug": "alleria"
+          }
+        ]
+      },
+      {
+        "id": 1308,
+        "name": "March on Quel'Danas",
+        "slug": "march-on-queldanas",
+        "encounters": [
+          {
+            "id": 2739,
+            "name": "Belo'ren, Child of Al'ar",
+            "slug": "beloren-child-of-alar",
+            "wowheadSlug": "light-void-phoenix"
+          },
+          {
+            "id": 2740,
+            "name": "Midnight Falls",
+            "slug": "midnight-falls",
+            "wowheadSlug": "lura-midnight"
+          }
+        ]
+      }
+    ]
+  }
+]

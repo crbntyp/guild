@@ -36,6 +36,150 @@ class WoWAPI {
     }
   }
 
+  // Get guild achievements
+  async getGuildAchievements() {
+    const endpoint = `/data/wow/guild/${config.guild.realmSlug}/${config.guild.nameSlug}/achievements`;
+
+    try {
+      const data = await battlenetClient.request(endpoint, {
+        params: {
+          namespace: config.api.namespace.profile
+        }
+      });
+      return data;
+    } catch (error) {
+      console.error('Error fetching guild achievements:', error);
+      throw error;
+    }
+  }
+
+  // Get guild activity feed (player achievements, encounter kills, etc.)
+  async getGuildActivity() {
+    const endpoint = `/data/wow/guild/${config.guild.realmSlug}/${config.guild.nameSlug}/activity`;
+
+    try {
+      const data = await battlenetClient.request(endpoint, {
+        params: {
+          namespace: config.api.namespace.profile
+        }
+      });
+      return data;
+    } catch (error) {
+      console.error('Error fetching guild activity:', error);
+      throw error;
+    }
+  }
+
+  // Normalize a Blizzard media asset to a URL string.
+  // Handles every shape I've seen: plain string, {value: string},
+  // {value: {href: string}}, {href: string}, or the asset itself being a URL string.
+  _extractAssetUrl(asset) {
+    if (!asset) return null;
+    if (typeof asset === 'string') return asset;
+    // asset.value can be a string or { href: string }
+    const v = asset.value;
+    if (typeof v === 'string') return v;
+    if (v && typeof v === 'object' && typeof v.href === 'string') return v.href;
+    // top-level href fallback
+    if (typeof asset.href === 'string') return asset.href;
+    // any other string-typed field we can find
+    for (const key of ['url', 'src', 'path']) {
+      if (typeof asset[key] === 'string') return asset[key];
+    }
+    console.warn('[_extractAssetUrl] could not extract url from asset:', asset);
+    return null;
+  }
+
+  // Get achievement media (icon)
+  async getAchievementMedia(achievementId) {
+    try {
+      const data = await battlenetClient.request(`/data/wow/media/achievement/${achievementId}`, {
+        params: { namespace: config.api.namespace.static }
+      });
+      const icon = data?.assets?.find(a => a.key === 'icon');
+      return this._extractAssetUrl(icon);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  // Get journal encounter details (includes boss creature displays)
+  async getJournalEncounter(encounterId) {
+    try {
+      const data = await battlenetClient.request(`/data/wow/journal-encounter/${encounterId}`, {
+        params: { namespace: config.api.namespace.static }
+      });
+      return data;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  // List every expansion in the journal (Classic → current)
+  async getJournalExpansionIndex() {
+    try {
+      return await battlenetClient.request('/data/wow/journal-expansion/index', {
+        params: { namespace: config.api.namespace.static }
+      });
+    } catch (error) {
+      console.error('Error fetching journal expansion index:', error);
+      return null;
+    }
+  }
+
+  // Full expansion details — includes raids[] and dungeons[]
+  async getJournalExpansion(expansionId) {
+    try {
+      return await battlenetClient.request(`/data/wow/journal-expansion/${expansionId}`, {
+        params: { namespace: config.api.namespace.static }
+      });
+    } catch (error) {
+      console.error(`Error fetching journal expansion ${expansionId}:`, error);
+      return null;
+    }
+  }
+
+  // Instance details — includes encounters[] for that raid/dungeon
+  async getJournalInstance(instanceId) {
+    try {
+      return await battlenetClient.request(`/data/wow/journal-instance/${instanceId}`, {
+        params: { namespace: config.api.namespace.static }
+      });
+    } catch (error) {
+      console.error(`Error fetching journal instance ${instanceId}:`, error);
+      return null;
+    }
+  }
+
+  // Get creature display media (boss portrait)
+  async getCreatureDisplayMedia(displayId) {
+    try {
+      const data = await battlenetClient.request(`/data/wow/media/creature-display/${displayId}`, {
+        params: { namespace: config.api.namespace.static }
+      });
+      console.log(`[creature-display ${displayId}] assets:`, data?.assets?.map(a => ({ key: a.key, value: a.value })));
+      const asset = data?.assets?.find(a => a.key === 'zoom-in' || a.key === 'icon')
+        || data?.assets?.[0];
+      return this._extractAssetUrl(asset);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  // Get journal instance media (raid/dungeon banner image)
+  async getJournalInstanceMedia(instanceId) {
+    try {
+      const data = await battlenetClient.request(`/data/wow/media/journal-instance/${instanceId}`, {
+        params: { namespace: config.api.namespace.static }
+      });
+      console.log(`[journal-instance ${instanceId}] assets:`, data?.assets?.map(a => ({ key: a.key, value: a.value })));
+      const asset = data?.assets?.find(a => a.key === 'tile') || data?.assets?.[0];
+      return this._extractAssetUrl(asset);
+    } catch (error) {
+      return null;
+    }
+  }
+
   // Get character profile summary
   async getCharacterProfile(realmSlug, characterName) {
     const encodedName = encodeURIComponent(characterName.toLowerCase());
@@ -323,6 +467,26 @@ class WoWAPI {
         console.error(`Error fetching character encounters for ${characterName}:`, error);
       }
       throw error;
+    }
+  }
+
+  // Get character raid encounters specifically (progression per raid/difficulty)
+  async getCharacterRaidEncounters(realmSlug, characterName) {
+    const encodedName = encodeURIComponent(characterName.toLowerCase());
+    const endpoint = `/profile/wow/character/${realmSlug}/${encodedName}/encounters/raids`;
+
+    try {
+      const data = await battlenetClient.request(endpoint, {
+        params: {
+          namespace: config.api.namespace.profile
+        }
+      });
+      return data;
+    } catch (error) {
+      if (error.status !== 404) {
+        console.error(`Error fetching raid encounters for ${characterName}:`, error);
+      }
+      return null;
     }
   }
 

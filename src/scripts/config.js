@@ -37,13 +37,13 @@ const config = {
   },
 
   guild: {
-    realm: 'tarren-mill',
-    name: 'geez-yer-shoes-n-jaykit',
+    realm: 'Ravencrest',
+    name: 'Drowsy Dragons',
     // Normalized for API calls (lowercase, hyphens)
-    realmSlug: 'tarren-mill',
-    nameSlug: 'geez-yer-shoes-n-jaykit',
-    // Connected realm ID for Tarren Mill (EU)
-    connectedRealmId: 1084
+    realmSlug: 'ravencrest',
+    nameSlug: 'drowsy-dragons',
+    // Connected realm ID for Ravencrest (EU)
+    connectedRealmId: 1329
   },
 
   // Cache settings

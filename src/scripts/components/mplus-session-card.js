@@ -37,12 +37,18 @@ class MplusSessionCard {
     if (isPast) {
       countdownStr = 'Passed';
     } else {
+      const sessionMidnight = new Date(sessionDate);
+      sessionMidnight.setHours(0, 0, 0, 0);
+      const todayMidnight = new Date(now);
+      todayMidnight.setHours(0, 0, 0, 0);
+      const dayDiff = Math.round((sessionMidnight - todayMidnight) / (1000 * 60 * 60 * 24));
+
       const diff = sessionDate - now;
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
       const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      if (days > 1) countdownStr = `${days}d ${hours}h`;
-      else if (days === 1) countdownStr = 'Tomorrow';
-      else if (hours > 0) countdownStr = 'Today';
+
+      if (dayDiff > 1) countdownStr = `${dayDiff}d ${hours}h`;
+      else if (dayDiff === 1) countdownStr = 'Tomorrow';
+      else if (dayDiff === 0) countdownStr = 'Today';
       else countdownStr = 'Soon';
     }
 

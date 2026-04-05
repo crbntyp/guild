@@ -1,0 +1,910 @@
+// Drowsy Dragons — editorial dark-fantasy home
+// Purple brand palette kept intact; adds cinematic banner, display typography,
+// ornate dividers, and staggered reveal animations.
+
+$dd-accent: #a335ee;
+$dd-accent-glow: rgba(163, 53, 238, 0.55);
+$dd-accent-soft: rgba(163, 53, 238, 0.12);
+$dd-accent-edge: rgba(163, 53, 238, 0.35);
+$dd-ink: rgba(255, 255, 255, 0.9);
+$dd-ink-soft: rgba(255, 255, 255, 0.55);
+$dd-ink-faint: rgba(255, 255, 255, 0.3);
+
+.dd-home {
+  width: 100%;
+  color: $dd-ink;
+  padding-bottom: 80px;
+
+  // Container for non-hero sections
+  .dd-section {
+    max-width: 1290px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+}
+
+// ============================================================
+// Reveal animation
+// ============================================================
+@keyframes dd-rise {
+  0%   { opacity: 0; transform: translateY(24px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes dd-glow-pulse {
+  0%, 100% { box-shadow: 0 0 0 1px $dd-accent-edge, 0 0 28px -8px $dd-accent-glow; }
+  50%      { box-shadow: 0 0 0 1px rgba(163, 53, 238, 0.5), 0 0 46px -6px $dd-accent-glow; }
+}
+
+@keyframes dd-banner-drift {
+  0%   { transform: scale(1.08) translateY(0); }
+  100% { transform: scale(1.12) translateY(-14px); }
+}
+
+// ============================================================
+// HERO — cinematic banner + editorial layout
+// ============================================================
+.dd-hero {
+  position: relative;
+  width: 100%;
+  margin-bottom: 0;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.dd-hero-banner {
+  position: absolute;
+  inset: -40px;
+  background-size: cover;
+  background-position: center 35%;
+  z-index: -2;
+  animation: dd-banner-drift 18s ease-in-out infinite alternate;
+}
+
+.dd-hero-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    180deg,
+    #000 0%,
+    rgba(0, 0, 0, 0.7) 15%,
+    rgba(0, 0, 0, 0.3) 45%,
+    transparent 100%
+  );
+}
+
+.dd-hero-content {
+  position: relative;
+  max-width: 1290px;
+  margin: 0 auto;
+  padding: 90px 32px 90px;
+  text-align: center;
+
+  @media (max-width: 768px) {
+    padding: 70px 20px 70px;
+  }
+}
+
+// Animate the page-header-badge on initial load
+.dd-hero .page-header-badge {
+  animation: dd-rise 0.9s 0.1s both;
+}
+
+// Guild name — huge Cinzel Decorative, split into two words for styling
+.dd-hero-name {
+  font-family: 'Cinzel Decorative', serif;
+  font-weight: 900;
+  font-size: clamp(52px, 9vw, 128px);
+  line-height: 0.92;
+  margin: 0 0 20px 0;
+  letter-spacing: 0.02em;
+  color: #fff;
+  text-shadow:
+    0 0 60px rgba(163, 53, 238, 0.35),
+    0 4px 40px rgba(0, 0, 0, 0.85);
+  animation: dd-rise 1s 0.2s both;
+
+  .dd-hero-name-word {
+    display: block;
+  }
+
+  .dd-hero-name-word-alt {
+    background: linear-gradient(180deg, $dd-accent 0%, #6d1fa5 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 30px rgba(163, 53, 238, 0.4));
+  }
+}
+
+.dd-hero-tagline {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(17px, 1.8vw, 22px);
+  font-weight: 400;
+  color: $dd-ink-soft;
+  margin: 0 auto 20px;
+  max-width: 580px;
+  line-height: 1.5;
+  animation: dd-rise 0.9s 0.1s both;
+}
+
+// Hero stats — follow .footer text style
+.dd-hero-stats {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+  color: white;
+  font-size: 14px;
+  animation: dd-rise 1s 0.55s both;
+
+  strong {
+    font-weight: 700;
+    color: $dd-accent;
+  }
+
+  em {
+    font-style: normal;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    margin-left: 2px;
+
+    &.dd-diff-normal      { color: #1eff00; }
+    &.dd-diff-heroic      { color: #a335ee; }
+    &.dd-diff-mythic      { color: #ff8000; }
+    &.dd-diff-raid-finder { color: rgba(255, 255, 255, 0.6); }
+  }
+
+  .dd-hero-stat-sep {
+    color: rgba(255, 255, 255, 0.35);
+  }
+}
+
+// ============================================================
+// SECTION — shared header
+// ============================================================
+.dd-section {
+  margin-bottom: 80px;
+
+  @media (max-width: 768px) {
+    margin-bottom: 56px;
+  }
+}
+
+.dd-section-header {
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+  .dd-section-title {
+    font-family: 'Muli', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    color: #fff;
+    margin: 0 0 4px 0;
+    line-height: 1.2;
+  }
+
+  .dd-section-sub {
+    font-family: 'Muli', sans-serif;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.4);
+    margin: 0;
+  }
+}
+
+// Recent Kills sits flush against the hero and overlaps it so both are
+// visible on initial page load. Header is centered for emphasis.
+.dd-section-activity {
+  position: relative;
+  z-index: 2;
+  margin-top: -260px;
+
+  .dd-section-header {
+    text-align: center;
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: -60px;
+  }
+
+  @media (max-width: 768px) {
+    margin-top: -200px;
+  }
+}
+
+// ============================================================
+// MEMBERS — asymmetric grid with class watermark
+// ============================================================
+.dd-members-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+
+  @media (max-width: 1024px) { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 768px)  { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 480px)  { grid-template-columns: 1fr; }
+}
+
+.dd-member-card {
+  --class-color: #fff;
+  --delay: 0s;
+  position: relative;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+  animation: dd-rise 0.7s var(--delay) both;
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+}
+
+// Hide decorative elements that aren't part of the canonical card style
+.dd-member-watermark { display: none; }
+
+.dd-member-rank {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-family: 'Muli', sans-serif;
+  font-weight: 700;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.08em;
+  z-index: 2;
+}
+
+.dd-member-inner {
+  position: relative;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dd-member-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.dd-member-icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  img {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+}
+
+.dd-member-name {
+  font-family: 'Muli', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--class-color);
+  margin: 0 0 2px 0;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dd-member-meta {
+  font-family: 'Muli', sans-serif;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+
+  .dd-member-sep {
+    margin: 0 4px;
+    color: rgba(255, 255, 255, 0.25);
+  }
+}
+
+.dd-member-ago {
+  margin-top: 4px;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+// ============================================================
+// RECENT KILLS — horizontal scroll of boss cards
+// ============================================================
+.dd-kill-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  margin: 0 -20px;
+  padding: 80px 20px 16px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $dd-accent-edge;
+    border-radius: 3px;
+
+    &:hover {
+      background: $dd-accent;
+    }
+  }
+}
+
+.dd-kill-track {
+  display: flex;
+  gap: 14px;
+  padding-bottom: 4px;
+}
+
+.dd-kill-card {
+  --delay: 0s;
+  flex: 0 0 320px;
+  width: 320px;
+  position: relative;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  scroll-snap-align: start;
+  transition: border-color 0.2s ease;
+  animation: dd-rise 0.6s var(--delay) both;
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+}
+
+.dd-kill-art {
+  position: relative;
+  width: 100%;
+  height: 160px;
+  background-color: rgba(0, 0, 0, 0.3);
+  background-size: cover;
+  background-position: center top;
+  overflow: hidden;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  > i {
+    font-size: 48px;
+    color: rgba(255, 255, 255, 0.2);
+  }
+
+  &.dd-kill-art-fallback {
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+
+  .dd-kill-art-scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.25) 30%, rgba(0, 0, 0, 0.85) 65%, rgba(0, 0, 0, 0.97) 100%);
+    pointer-events: none;
+  }
+
+  .raid-difficulty-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+  }
+
+  .dd-kill-art-title {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 12px;
+    z-index: 2;
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+  }
+
+  .dd-kill-art-text {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+// Small circular boss portrait that sits above the boss name inside the
+// banner. Always rendered — shows the Wowhead portrait when a wowheadSlug is
+// mapped, otherwise falls back to a skull placeholder so the layout stays
+// consistent across kills.
+.dd-kill-portrait {
+  width: 52px;
+  height: 52px;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+  }
+
+  i {
+    font-size: 22px;
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  &.is-placeholder {
+    background: rgba(163, 53, 238, 0.08);
+
+    i { color: rgba(163, 53, 238, 0.7); }
+  }
+}
+
+.dd-kill-body {
+  padding: 10px 16px 14px;
+}
+
+.dd-kill-name {
+  font-family: 'Muli', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 2px 0;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+
+.dd-kill-instance {
+  font-size: 11px;
+  color: $dd-accent;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dd-kill-meta {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+
+  .dd-kill-sep {
+    margin: 0 6px;
+    color: rgba(255, 255, 255, 0.25);
+  }
+}
+
+// ============================================================
+// The Dragons' Ledger — 4-col stats row
+// ============================================================
+.dd-section-ledger {
+  margin-top: 20px;
+
+  .dd-section-header {
+    text-align: center;
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+}
+
+// ============================================================
+// Hall of Champions — compact pills above Recent Progression
+// ============================================================
+.dd-champ-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 48px;
+}
+
+@keyframes dd-champ-shimmer {
+  0%   { background-position: -180px 0; }
+  100% { background-position: 180px 0; }
+}
+
+.dd-champ-pill-skeleton {
+  height: 28px;
+  width: 180px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    rgba(163, 53, 238, 0.18) 50%,
+    rgba(255, 255, 255, 0.04) 100%
+  );
+  background-size: 360px 100%;
+  animation: dd-champ-shimmer 1.6s ease-in-out infinite;
+}
+
+.dd-champ-pill {
+  --champ-color: #fff;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px 6px 10px;
+  background: linear-gradient(90deg, rgba(255, 215, 0, 0.08), rgba(0, 0, 0, 0.5));
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1;
+  box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.6);
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+
+  .dd-champ-pill-crown {
+    font-size: 14px;
+    color: #ffd700;
+    filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.6));
+  }
+
+  .dd-champ-pill-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #ffd700;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8);
+  }
+
+  .dd-champ-pill-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1px solid var(--champ-color);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6);
+  }
+
+  .dd-champ-pill-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--champ-color);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+  }
+
+  .dd-champ-pill-stat {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.55);
+    font-variant-numeric: tabular-nums;
+    padding-left: 6px;
+    margin-left: 2px;
+    border-left: 1px solid rgba(255, 255, 255, 0.15);
+  }
+}
+
+.dd-ledger-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+
+  @media (max-width: 1100px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 600px)  { grid-template-columns: 1fr; }
+}
+
+// Outer column — matches the raid-card container treatment
+.dd-ledger-col {
+  height: 300px;
+  position: relative;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.2s ease;
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .dd-ledger-col-title {
+    font-family: 'Muli', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    color: #fff;
+    margin: 0 0 12px 0;
+    flex-shrink: 0;
+  }
+
+  .dd-ledger-col-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 4px;
+
+    &::-webkit-scrollbar { width: 6px; }
+    &::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.03); border-radius: 3px; }
+    &::-webkit-scrollbar-thumb { background: rgba(163, 53, 238, 0.35); border-radius: 3px; }
+    &::-webkit-scrollbar-thumb:hover { background: rgba(163, 53, 238, 0.6); }
+  }
+}
+
+// Generic row — used by Top Raiders / Top Geared / Mythic+ Ladder.
+// Each row is a mini raid-card: solid dark bg, border, 6px radius, hover lift.
+.dd-ledger-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  transition: border-color 0.2s ease;
+
+  &:last-child { margin-bottom: 0; }
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .dd-ledger-rank {
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.35);
+    letter-spacing: 0.08em;
+    width: 22px;
+    flex-shrink: 0;
+    text-align: center;
+  }
+
+  .dd-ledger-icons {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .dd-ledger-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 3px;
+    display: block;
+    border: 1px solid rgba(0, 0, 0, 0.6);
+  }
+
+  .dd-ledger-row-name {
+    flex: 1;
+    min-width: 0;
+    font-size: 13px;
+    color: #fff;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .dd-ledger-row-value {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    justify-content: flex-end;
+    flex-shrink: 0;
+
+    strong {
+      color: #fff;
+      font-weight: 700;
+      font-size: 13px;
+    }
+  }
+
+  .dd-ledger-row-bars {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    justify-content: flex-end;
+    flex-shrink: 0;
+  }
+
+  .dd-ledger-bar {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 2px 5px;
+    border-radius: 3px;
+    letter-spacing: 0.05em;
+
+    &.dd-diff-normal { background: rgba(30, 255, 0, 0.15); color: #1eff00; border: 1px solid rgba(30, 255, 0, 0.3); }
+    &.dd-diff-heroic { background: rgba(163, 53, 238, 0.15); color: #a335ee; border: 1px solid rgba(163, 53, 238, 0.3); }
+    &.dd-diff-mythic { background: rgba(255, 128, 0, 0.15); color: #ff8000; border: 1px solid rgba(255, 128, 0, 0.3); }
+  }
+}
+
+// Dungeon Highs row — same mini-card treatment with a dungeon tile banner on
+// top and the scrim over it. Structure matches the raid-card banner pattern.
+.dd-ledger-dungeon-row {
+  position: relative;
+  margin-bottom: 6px;
+  background-color: rgba(0, 0, 0, 0.4);
+  background-size: cover;
+  background-position: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+
+  &:last-child { margin-bottom: 0; }
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+}
+
+.dd-ledger-dungeon-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.85) 100%);
+  pointer-events: none;
+}
+
+.dd-ledger-dungeon-inner {
+  position: relative;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dd-ledger-dungeon-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .dd-ledger-icon { width: 22px; height: 22px; }
+
+  .dd-ledger-dungeon-char {
+    font-size: 13px;
+    font-weight: 700;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.dd-ledger-dungeon-bottom {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: nowrap;
+
+  .dd-ledger-dungeon-name {
+    flex: 1;
+    min-width: 0;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.75);
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  }
+
+  .dd-ledger-dungeon-level {
+    font-size: 13px;
+    font-weight: 800;
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  }
+
+  .dd-ledger-dungeon-time {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.55);
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  }
+
+  .dd-ledger-dungeon-rating {
+    font-size: 11px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  }
+}
+
+.dd-ledger-empty,
+.dd-ledger-loading {
+  text-align: center;
+  padding: 30px 10px;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 12px;
+
+  i {
+    color: $dd-accent;
+    margin-right: 6px;
+  }
+}
+
+// ============================================================
+// Scroll hint — fixed bottom arrow that fades out once the user scrolls
+// ============================================================
+@keyframes dd-scroll-bounce {
+  0%, 100% { transform: translate(-50%, 0); }
+  50%      { transform: translate(-50%, 8px); }
+}
+
+.dd-scroll-hint {
+  position: fixed;
+  left: 50%;
+  bottom: 32px;
+  transform: translateX(-50%);
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 22px;
+  z-index: 9998;
+  pointer-events: none;
+  box-shadow: 0 6px 24px -6px rgba(255, 255, 255, 0.35);
+  animation: dd-scroll-bounce 2s ease-in-out infinite;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+
+  &.is-hidden {
+    opacity: 0;
+    transform: translate(-50%, 16px);
+    pointer-events: none;
+  }
+}
+
+// ============================================================
+// Loading / error
+// ============================================================
+.dd-loading,
+.dd-error {
+  text-align: center;
+  padding: 120px 20px;
+  color: $dd-ink-soft;
+
+  i {
+    color: $dd-accent;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 0 18px $dd-accent-glow);
+  }
+
+  h2 {
+    font-family: 'Muli', sans-serif;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 8px 0;
+    font-size: 24px;
+    letter-spacing: 0.02em;
+  }
+
+  p {
+    font-family: 'Muli', sans-serif;
+    font-style: italic;
+    margin: 0;
+    font-size: 16px;
+  }
+}

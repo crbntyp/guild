@@ -1,6 +1,7 @@
 import PageInitializer from './utils/page-initializer.js';
 import MplusManager from './components/mplus-manager.js';
 import authService from './services/auth.js';
+import { applyBotAccessToButtons } from './utils/bot-access.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   await PageInitializer.init({
@@ -98,6 +99,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             </div>
           `;
           document.getElementById('btn-login-groups')?.addEventListener('click', () => authService.login());
+          applyBotAccessToButtons(container);
         } else {
           // No Discord context — general landing
           container.innerHTML = `
@@ -320,6 +322,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               </div>
             </div>
           `;
+          applyBotAccessToButtons(container);
         }
       }
     }
