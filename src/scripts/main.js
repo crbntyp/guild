@@ -906,14 +906,58 @@ function renderCraftersSection(crafters) {
   `;
 }
 
+// Persistent localStorage cache for recipe icons (recipes never change).
+const RECIPE_ICON_CACHE_KEY = 'dd:recipe-icons:v1';
+let _recipeIconCache = null;
+function loadRecipeIconCache() {
+  if (_recipeIconCache) return _recipeIconCache;
+  try {
+    _recipeIconCache = JSON.parse(localStorage.getItem(RECIPE_ICON_CACHE_KEY) || '{}');
+  } catch (e) { _recipeIconCache = {}; }
+  return _recipeIconCache;
+}
+function saveRecipeIconCache() {
+  try {
+    localStorage.setItem(RECIPE_ICON_CACHE_KEY, JSON.stringify(_recipeIconCache || {}));
+  } catch (e) { /* quota */ }
+}
+
+async function fetchRecipeIcons(recipeIds) {
+  const cache = loadRecipeIconCache();
+  const missing = recipeIds.filter(id => !(id in cache));
+  if (!missing.length) return cache;
+
+  // Batched parallel fetch — 20 at a time with a small delay
+  const BATCH = 20;
+  for (let i = 0; i < missing.length; i += BATCH) {
+    const batch = missing.slice(i, i + BATCH);
+    const results = await Promise.all(batch.map(async (id) => ({
+      id,
+      url: await wowAPI.getRecipeMedia(id).catch(() => null)
+    })));
+    for (const { id, url } of results) cache[id] = url || null;
+    if (i + BATCH < missing.length) await new Promise(r => setTimeout(r, 150));
+  }
+  saveRecipeIconCache();
+  return cache;
+}
+
 function openCrafterRecipeModal(crafter) {
   if (!crafter?.recipes?.length) return;
   document.querySelector('.dd-recipe-modal')?.remove();
 
   const color = getClassColor ? getClassColor(crafter.classId) : '#fff';
-  const recipeListHtml = crafter.recipes.map(r =>
-    `<a href="https://www.wowhead.com/recipe=${r.id}" target="_blank" rel="noopener" class="dd-recipe-item">${r.name}</a>`
-  ).join('');
+  const iconCache = loadRecipeIconCache();
+
+  const recipeItemHtml = (r) => {
+    const icon = iconCache[r.id];
+    return `
+      <a href="https://www.wowhead.com/recipe=${r.id}" target="_blank" rel="noopener" class="dd-recipe-item" data-name="${r.name.toLowerCase()}">
+        <img src="${icon || 'img/placeholder.png'}" alt="" class="dd-recipe-item-icon" data-recipe-id="${r.id}" />
+        <span class="dd-recipe-item-name">${r.name}</span>
+      </a>
+    `;
+  };
 
   const overlay = document.createElement('div');
   overlay.className = 'dd-recipe-modal';
@@ -930,11 +974,34 @@ function openCrafterRecipeModal(crafter) {
           <span>${crafter.recipes.length} recipes</span>
         </div>
       </div>
-      <div class="dd-recipe-modal-list">${recipeListHtml}</div>
+      <input type="text" class="dd-recipe-modal-search" placeholder="Filter recipes…" autofocus />
+      <div class="dd-recipe-modal-list">${crafter.recipes.map(recipeItemHtml).join('')}</div>
     </div>
   `;
   document.body.appendChild(overlay);
   document.body.classList.add('modal-open');
+
+  // Filter as you type
+  const searchInput = overlay.querySelector('.dd-recipe-modal-search');
+  const items = overlay.querySelectorAll('.dd-recipe-item');
+  searchInput.addEventListener('input', () => {
+    const q = searchInput.value.trim().toLowerCase();
+    items.forEach(el => {
+      const match = !q || el.dataset.name.includes(q);
+      el.style.display = match ? '' : 'none';
+    });
+  });
+
+  // Lazy-load missing icons in the background
+  const missingIds = crafter.recipes.map(r => r.id).filter(id => !(id in iconCache));
+  if (missingIds.length) {
+    fetchRecipeIcons(missingIds).then(freshCache => {
+      overlay.querySelectorAll('.dd-recipe-item-icon[data-recipe-id]').forEach(img => {
+        const url = freshCache[img.dataset.recipeId];
+        if (url) img.src = url;
+      });
+    });
+  }
 
   const close = () => {
     overlay.remove();

@@ -166,6 +166,19 @@ class WoWAPI {
     }
   }
 
+  // Get recipe media (the icon for a crafting recipe)
+  async getRecipeMedia(recipeId) {
+    try {
+      const data = await battlenetClient.request(`/data/wow/media/recipe/${recipeId}`, {
+        params: { namespace: config.api.namespace.static }
+      });
+      const asset = data?.assets?.find(a => a.key === 'icon') || data?.assets?.[0];
+      return this._extractAssetUrl(asset);
+    } catch (error) {
+      return null;
+    }
+  }
+
   // Get profession media — returns { icon, banner } with all available assets
   async getProfessionMedia(professionId) {
     try {
