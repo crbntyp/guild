@@ -487,7 +487,7 @@ async function loadCritterTracker() {
 // ============================================================
 // The Dragons' Ledger — live stats from character endpoints
 // ============================================================
-const LEDGER_CACHE_KEY = 'dd:guild-ledger:v10';
+const LEDGER_CACHE_KEY = 'dd:guild-ledger:v12';
 const LEDGER_TTL = 60 * 60 * 1000; // 1 hour
 
 async function fetchGuildLedger(roster) {
@@ -794,6 +794,9 @@ async function fetchGuildLedger(roster) {
       // Only include characters who have maxed the tier
       if (!maxSkill || skill < maxSkill) continue;
 
+      const recipes = (midnightTier.known_recipes || [])
+        .map(rec => ({ id: rec.id, name: rec.name }))
+        .sort((a, b) => a.name.localeCompare(b.name));
       const entry = craftersByProfession.get(profName) || { id: profId, list: [] };
       entry.list.push({
         name: r.character.name,
@@ -801,7 +804,9 @@ async function fetchGuildLedger(roster) {
         specId: r.profile?.active_spec?.id,
         tier: midnightTier.tier?.name || '',
         skill,
-        maxSkill
+        maxSkill,
+        recipeCount: recipes.length,
+        recipes
       });
       craftersByProfession.set(profName, entry);
     }
@@ -844,6 +849,10 @@ async function fetchGuildLedger(roster) {
 
 const CINDERS_HTML = '<div class="void-cinders"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>';
 
+// Registry populated when crafters render — keyed by index so the click
+// handler can look up the recipe list without round-tripping data attributes.
+const _crafterCardRegistry = [];
+
 function renderCraftersSection(crafters) {
   if (!crafters || !Object.keys(crafters).length) return '';
   const profOrder = [
@@ -862,6 +871,10 @@ function renderCraftersSection(crafters) {
   }
   if (!cards.length) return '';
 
+  // Reset + repopulate the registry for click delegation
+  _crafterCardRegistry.length = 0;
+  cards.forEach(c => _crafterCardRegistry.push(c));
+
   return `
     <section class="dd-section dd-section-crafters">
       <header class="dd-section-header">
@@ -869,11 +882,12 @@ function renderCraftersSection(crafters) {
         <p class="dd-section-sub">Maxed Midnight professions — whisper these dragons</p>
       </header>
       <div class="dd-crafters-grid">
-        ${cards.map(c => {
+        ${cards.map((c, i) => {
           const color = getClassColor ? getClassColor(c.classId) : '#fff';
           const classUrl = c.classId ? getClassIconUrl(c.classId) : null;
+          const clickable = c.recipeCount > 0;
           return `
-            <div class="dd-crafter-card">
+            <div class="dd-crafter-card${clickable ? ' dd-crafter-card-clickable' : ''}"${clickable ? ` data-crafter-idx="${i}"` : ''}>
               <div class="dd-crafter-card-top">
                 ${classUrl ? `<img src="${classUrl}" alt="" class="dd-crafter-icon" />` : ''}
                 <span class="dd-crafter-name" style="color:${color}">${c.name}</span>
@@ -883,12 +897,70 @@ function renderCraftersSection(crafters) {
                 <span class="dd-crafter-prof-name">${c.prof}</span>
                 <span class="dd-crafter-skill">${c.skill}<span class="dd-crafter-skill-max">/${c.maxSkill}</span></span>
               </div>
+              ${c.recipeCount ? `<div class="dd-crafter-card-recipes">${c.recipeCount} recipes →</div>` : ''}
             </div>
           `;
         }).join('')}
       </div>
     </section>
   `;
+}
+
+function openCrafterRecipeModal(crafter) {
+  if (!crafter?.recipes?.length) return;
+  document.querySelector('.dd-recipe-modal')?.remove();
+
+  const color = getClassColor ? getClassColor(crafter.classId) : '#fff';
+  const recipeListHtml = crafter.recipes.map(r =>
+    `<a href="https://www.wowhead.com/recipe=${r.id}" target="_blank" rel="noopener" class="dd-recipe-item">${r.name}</a>`
+  ).join('');
+
+  const overlay = document.createElement('div');
+  overlay.className = 'dd-recipe-modal';
+  overlay.innerHTML = `
+    <div class="dd-recipe-modal-content">
+      <div class="void-cinders"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      <button class="dd-recipe-modal-close" aria-label="Close">&times;</button>
+      <div class="dd-recipe-modal-header">
+        <h2 class="dd-recipe-modal-title" style="color:${color}">${crafter.name}</h2>
+        <div class="dd-recipe-modal-sub">
+          ${crafter.profIcon ? `<img src="${crafter.profIcon}" alt="" class="dd-recipe-modal-prof-icon" />` : ''}
+          <span>${crafter.prof}</span>
+          <span class="dd-recipe-modal-sep">·</span>
+          <span>${crafter.recipes.length} recipes</span>
+        </div>
+      </div>
+      <div class="dd-recipe-modal-list">${recipeListHtml}</div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  document.body.classList.add('modal-open');
+
+  const close = () => {
+    overlay.remove();
+    document.body.classList.remove('modal-open');
+  };
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) close();
+  });
+  overlay.querySelector('.dd-recipe-modal-close').addEventListener('click', close);
+  document.addEventListener('keydown', function esc(e) {
+    if (e.key === 'Escape') { close(); document.removeEventListener('keydown', esc); }
+  });
+}
+
+// Global delegation for crafter card clicks (installed once, safe to call
+// multiple times — subsequent installs no-op via the attribute flag).
+function installCrafterClickDelegate() {
+  if (document.body.dataset.ddCrafterClickInstalled) return;
+  document.body.dataset.ddCrafterClickInstalled = '1';
+  document.body.addEventListener('click', (e) => {
+    const card = e.target.closest('.dd-crafter-card-clickable');
+    if (!card) return;
+    const idx = parseInt(card.dataset.crafterIdx, 10);
+    const crafter = _crafterCardRegistry[idx];
+    if (crafter) openCrafterRecipeModal(crafter);
+  });
 }
 
 function renderLedgerPlaceholder() {
@@ -1126,7 +1198,10 @@ async function renderHome() {
         const pillsSlot = document.getElementById('dd-champions-pills-slot');
         if (pillsSlot) pillsSlot.innerHTML = renderChampionPills(ledger?.champions);
         const craftersSlot = document.getElementById('dd-crafters-slot');
-        if (craftersSlot) craftersSlot.innerHTML = renderCraftersSection(ledger?.crafters);
+        if (craftersSlot) {
+          craftersSlot.innerHTML = renderCraftersSection(ledger?.crafters);
+          installCrafterClickDelegate();
+        }
         // Re-render the progression row so AOTC/CE badges pop in from the cache
         const activitySection = document.querySelector('.dd-section-activity');
         if (activitySection) {
