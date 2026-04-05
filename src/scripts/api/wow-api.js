@@ -166,6 +166,27 @@ class WoWAPI {
     }
   }
 
+  // Get profession media — returns { icon, banner } with all available assets
+  async getProfessionMedia(professionId) {
+    try {
+      const data = await battlenetClient.request(`/data/wow/media/profession/${professionId}`, {
+        params: { namespace: config.api.namespace.static }
+      });
+      console.log(`[profession ${professionId}] assets:`, data?.assets?.map(a => ({ key: a.key, value: a.value })));
+      const assets = {};
+      for (const a of (data?.assets || [])) {
+        assets[a.key] = this._extractAssetUrl(a);
+      }
+      return {
+        icon: assets.icon || null,
+        banner: assets.banner || assets.header || assets['banner-image'] || null,
+        all: assets
+      };
+    } catch (error) {
+      return null;
+    }
+  }
+
   // Get journal instance media (raid/dungeon banner image)
   async getJournalInstanceMedia(instanceId) {
     try {
@@ -467,6 +488,40 @@ class WoWAPI {
         console.error(`Error fetching character encounters for ${characterName}:`, error);
       }
       throw error;
+    }
+  }
+
+  // Get character achievements (for AOTC / Cutting Edge detection)
+  async getCharacterAchievements(realmSlug, characterName) {
+    const encodedName = encodeURIComponent(characterName.toLowerCase());
+    const endpoint = `/profile/wow/character/${realmSlug}/${encodedName}/achievements`;
+    try {
+      const data = await battlenetClient.request(endpoint, {
+        params: { namespace: config.api.namespace.profile }
+      });
+      return data;
+    } catch (error) {
+      if (error.status !== 404) {
+        console.error(`Error fetching achievements for ${characterName}:`, error);
+      }
+      return null;
+    }
+  }
+
+  // Get character professions (primaries + secondaries with tiers)
+  async getCharacterProfessions(realmSlug, characterName) {
+    const encodedName = encodeURIComponent(characterName.toLowerCase());
+    const endpoint = `/profile/wow/character/${realmSlug}/${encodedName}/professions`;
+    try {
+      const data = await battlenetClient.request(endpoint, {
+        params: { namespace: config.api.namespace.profile }
+      });
+      return data;
+    } catch (error) {
+      if (error.status !== 404) {
+        console.error(`Error fetching professions for ${characterName}:`, error);
+      }
+      return null;
     }
   }
 

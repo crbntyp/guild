@@ -169,6 +169,57 @@ async function buildRaidProgression(activity) {
     .sort((a, b) => b.kills - a.kills);
 }
 
+function buildGuildGlance(roster) {
+  if (!roster?.members) return null;
+  const classCounts = {};
+  let alliance = 0, horde = 0;
+  for (const m of roster.members) {
+    const cid = m.character?.playable_class?.id;
+    if (cid) classCounts[cid] = (classCounts[cid] || 0) + 1;
+    const faction = m.character?.faction?.type;
+    if (faction === 'ALLIANCE') alliance++;
+    else if (faction === 'HORDE') horde++;
+  }
+  const total = roster.members.length;
+  return { classCounts, alliance, horde, total };
+}
+
+function renderGuildGlance(data) {
+  if (!data) return '';
+  const { classCounts, alliance, horde, total } = data;
+  if (!total) return '';
+
+  const sorted = Object.entries(classCounts)
+    .map(([id, count]) => ({
+      id: Number(id),
+      count,
+      pct: (count / total) * 100,
+      name: CLASS_NAMES[Number(id)] || 'Unknown',
+      color: getClassColor ? getClassColor(Number(id)) : '#fff'
+    }))
+    .sort((a, b) => b.count - a.count);
+
+  const legend = sorted.map(c => `
+    <span class="dd-glance-legend-item">
+      <span class="dd-glance-legend-dot" style="background:${c.color}"></span>
+      <span class="dd-glance-legend-name">${c.name}</span>
+      <span class="dd-glance-legend-count">${c.count}</span>
+    </span>
+  `).join('');
+
+  return `
+    <div class="dd-glance">
+      <div class="dd-glance-footer">
+        <div class="dd-glance-legend">${legend}</div>
+        <div class="dd-glance-factions">
+          <span class="dd-glance-faction dd-glance-alliance"><strong>${alliance}</strong> Alliance</span>
+          <span class="dd-glance-faction dd-glance-horde"><strong>${horde}</strong> Horde</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 async function renderHero(guildInfo, activity) {
   const memberCount = guildInfo?.member_count || 0;
   const banner = HERO_BANNERS[0];
@@ -267,6 +318,20 @@ function renderMembers(roster) {
   `;
 }
 
+// Pull cached guild-clears synchronously from localStorage so kill cards can
+// stamp AOTC/CE badges without waiting for the ledger fetch.
+function getCachedGuildClears() {
+  try {
+    const cached = localStorage.getItem(LEDGER_CACHE_KEY);
+    if (!cached) return {};
+    const parsed = JSON.parse(cached);
+    if (parsed.expires < Date.now()) return {};
+    return parsed.data?.guildClears || {};
+  } catch (e) {
+    return {};
+  }
+}
+
 async function renderActivity(activity) {
   if (!activity || !activity.activities) return '';
 
@@ -285,13 +350,15 @@ async function renderActivity(activity) {
 
   if (!kills.length) return '';
 
+  const guildClears = getCachedGuildClears();
   const enriched = kills.map((item) => {
     const encId = item.encounter_completed?.encounter?.id;
     const entry = encId ? journalMap.get(encId) : null;
     const instanceName = entry?.instanceName || null;
     const portrait = bossPortraitUrl(entry?.wowheadSlug);
     const banner = zoneBannerUrl(instanceName);
-    return { item, banner, portrait, instanceName };
+    const clear = instanceName ? guildClears[instanceName] : null;
+    return { item, banner, portrait, instanceName, clear };
   });
 
   return `
@@ -302,7 +369,7 @@ async function renderActivity(activity) {
       </header>
       <div class="dd-kill-scroll">
         <div class="dd-kill-track">
-          ${enriched.map(({ item, banner, portrait, instanceName }, i) => {
+          ${enriched.map(({ item, banner, portrait, instanceName, clear }, i) => {
             const ts = item.timestamp;
             const enc = item.encounter_completed.encounter?.name || 'Unknown Boss';
             const mode = item.encounter_completed.mode?.name || '';
@@ -327,7 +394,7 @@ async function renderActivity(activity) {
                     ${portraitMarkup}
                     <div class="dd-kill-art-text">
                       <h3 class="dd-kill-name">${enc}</h3>
-                      ${instanceName ? `<div class="dd-kill-instance">${instanceName}</div>` : ''}
+                      ${instanceName ? `<div class="dd-kill-instance">${instanceName}${clear?.ce ? ' <span class="dd-clear-badge dd-clear-ce">CE</span>' : clear?.aotc ? ' <span class="dd-clear-badge dd-clear-aotc">AOTC</span>' : ''}</div>` : ''}
                     </div>
                   </div>
                 </div>
@@ -420,7 +487,7 @@ async function loadCritterTracker() {
 // ============================================================
 // The Dragons' Ledger — live stats from character endpoints
 // ============================================================
-const LEDGER_CACHE_KEY = 'dd:guild-ledger:v5';
+const LEDGER_CACHE_KEY = 'dd:guild-ledger:v10';
 const LEDGER_TTL = 60 * 60 * 1000; // 1 hour
 
 async function fetchGuildLedger(roster) {
@@ -470,15 +537,17 @@ async function fetchGuildLedger(roster) {
       const name = m.character?.name;
       if (!realm || !name) return null;
       try {
-        const [profile, mplus, raids, mplusSeason] = await Promise.all([
+        const [profile, mplus, raids, mplusSeason, achievements, professions] = await Promise.all([
           wowAPI.getCharacterProfile(realm, name).catch(() => null),
           wowAPI.getCharacterMythicKeystoneProfile(realm, name).catch(() => null),
           wowAPI.getCharacterRaidEncounters(realm, name),
           currentSeasonId
             ? wowAPI.getCharacterMythicKeystoneSeasonDetails(realm, name, currentSeasonId).catch(() => null)
-            : null
+            : null,
+          wowAPI.getCharacterAchievements(realm, name),
+          wowAPI.getCharacterProfessions(realm, name)
         ]);
-        return { character: m.character, profile, mplus, raids, mplusSeason };
+        return { character: m.character, profile, mplus, raids, mplusSeason, achievements, professions };
       } catch (e) { return null; }
     }));
     results.push(...batchResults.filter(Boolean));
@@ -677,7 +746,96 @@ async function fetchGuildLedger(roster) {
     } : null
   };
 
-  const data = { topGear, topMplus, topProgression, dungeonHighs, champions };
+  // Guild Clears — scan every character's achievements for AOTC/CE stamps
+  // targeting current-expansion raids (via the journalMap instance names).
+  const expansionRaidNames = new Set(Array.from(journalMap.values()).map(e => e.instanceName));
+  const clearsByRaid = new Map(); // raidName → { aotc, ce }
+  for (const r of results) {
+    const achs = r.achievements?.achievements || [];
+    for (const a of achs) {
+      const name = a.achievement?.name || '';
+      const aotcMatch = name.match(/^Ahead of the Curve:\s*(.+)$/i);
+      const ceMatch = name.match(/^Cutting Edge:\s*(.+)$/i);
+      const matched = aotcMatch || ceMatch;
+      if (!matched) continue;
+      // Some AOTC achievements use boss name; prefer a direct instance-name match.
+      let raidName = null;
+      for (const inst of expansionRaidNames) {
+        if (matched[1].includes(inst) || inst.includes(matched[1])) {
+          raidName = inst;
+          break;
+        }
+      }
+      if (!raidName) continue;
+      const entry = clearsByRaid.get(raidName) || { aotc: false, ce: false };
+      if (aotcMatch) entry.aotc = true;
+      if (ceMatch) entry.ce = true;
+      clearsByRaid.set(raidName, entry);
+    }
+  }
+  const guildClears = {};
+  for (const [name, v] of clearsByRaid) guildClears[name] = v;
+
+  // Dragon Crafters — only current-expansion (Midnight) tier at max skill
+  const craftersByProfession = new Map(); // profName → { id, list }
+  for (const r of results) {
+    const primaries = r.professions?.primaries || [];
+    for (const p of primaries) {
+      const profName = p.profession?.name;
+      const profId = p.profession?.id;
+      if (!profName) continue;
+      // Find the Midnight tier specifically
+      const midnightTier = (p.tiers || []).find(t =>
+        /midnight/i.test(t.tier?.name || '')
+      );
+      if (!midnightTier) continue;
+      const skill = midnightTier.skill_points || 0;
+      const maxSkill = midnightTier.max_skill_points || 0;
+      // Only include characters who have maxed the tier
+      if (!maxSkill || skill < maxSkill) continue;
+
+      const entry = craftersByProfession.get(profName) || { id: profId, list: [] };
+      entry.list.push({
+        name: r.character.name,
+        classId: r.character.playable_class?.id,
+        specId: r.profile?.active_spec?.id,
+        tier: midnightTier.tier?.name || '',
+        skill,
+        maxSkill
+      });
+      craftersByProfession.set(profName, entry);
+    }
+  }
+
+  // Fetch profession icon media in parallel (max 1 per unique profession)
+  const profEntries = Array.from(craftersByProfession.entries());
+  const profIconResults = await Promise.all(profEntries.map(async ([, e]) => {
+    if (!e.id) return null;
+    try { return await wowAPI.getProfessionMedia(e.id); } catch { return null; }
+  }));
+
+  const crafters = {};
+  profEntries.forEach(([prof, entry], idx) => {
+    const media = profIconResults[idx] || {};
+    crafters[prof] = {
+      id: entry.id,
+      icon: media.icon || null,
+      banner: media.banner || null,
+      list: entry.list.sort((a, b) => b.skill - a.skill).slice(0, 10)
+    };
+  });
+
+  // Random seasonal background picks for ledger columns (persist in cache)
+  const raidNameSet = new Set();
+  for (const e of journalMap.values()) {
+    if (!EXCLUDED_INSTANCE_IDS.has(e.instanceId)) raidNameSet.add(e.instanceName);
+  }
+  const raidNames = Array.from(raidNameSet);
+  const slayerBg = raidNames.length
+    ? zoneBannerUrl(raidNames[Math.floor(Math.random() * raidNames.length)])
+    : null;
+
+  const data = { topGear, topMplus, topProgression, dungeonHighs, champions, guildClears, crafters, slayerBg };
   try {
     localStorage.setItem(LEDGER_CACHE_KEY, JSON.stringify({ data, expires: Date.now() + LEDGER_TTL }));
   } catch (e) { /* ignore */ }
@@ -685,6 +843,53 @@ async function fetchGuildLedger(roster) {
 }
 
 const CINDERS_HTML = '<div class="void-cinders"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>';
+
+function renderCraftersSection(crafters) {
+  if (!crafters || !Object.keys(crafters).length) return '';
+  const profOrder = [
+    'Blacksmithing', 'Leatherworking', 'Tailoring', 'Enchanting',
+    'Engineering', 'Jewelcrafting', 'Alchemy', 'Inscription'
+  ];
+
+  // Flatten: one card per maxed (character, profession) combo
+  const cards = [];
+  for (const prof of profOrder) {
+    const entry = crafters[prof];
+    if (!entry?.list?.length) continue;
+    for (const c of entry.list) {
+      cards.push({ ...c, prof, profIcon: entry.icon });
+    }
+  }
+  if (!cards.length) return '';
+
+  return `
+    <section class="dd-section dd-section-crafters">
+      <header class="dd-section-header">
+        <h2 class="dd-section-title">Dragon Crafters</h2>
+        <p class="dd-section-sub">Maxed Midnight professions — whisper these dragons</p>
+      </header>
+      <div class="dd-crafters-grid">
+        ${cards.map(c => {
+          const color = getClassColor ? getClassColor(c.classId) : '#fff';
+          const classUrl = c.classId ? getClassIconUrl(c.classId) : null;
+          return `
+            <div class="dd-crafter-card">
+              <div class="dd-crafter-card-top">
+                ${classUrl ? `<img src="${classUrl}" alt="" class="dd-crafter-icon" />` : ''}
+                <span class="dd-crafter-name" style="color:${color}">${c.name}</span>
+              </div>
+              <div class="dd-crafter-card-bottom">
+                ${c.profIcon ? `<img src="${c.profIcon}" alt="" class="dd-crafter-prof-icon-sm" />` : ''}
+                <span class="dd-crafter-prof-name">${c.prof}</span>
+                <span class="dd-crafter-skill">${c.skill}<span class="dd-crafter-skill-max">/${c.maxSkill}</span></span>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </section>
+  `;
+}
 
 function renderLedgerPlaceholder() {
   const placeholderCol = (title) => `
@@ -753,9 +958,22 @@ function renderChampionPills(champions) {
   return `<div class="dd-champ-pills">${items.map(renderChampionPill).join('')}</div>`;
 }
 
+function pickRandomDungeonBanners(dungeonHighs, count) {
+  if (!dungeonHighs?.length) return [];
+  const pool = [...dungeonHighs];
+  const picks = [];
+  for (let i = 0; i < count && pool.length; i++) {
+    const idx = Math.floor(Math.random() * pool.length);
+    const [chosen] = pool.splice(idx, 1);
+    picks.push(zoneBannerUrl(chosen.name));
+  }
+  return picks;
+}
+
 function renderLedger(ledger) {
   if (!ledger) return '';
-  const { topGear = [], topMplus = [], topProgression = [], dungeonHighs = [], champions = {} } = ledger;
+  const { topGear = [], topMplus = [], topProgression = [], dungeonHighs = [], champions = {}, slayerBg = null } = ledger;
+  const [grindersBg, scalersBg] = pickRandomDungeonBanners(dungeonHighs, 2);
 
   const progHtml = topProgression.length ? topProgression.map((p, i) => {
     const color = getClassColor ? getClassColor(p.classId) : '#fff';
@@ -831,17 +1049,17 @@ function renderLedger(ledger) {
         <p class="dd-section-sub">A tally of the flight's finest</p>
       </header>
       <div class="dd-ledger-grid">
-        <div class="dd-ledger-col">
+        <div class="dd-ledger-col ${slayerBg ? 'dd-ledger-col-banner' : ''}"${slayerBg ? ` style="--col-bg:url('${slayerBg}')"` : ''}>
           ${CINDERS_HTML}
           <h3 class="dd-ledger-col-title">Dragon Slayers</h3>
           <div class="dd-ledger-col-body">${progHtml}</div>
         </div>
-        <div class="dd-ledger-col">
+        <div class="dd-ledger-col ${grindersBg ? 'dd-ledger-col-banner' : ''}"${grindersBg ? ` style="--col-bg:url('${grindersBg}')"` : ''}>
           ${CINDERS_HTML}
           <h3 class="dd-ledger-col-title">Dragon Grinders</h3>
           <div class="dd-ledger-col-body">${gearHtml}</div>
         </div>
-        <div class="dd-ledger-col">
+        <div class="dd-ledger-col ${scalersBg ? 'dd-ledger-col-banner' : ''}"${scalersBg ? ` style="--col-bg:url('${scalersBg}')"` : ''}>
           ${CINDERS_HTML}
           <h3 class="dd-ledger-col-title">Dragon Scalers</h3>
           <div class="dd-ledger-col-body">${mplusHtml}</div>
@@ -879,21 +1097,43 @@ async function renderHome() {
       renderActivity(activity)
     ]);
 
+    const glance = buildGuildGlance(roster);
+    const glanceHtml = glance ? `
+      <section class="dd-section dd-section-glance">
+        <header class="dd-section-header">
+          <h2 class="dd-section-title">The Flight at a Glance</h2>
+          <p class="dd-section-sub">Class makeup and faction split across all ${glance.total} dragons</p>
+        </header>
+        ${renderGuildGlance(glance)}
+      </section>
+    ` : '';
+
     container.innerHTML = `
       <div class="dd-home">
         ${heroHtml}
         ${activityHtml}
         ${renderLedgerPlaceholder()}
+        <div id="dd-crafters-slot"></div>
+        ${glanceHtml}
       </div>
     `;
 
-    // Fill in the ledger + champion pills without blocking the page render
+    // Fill in the ledger + champion pills + crafters without blocking the render
     fetchGuildLedger(roster)
       .then(ledger => {
         const section = document.getElementById('dd-ledger-section');
         if (section) section.outerHTML = renderLedger(ledger);
         const pillsSlot = document.getElementById('dd-champions-pills-slot');
         if (pillsSlot) pillsSlot.innerHTML = renderChampionPills(ledger?.champions);
+        const craftersSlot = document.getElementById('dd-crafters-slot');
+        if (craftersSlot) craftersSlot.innerHTML = renderCraftersSection(ledger?.crafters);
+        // Re-render the progression row so AOTC/CE badges pop in from the cache
+        const activitySection = document.querySelector('.dd-section-activity');
+        if (activitySection) {
+          renderActivity(activity).then(html => {
+            if (html) activitySection.outerHTML = html;
+          });
+        }
       })
       .catch(err => console.error('Ledger fetch failed:', err));
   } catch (error) {

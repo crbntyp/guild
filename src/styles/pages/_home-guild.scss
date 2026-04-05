@@ -178,8 +178,7 @@ $dd-ink-faint: rgba(255, 255, 255, 0.3);
 
 .dd-section-header {
   margin-bottom: 24px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  text-align: center;
 
   .dd-section-title {
     font-family: 'Muli', sans-serif;
@@ -198,22 +197,15 @@ $dd-ink-faint: rgba(255, 255, 255, 0.3);
   }
 }
 
-// Recent Kills sits flush against the hero and overlaps it so both are
-// visible on initial page load. Header is centered for emphasis.
-.dd-section-activity {
+// Recent Kills sits below the hero with a tight gap to the cards.
+// Scoped under .dd-home to beat the .dd-home .dd-section container rule.
+.dd-home .dd-section-activity {
   position: relative;
   z-index: 2;
-  margin-top: -260px;
+  margin-top: 0;
 
   .dd-section-header {
-    text-align: center;
-    border-bottom: none;
-    padding-bottom: 0;
     margin-bottom: -60px;
-  }
-
-  @media (max-width: 768px) {
-    margin-top: -200px;
   }
 }
 
@@ -497,14 +489,8 @@ $dd-ink-faint: rgba(255, 255, 255, 0.3);
 // ============================================================
 // The Dragons' Ledger — 4-col stats row
 // ============================================================
-.dd-section-ledger {
-  margin-top: 20px;
-
-  .dd-section-header {
-    text-align: center;
-    border-bottom: none;
-    padding-bottom: 0;
-  }
+.dd-home .dd-section-ledger {
+  margin-top: 40px;
 }
 
 // ============================================================
@@ -521,6 +507,195 @@ $dd-ink-faint: rgba(255, 255, 255, 0.3);
 @keyframes dd-champ-shimmer {
   0%   { background-position: -180px 0; }
   100% { background-position: 180px 0; }
+}
+
+// AOTC / Cutting Edge badges next to instance names in kill cards
+.dd-clear-badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 2px 5px;
+  border-radius: 3px;
+  letter-spacing: 0.08em;
+  vertical-align: middle;
+  margin-left: 4px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+
+  &.dd-clear-aotc {
+    color: #ffd700;
+    background: rgba(255, 215, 0, 0.18);
+    border: 1px solid rgba(255, 215, 0, 0.5);
+  }
+
+  &.dd-clear-ce {
+    color: #ff8c42;
+    background: rgba(255, 140, 66, 0.2);
+    border: 1px solid rgba(255, 140, 66, 0.6);
+  }
+}
+
+// ============================================================
+// Dragon Crafters — profession directory
+// ============================================================
+.dd-home .dd-section-crafters {
+  margin-top: 40px;
+}
+
+.dd-crafters-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.dd-crafter-card {
+  flex: 0 0 220px;
+  width: 220px;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: border-color 0.2s ease;
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+}
+
+.dd-crafter-card-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dd-crafter-card-bottom {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.dd-crafter-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  flex-shrink: 0;
+}
+
+.dd-crafter-prof-icon-sm {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.dd-crafter-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dd-crafter-prof-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.55);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dd-crafter-skill {
+  font-size: 11px;
+  color: #fff;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.dd-crafter-skill-max {
+  color: rgba(255, 255, 255, 0.35);
+  font-weight: 500;
+}
+
+// Guild at a Glance — class distribution bar + faction split
+.dd-home .dd-section-glance {
+  margin-top: 200px;
+}
+
+.dd-glance {
+  margin: 0 auto;
+  max-width: 680px;
+}
+
+.dd-glance-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.dd-glance-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.dd-glance-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  line-height: 1;
+}
+
+.dd-glance-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dd-glance-legend-name {
+  font-weight: 600;
+}
+
+.dd-glance-legend-count {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.dd-glance-factions {
+  display: flex;
+  gap: 14px;
+  font-size: 11px;
+  flex-shrink: 0;
+
+  strong {
+    font-weight: 700;
+    margin-right: 2px;
+  }
+
+  .dd-glance-alliance {
+    color: #4a9eff;
+    strong { color: #7ebbff; }
+  }
+
+  .dd-glance-horde {
+    color: #ff6b6b;
+    strong { color: #ff8a8a; }
+  }
 }
 
 .dd-champ-pill-skeleton {
@@ -614,10 +789,22 @@ $dd-ink-faint: rgba(255, 255, 255, 0.3);
   padding: 14px;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   transition: border-color 0.2s ease;
 
   &:hover {
     border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  // Banner variant — a random Season 1 dungeon image set via --col-bg,
+  // overlaid with a light vertical gradient scrim for legibility.
+  &.dd-ledger-col-banner {
+    background-image:
+      linear-gradient(180deg, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0.55) 60%, rgba(0, 0, 0, 0.75) 100%),
+      var(--col-bg);
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
   }
 
   .dd-ledger-col-title {
